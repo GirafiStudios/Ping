@@ -1,0 +1,13 @@
+[
+{
+  "modid": "Ping",
+  "name": "Ping",
+  "description": "Ping",
+  "version": "${mod_version}",
+  "mcversion": "${minecraft_version}",
+  "authors": [ "dmillerw" ],
+  "dependencies": [
+     "mod_MinecraftForge"
+  ]
+}
+]
