@@ -254,7 +254,8 @@ public class PingHandler {
 
         tessellator.startDrawingQuads();
 
-        tessellator.setColorRGBA_I(ping.color, 122);
+        int alpha = ping.type == PingType.ALERT ? (int)(100 * (1 + Math.sin(mc.theWorld.getTotalWorldTime()))) : 25;
+        tessellator.setColorRGBA_I(ping.color, 150 + alpha);
 
         IIcon icon = Blocks.stained_glass.getIcon(0, 0);
 
