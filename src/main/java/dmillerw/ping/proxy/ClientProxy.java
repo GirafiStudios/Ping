@@ -1,5 +1,6 @@
 package dmillerw.ping.proxy;
 
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.client.PingHandler;
@@ -30,6 +31,8 @@ public class ClientProxy extends CommonProxy {
         PingHandler.register();
         KeyHandler.register();
         RenderHandler.register();
+
+        FMLInterModComms.sendRuntimeMessage(this, "VersionChecker", "addVersionCheck", "https://raw.githubusercontent.com/dmillerw/Ping/master/version.json");
 
         configuration = new Configuration(event.getSuggestedConfigurationFile());
         configuration.load();

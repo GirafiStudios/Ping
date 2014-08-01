@@ -1,0 +1,14 @@
+{
+    "versionList": [
+        {
+            "mcVersion":"*",
+            "modVersion":"1.0.0",
+            "changeLog": [
+                "Initial release"
+            ],
+            "updateURL":"",
+            "isDirectLink":"true",
+            "newFileName":""
+        }
+    ]
+}
