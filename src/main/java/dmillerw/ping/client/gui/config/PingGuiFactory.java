@@ -1,4 +1,4 @@
-package dmillerw.ping.client.gui;
+package dmillerw.ping.client.gui.config;
 
 import cpw.mods.fml.client.IModGuiFactory;
 import net.minecraft.client.Minecraft;

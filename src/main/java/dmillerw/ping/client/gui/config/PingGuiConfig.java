@@ -1,4 +1,4 @@
-package dmillerw.ping.client.gui;
+package dmillerw.ping.client.gui.config;
 
 import cpw.mods.fml.client.config.GuiConfig;
 import cpw.mods.fml.client.config.IConfigElement;

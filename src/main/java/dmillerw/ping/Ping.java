@@ -11,7 +11,7 @@ import dmillerw.ping.proxy.CommonProxy;
 /**
  * @author dmillerw
  */
-@Mod(modid = "Ping", name = "Ping", version = "%MOD_VERSION", dependencies = "required-after:Forge@[%FORGE_VERSION%,)", guiFactory = "dmillerw.ping.client.gui.PingGuiFactory")
+@Mod(modid = "Ping", name = "Ping", version = "%MOD_VERSION", dependencies = "required-after:Forge@[%FORGE_VERSION%,)", guiFactory = "dmillerw.ping.client.gui.config.PingGuiFactory")
 public class Ping {
 
     @Mod.Instance("Ping")

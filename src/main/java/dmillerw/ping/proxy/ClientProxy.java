@@ -3,6 +3,7 @@ package dmillerw.ping.proxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.client.PingHandler;
+import dmillerw.ping.client.RenderHandler;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -28,6 +29,7 @@ public class ClientProxy extends CommonProxy {
 
         PingHandler.register();
         KeyHandler.register();
+        RenderHandler.register();
 
         configuration = new Configuration(event.getSuggestedConfigurationFile());
         configuration.load();
