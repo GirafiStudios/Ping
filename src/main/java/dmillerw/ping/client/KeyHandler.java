@@ -25,6 +25,8 @@ public class KeyHandler {
 
     private static boolean lastKeyState = false;
 
+    public static boolean ignoreNextRelease = false;
+
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
@@ -43,13 +45,16 @@ public class KeyHandler {
             if (keyPressed) {
                 GuiPingSelect.activate();
             } else {
-                final CompatibleScaledResolution scaledresolution = new CompatibleScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-                int i = scaledresolution.getScaledWidth();
-                int j = scaledresolution.getScaledHeight();
-                final int k = Mouse.getX() * i / mc.displayWidth;
-                final int l = j - Mouse.getY() * j / mc.displayHeight - 1;
+                if (!ignoreNextRelease) {
+                    final CompatibleScaledResolution scaledresolution = new CompatibleScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+                    int i = scaledresolution.getScaledWidth();
+                    int j = scaledresolution.getScaledHeight();
+                    final int k = Mouse.getX() * i / mc.displayWidth;
+                    final int l = j - Mouse.getY() * j / mc.displayHeight - 1;
 
-                GuiPingSelect.INSTANCE.mouseClicked(k, l, 0);
+                    GuiPingSelect.INSTANCE.mouseClicked(k, l, 0);
+                }
+                ignoreNextRelease = false;
                 GuiPingSelect.deactivate();
             }
         }

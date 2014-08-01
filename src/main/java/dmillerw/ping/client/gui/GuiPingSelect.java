@@ -1,5 +1,6 @@
 package dmillerw.ping.client.gui;
 
+import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.network.PacketHandler;
 import net.minecraft.client.Minecraft;
@@ -50,9 +51,11 @@ public class GuiPingSelect extends GuiScreen {
 
             if (mouseIn) {
                 PacketHandler.sendPing(type);
+                KeyHandler.ignoreNextRelease = true;
                 return;
             }
         }
+
     }
 
     @Override
