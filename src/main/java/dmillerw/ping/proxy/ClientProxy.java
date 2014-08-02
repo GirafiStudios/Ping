@@ -18,6 +18,7 @@ public class ClientProxy extends CommonProxy {
     public static int pingB;
 
     public static boolean blockOverlay;
+    public static boolean sound;
 
     public static double pingAcceptDistance;
     public static int pingDuration;
@@ -49,6 +50,7 @@ public class ClientProxy extends CommonProxy {
         pingB = verify(p_pingB);
 
         blockOverlay = configuration.get("visual", "blockOverlay", true, "Whether to render a colored overlay on the Pinged block").getBoolean();
+        sound = configuration.get("general", "sound", true, "Whether to play a sound when a Ping is received").getBoolean();
         pingAcceptDistance = configuration.get("general", "pingAcceptDistance", 32D, "Maximum distance a Ping can be from you and still be received").getDouble();
         pingDuration = configuration.get("general", "pingDuration", 100, "How long a Ping should remain active before disappearing").getInt();
 

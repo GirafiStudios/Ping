@@ -5,14 +5,15 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
+import dmillerw.ping.helper.PingRenderHelper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.Frustrum;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -50,7 +51,11 @@ public class PingHandler {
     private List<PingWrapper> activePings = new ArrayList<PingWrapper>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
-        if (Minecraft.getMinecraft().thePlayer.getDistance(packet.ping.x, packet.ping.y, packet.ping.z) <= ClientProxy.pingAcceptDistance) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.thePlayer.getDistance(packet.ping.x, packet.ping.y, packet.ping.z) <= ClientProxy.pingAcceptDistance) {
+            if (ClientProxy.sound) {
+                mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("ping:bloop"), 1.0F));
+            }
             packet.ping.timer = ClientProxy.pingDuration;
             activePings.add(packet.ping);
         }
@@ -236,80 +241,28 @@ public class PingHandler {
             renderBlocks = new RenderBlocks(mc.theWorld);
         }
 
-        float padding = 0F + (0.20F * (float)ping.animationTimer / (float)20);
-        float min = -padding;
-        float max = 1 + padding;
-
-        GL11.glPushMatrix();
-
-        GL11.glDisable(GL11.GL_LIGHTING);
-
-        GL11.glEnable(GL11.GL_BLEND);
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.setTranslation(x, y, z);
-
-        tessellator.startDrawingQuads();
-
-        int alpha = ping.type == PingType.ALERT ? (int)(100 * (1 + Math.sin(mc.theWorld.getTotalWorldTime()))) : 25;
-        tessellator.setColorRGBA_I(ping.color, 150 + alpha);
-
         IIcon icon = Blocks.stained_glass.getIcon(0, 0);
 
-        mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        float padding = 0F + (0.20F * (float)ping.animationTimer / (float)20);
+        float box = 1 + padding + padding;
 
-        tessellator.setBrightness(Integer.MAX_VALUE);
+        int alpha = ping.type == PingType.ALERT ? (int)(100 * (1 + Math.sin(mc.theWorld.getTotalWorldTime()))) : 25;
 
+        GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_BLEND);
+        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-        // TOP
-        tessellator.addVertexWithUV(min, min, max, icon.getMinU(), icon.getMaxV());
-        tessellator.addVertexWithUV(max, min, max, icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(max, min, min, icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(min, min, min, icon.getMinU(), icon.getMinV());
+        Tessellator.instance.setTranslation(x + 0.5, y + 0.5, z + 0.5);
 
-        // BOTTOM
-        tessellator.addVertexWithUV(min, max, min, icon.getMinU(), icon.getMinV());
-        tessellator.addVertexWithUV(max, max, min, icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(max, max, max, icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(min, max, max, icon.getMinU(), icon.getMaxV());
+        PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 150 + alpha);
 
-        // NORTH
-        tessellator.addVertexWithUV(min, max, max, icon.getMinU(), icon.getMaxV());
-        tessellator.addVertexWithUV(max, max, max, icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(max, min, max, icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(min, min, max, icon.getMinU(), icon.getMinV());
-
-        // SOUTH
-        tessellator.addVertexWithUV(min, min, min, icon.getMinU(), icon.getMinV());
-        tessellator.addVertexWithUV(max, min, min, icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(max, max, min, icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(min, max, min, icon.getMinU(), icon.getMaxV());
-
-        // EAST
-        tessellator.addVertexWithUV(min, max, min, icon.getMinU(), icon.getMaxV());
-        tessellator.addVertexWithUV(min, max, max, icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(min, min, max, icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(min, min, min, icon.getMinU(), icon.getMinV());
-
-        // WEST
-        tessellator.addVertexWithUV(max, min, min, icon.getMinU(), icon.getMinV());
-        tessellator.addVertexWithUV(max, min, max, icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(max, max, max, icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(max, max, min, icon.getMinU(), icon.getMaxV());
-
-        tessellator.draw();
-
-        tessellator.setTranslation(0, 0, 0);
+        Tessellator.instance.setTranslation(0, 0, 0);
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-
         GL11.glDisable(GL11.GL_BLEND);
-
         GL11.glEnable(GL11.GL_LIGHTING);
-
         GL11.glPopMatrix();
     }
 
