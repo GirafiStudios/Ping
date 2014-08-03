@@ -7,9 +7,9 @@ public enum PingType {
 
     BACKGROUND,
     ALERT,
-    GOTO,
+    MINE,
     LOOK,
-    MINE;
+    GOTO;
 
     public final float minU;
     public final float minV;
