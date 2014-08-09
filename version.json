@@ -2,9 +2,10 @@
     "versionList": [
         {
             "mcVersion":"*",
-            "modVersion":"1.0.0",
+            "modVersion":"1.0.1",
             "changeLog": [
-                "Initial release"
+                "Fixed Ping menu being out of order",
+                "Added optional sound-effect upon receiving a Ping"
             ],
             "updateURL":"http://minecraft.curseforge.com/mc-mods/222967-ping/files/2210326/download",
             "isDirectLink":"true",

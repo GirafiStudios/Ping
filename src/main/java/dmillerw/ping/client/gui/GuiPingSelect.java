@@ -2,7 +2,7 @@ package dmillerw.ping.client.gui;
 
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.data.PingType;
-import dmillerw.ping.network.PacketHandler;
+import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -50,7 +50,7 @@ public class GuiPingSelect extends GuiScreen {
                     mouseY >= (drawY - ITEM_SIZE / 2) && mouseY <= (drawY + ITEM_SIZE / 2);
 
             if (mouseIn) {
-                PacketHandler.sendPing(type);
+                ClientProxy.sendPing(type);
                 KeyHandler.ignoreNextRelease = true;
                 return;
             }

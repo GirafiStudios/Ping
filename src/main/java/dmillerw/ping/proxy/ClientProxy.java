@@ -5,8 +5,17 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.client.RenderHandler;
+import dmillerw.ping.data.PingType;
+import dmillerw.ping.data.PingWrapper;
+import dmillerw.ping.helper.RaytraceHelper;
+import dmillerw.ping.network.PacketHandler;
+import dmillerw.ping.network.packet.ClientSendPing;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+
+import java.awt.*;
 
 /**
  * @author dmillerw
@@ -24,6 +33,17 @@ public class ClientProxy extends CommonProxy {
     public static int pingDuration;
 
     public static Configuration configuration;
+
+    public static void sendPing(PingType type) {
+        MovingObjectPosition mob = RaytraceHelper.raytrace(Minecraft.getMinecraft().thePlayer, 50);
+        if (mob != null && mob.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            sendPing(mob, new Color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB).getRGB(), type);
+        }
+    }
+
+    public static void sendPing(MovingObjectPosition mob, int color, PingType type) {
+        PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.blockX, mob.blockY, mob.blockZ, color, type)));
+    }
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
