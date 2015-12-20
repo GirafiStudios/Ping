@@ -2,12 +2,21 @@
 {
   "modid": "Ping",
   "name": "Ping",
-  "description": "Ping",
+  "description": "Inspired by Portal 2, this mod brings the Ping tool into Minecraft.",
   "version": "${mod_version}",
-  "mcversion": "${minecraft_version}",
-  "authors": [ "dmillerw" ],
+  "mcversion": "${mcversion}",
+  "url": "http://minecraft.curseforge.com/projects/ping",
+  "updateUrl": "",
+  "authorList": [
+    "dmillerw"
+  ],
+  "credits": "",
+  "logoFile": "assets/ping/logo.png",
+  "screenshots": [
+  ],
+  "parent":"",
   "dependencies": [
-     "mod_MinecraftForge"
+    "mod_MinecraftForge"
   ]
 }
 ]
