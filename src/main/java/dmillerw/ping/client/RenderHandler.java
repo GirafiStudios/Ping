@@ -15,7 +15,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 /**
  * @author dmillerw
@@ -60,12 +59,12 @@ public class RenderHandler {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
-        // Background
-        GL11.glPushMatrix();
+        // Menu Background
+        GlStateManager.pushMatrix();
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
 
-        GL11.glEnable(GL11.GL_BLEND);
+        GlStateManager.enableBlend();
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 
         float halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
@@ -73,8 +72,8 @@ public class RenderHandler {
         float backgroundX = resolution.getScaledWidth() / 2 - halfWidth;
         float backgroundY = resolution.getScaledHeight() / 4 - halfHeight;
 
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION); //TODO
-        //tessellator.setColorRGBA_I(0x000000, 122); //TODO
+        GlStateManager.color(0F, 0F, 0F, 0.5F);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
 
         worldrenderer.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).endVertex();
         worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).endVertex();
@@ -83,13 +82,12 @@ public class RenderHandler {
 
         tessellator.draw();
 
-        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.disableBlend();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getMinecraft().getTextureManager().bindTexture(PingHandler.TEXTURE);
 
         int width = resolution.getScaledWidth();
@@ -111,20 +109,22 @@ public class RenderHandler {
             float min = -ITEM_SIZE / 2;
             float max = ITEM_SIZE / 2;
 
-            // Background
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX); //TODO
+            // Button Background
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
             if (mouseIn) {
-                worldrenderer.color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB, 255);
-            } //TODO
+                GlStateManager.color((float) ClientProxy.pingR, (float) ClientProxy.pingG, (float) ClientProxy.pingB, 100);
+            } else {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            }
             worldrenderer.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).endVertex();
             worldrenderer.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).endVertex();
             worldrenderer.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).endVertex();
             worldrenderer.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).endVertex();
             tessellator.draw();
 
-            // Icon
-            //worldrenderer.setColorOpaque_F(1, 1, 1); //TODO
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX); //TODO
+            // Button Icon
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
             worldrenderer.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).endVertex();
             worldrenderer.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).endVertex();
             worldrenderer.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).endVertex();
@@ -159,12 +159,12 @@ public class RenderHandler {
                     mouseY >= (drawY - ITEM_SIZE / 2) && mouseY <= (drawY + ITEM_SIZE / 2);
 
             if (mouseIn) {
-                GL11.glPushMatrix();
-                GL11.glDisable(GL11.GL_LIGHTING);
-                GL11.glColor4f(1, 1, 1, 1);
+                GlStateManager.pushMatrix();
+                //GlStateManager.disableLighting();
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 mc.fontRendererObj.drawString(type.toString(), resolution.getScaledWidth() / 2 - mc.fontRendererObj.getStringWidth(type.toString()) / 2, (int) (backgroundY + halfHeight * 2), 0xFFFFFF);
-                GL11.glEnable(GL11.GL_LIGHTING);
-                GL11.glPopMatrix();
+                //GlStateManager.enableLighting();
+                GlStateManager.popMatrix();
             }
         }
     }

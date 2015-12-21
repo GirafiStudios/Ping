@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -137,9 +137,8 @@ public class PingHandler {
                 pingX += width / 2;
                 pingY += height / 2;
 
-                GL11.glPushMatrix();
+                GlStateManager.pushMatrix();
 
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 
                 Tessellator tessellator = Tessellator.getInstance();
@@ -150,19 +149,18 @@ public class PingHandler {
                 float min = -8;
                 float max =  8;
 
-                // Background
-                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX); //TODO
-                //worldrenderer.setColorOpaque_I(ping.color); //TODO TEST
-                //worldrenderer.putColorRGBA(worldrenderer.getColorIndex(ping.color & 255), ping.color >> 16 & 255, ping.color >> 8 & 255, ping.color & 255, 255);
+                // Ping Notice Background
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+                GlStateManager.color(ping.color >> 16 & 255, ping.color >> 8 & 255, ping.color & 255, 255);
                 worldrenderer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).endVertex();
                 worldrenderer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).endVertex();;
                 worldrenderer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).endVertex();;
                 worldrenderer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).endVertex();;
                 tessellator.draw();
 
-                // Icon
-                //worldrenderer.setColorOpaque_F(1, 1, 1); //TODO
-                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX); //TODO
+                // Ping Notice Icon
+                GlStateManager.color(1F, 1F, 1F, 1F);
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
                 worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).endVertex();;
                 worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).endVertex();;
                 worldrenderer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).endVertex();;
@@ -171,7 +169,7 @@ public class PingHandler {
 
                 worldrenderer.setTranslation(0, 0, 0);
 
-                GL11.glPopMatrix();
+                GlStateManager.popMatrix();
             }
         }
     }
@@ -194,19 +192,17 @@ public class PingHandler {
     }
 
     public void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
 
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(false);
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
 
-        GL11.glTranslated(px, py, pz);
+        GlStateManager.translate(px, py, pz);
 
-        GL11.glRotatef(-renderEntity.rotationYaw, 0, 1, 0);
-        GL11.glRotatef(renderEntity.rotationPitch, 1, 0, 0);
+        GlStateManager.rotate(-renderEntity.rotationYaw, 0, 1, 0);
+        GlStateManager.rotate(renderEntity.rotationPitch, 1, 0, 0);
         GL11.glRotated(180, 0, 0, 1);
 
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -215,46 +211,46 @@ public class PingHandler {
         float min = -0.25F - (0.25F * (float)ping.animationTimer / 20F);
         float max =  0.25F + (0.25F * (float)ping.animationTimer / 20F);
 
-        // Background
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR); //TODO
-        //worldrenderer.setColorOpaque_I(ping.color); //TODO
+        // Block Overlay Background
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        //GlStateManager.color(ping.color >> 16 & 255, ping.color >> 8 & 255, ping.color & 255, 255);
         worldrenderer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).endVertex();
         worldrenderer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).endVertex();
         worldrenderer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).endVertex();
         worldrenderer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).endVertex();
         tessellator.draw();
 
-        // Icon
-        //worldrenderer.setColorOpaque_F(1, 1, 1); //TODO
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX); //TODO
+        // Block Overlay Icon
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
         worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).endVertex();
         worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).endVertex();
         worldrenderer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).endVertex();
         worldrenderer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).endVertex();
         tessellator.draw();
 
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_LIGHTING);
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+        GlStateManager.enableLighting();
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     public void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
         Minecraft mc = Minecraft.getMinecraft();
 
-        TextureAtlasSprite icon = mc.getRenderItem().getItemModelMesher().getParticleIcon(Item.getItemFromBlock(Blocks.stained_glass));
+        TextureAtlasSprite icon = mc.getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.stained_glass)).getParticleTexture();
 
         float padding = 0F + (0.20F * (float)ping.animationTimer / (float)20);
         float box = 1 + padding + padding;
 
         int alpha = ping.type == PingType.ALERT ? (int)(100 * (1 + Math.sin(mc.theWorld.getTotalWorldTime()))) : 25;
 
-        GL11.glPushMatrix();
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_BLEND);
+        GlStateManager.pushMatrix();
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GlStateManager.disableDepth();
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -264,10 +260,10 @@ public class PingHandler {
 
         worldrenderer.setTranslation(0, 0, 0);
 
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glPopMatrix();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
     }
 
     private void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
@@ -276,8 +272,8 @@ public class PingHandler {
         FloatBuffer modelview = BufferUtils.createFloatBuffer(16);
         FloatBuffer projection = BufferUtils.createFloatBuffer(16);
 
-        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview);
-        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection);
+        GlStateManager.getFloat(GL11.GL_MODELVIEW_MATRIX, modelview);
+        GlStateManager.getFloat(GL11.GL_PROJECTION_MATRIX, projection);
         GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
 
 
