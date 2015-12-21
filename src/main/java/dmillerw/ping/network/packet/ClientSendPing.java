@@ -1,11 +1,11 @@
 package dmillerw.ping.network.packet;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Sent from the Client, handled on the Server
@@ -35,7 +35,7 @@ public class ClientSendPing implements IMessage, IMessageHandler<ClientSendPing,
 
     @Override
     public IMessage onMessage(ClientSendPing message, MessageContext ctx) {
-        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().playerEntity.worldObj.provider.dimensionId);
+        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().playerEntity.worldObj.provider.getDimensionId());
         return null;
     }
 }

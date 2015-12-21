@@ -1,61 +1,66 @@
 package dmillerw.ping.helper;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 /**
  * @author dmillerw
  */
 public class PingRenderHelper {
 
-    public static void drawBlockOverlay(float width, float height, float length, IIcon icon, int color, int alpha) {
-        Tessellator tessellator = Tessellator.instance;
+    public static void drawBlockOverlay(float width, float height, float length, TextureAtlasSprite icon, int color, int alpha) { //TODO ICON
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
-        tessellator.startDrawingQuads();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX); //TODO Check
 
-        tessellator.setColorRGBA_I(color, alpha);
+        //worldrenderer.setColorRGBA_I(color, alpha); //TODO
 
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 
-        tessellator.setBrightness(Integer.MAX_VALUE);
+        //worldrenderer.putBrightness4(Integer.MAX_VALUE); //TODO
 
         // TOP
-        tessellator.addVertexWithUV(-(width / 2), (height / 2), -(length / 2), icon.getMinU(), icon.getMinV());
-        tessellator.addVertexWithUV( (width / 2), (height / 2), -(length / 2), icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV( (width / 2), (height / 2),  (length / 2), icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(-(width / 2), (height / 2),  (length / 2), icon.getMinU(), icon.getMaxV());
+        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
+        worldrenderer.pos( (width / 2), (height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+        worldrenderer.pos( (width / 2), (height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2),  (length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
 
         // BOTTOM
-        tessellator.addVertexWithUV(-(width / 2), -(height / 2),  (length / 2), icon.getMinU(), icon.getMaxV());
-        tessellator.addVertexWithUV( (width / 2), -(height / 2),  (length / 2), icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV( (width / 2), -(height / 2), -(length / 2), icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(-(width / 2), -(height / 2), -(length / 2), icon.getMinU(), icon.getMinV());
+        worldrenderer.pos(-(width / 2), -(height / 2),  (length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos( (width / 2), -(height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos( (width / 2), -(height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
 
         // NORTH
-        tessellator.addVertexWithUV(-(width / 2),  (height / 2),  (length / 2), icon.getMinU(), icon.getMaxV());
-        tessellator.addVertexWithUV( (width / 2),  (height / 2),  (length / 2), icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV( (width / 2), -(height / 2),  (length / 2), icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(-(width / 2), -(height / 2),  (length / 2), icon.getMinU(), icon.getMinV());
+        worldrenderer.pos(-(width / 2),  (height / 2),  (length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos( (width / 2),  (height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos( (width / 2), -(height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2),  (length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
 
         // SOUTH
-        tessellator.addVertexWithUV(-(width / 2), -(height / 2), -(length / 2), icon.getMinU(), icon.getMinV());
-        tessellator.addVertexWithUV( (width / 2), -(height / 2), -(length / 2), icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV( (width / 2),  (height / 2), -(length / 2), icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(-(width / 2),  (height / 2), -(length / 2), icon.getMinU(), icon.getMaxV());
+        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
+        worldrenderer.pos( (width / 2), -(height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+        worldrenderer.pos( (width / 2),  (height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos(-(width / 2),  (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
 
         // EAST
-        tessellator.addVertexWithUV(-(width / 2),  (height / 2), -(length / 2), icon.getMinU(), icon.getMaxV());
-        tessellator.addVertexWithUV(-(width / 2),  (height / 2),  (length / 2), icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV(-(width / 2), -(height / 2),  (length / 2), icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV(-(width / 2), -(height / 2), -(length / 2), icon.getMinU(), icon.getMinV());
+        worldrenderer.pos(-(width / 2),  (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos(-(width / 2),  (height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
 
         // WEST
-        tessellator.addVertexWithUV( (width / 2), -(height / 2), -(length / 2), icon.getMinU(), icon.getMinV());
-        tessellator.addVertexWithUV( (width / 2), -(height / 2),  (length / 2), icon.getMaxU(), icon.getMinV());
-        tessellator.addVertexWithUV( (width / 2),  (height / 2),  (length / 2), icon.getMaxU(), icon.getMaxV());
-        tessellator.addVertexWithUV( (width / 2),  (height / 2), -(length / 2), icon.getMinU(), icon.getMaxV());
+        worldrenderer.pos( (width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
+        worldrenderer.pos( (width / 2), -(height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+        worldrenderer.pos( (width / 2),  (height / 2),  (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos( (width / 2),  (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
 
         tessellator.draw();
     }

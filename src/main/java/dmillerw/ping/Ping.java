@@ -1,17 +1,17 @@
 package dmillerw.ping;
 
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import dmillerw.ping.proxy.CommonProxy;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * @author dmillerw
  */
-@Mod(modid = "Ping", name = "Ping", version = "%MOD_VERSION%", acceptedMinecraftVersions="[1.7,1.8)", dependencies = "required-after:Forge@[10.12.2.1147,)", guiFactory = "dmillerw.ping.client.gui.config.PingGuiFactory")
+@Mod(modid = "Ping", name = "Ping", version = "%MOD_VERSION%", dependencies = "required-after:Forge@[%FORGE_VERSION%,)", guiFactory = "dmillerw.ping.client.gui.config.PingGuiFactory")
 public class Ping {
 
     @Mod.Instance("Ping")
@@ -22,7 +22,7 @@ public class Ping {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        FMLCommonHandler.instance().bus().register(instance);
+        MinecraftForge.EVENT_BUS.register(instance);
 
         proxy.preInit(event);
         proxy.syncConfig();

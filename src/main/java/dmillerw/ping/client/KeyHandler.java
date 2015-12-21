@@ -1,13 +1,13 @@
 package dmillerw.ping.client;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import dmillerw.ping.client.gui.CompatibleScaledResolution;
 import dmillerw.ping.client.gui.GuiPingSelect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -20,7 +20,7 @@ public class KeyHandler {
 
     public static void register() {
         ClientRegistry.registerKeyBinding(KEY_BINDING);
-        FMLCommonHandler.instance().bus().register(new KeyHandler());
+        MinecraftForge.EVENT_BUS.register(new KeyHandler());
     }
 
     private static boolean lastKeyState = false;

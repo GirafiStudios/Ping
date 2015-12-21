@@ -42,7 +42,7 @@ public class PingWrapper {
     }
 
     public AxisAlignedBB getAABB() {
-        return AxisAlignedBB.getBoundingBox(x + 0.5, y + 0.5, z + 0.5, x + 0.5, y + 0.5, z + 0.5);
+        return AxisAlignedBB.fromBounds(x + 0.5, y + 0.5, z + 0.5, x + 0.5, y + 0.5, z + 0.5);
     }
 
     public void writeToBuffer(ByteBuf buffer) {

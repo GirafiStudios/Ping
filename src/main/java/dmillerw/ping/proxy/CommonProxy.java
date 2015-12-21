@@ -1,7 +1,7 @@
 package dmillerw.ping.proxy;
 
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.ping.network.PacketHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * @author dmillerw

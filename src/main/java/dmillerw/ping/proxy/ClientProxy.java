@@ -1,7 +1,5 @@
 package dmillerw.ping.proxy;
 
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.client.RenderHandler;
@@ -14,6 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.awt.*;
 
@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public static void sendPing(MovingObjectPosition mob, int color, PingType type) {
-        PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.blockX, mob.blockY, mob.blockZ, color, type)));
+        PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos().getX(), mob.getBlockPos().getY(), mob.getBlockPos().getZ(), color, type)));
     }
 
     @Override
