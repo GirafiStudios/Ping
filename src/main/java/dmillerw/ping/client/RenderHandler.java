@@ -60,33 +60,35 @@ public class RenderHandler {
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
         // Menu Background
-        GlStateManager.pushMatrix();
+        if (ClientProxy.menuBackground) {
+            GlStateManager.pushMatrix();
 
-        GlStateManager.disableTexture2D();
+            GlStateManager.disableTexture2D();
 
-        GlStateManager.enableBlend();
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+            GlStateManager.enableBlend();
+            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 
-        float halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
-        float halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-        float backgroundX = resolution.getScaledWidth() / 2 - halfWidth;
-        float backgroundY = resolution.getScaledHeight() / 4 - halfHeight;
+            float halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
+            float halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
+            float backgroundX = resolution.getScaledWidth() / 2 - halfWidth;
+            float backgroundY = resolution.getScaledHeight() / 4 - halfHeight;
 
-        GlStateManager.color(0F, 0F, 0F, 0.5F);
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+            GlStateManager.color(0F, 0F, 0F, 0.5F);
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION);
 
-        worldrenderer.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).endVertex();
-        worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).endVertex();
-        worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY, 0).endVertex();
-        worldrenderer.pos(backgroundX, backgroundY, 0).endVertex();
+            worldrenderer.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).endVertex();
+            worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).endVertex();
+            worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY, 0).endVertex();
+            worldrenderer.pos(backgroundX, backgroundY, 0).endVertex();
 
-        tessellator.draw();
+            tessellator.draw();
 
-        GlStateManager.disableBlend();
+            GlStateManager.disableBlend();
 
-        GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture2D();
 
-        GlStateManager.popMatrix();
+            GlStateManager.popMatrix();
+        }
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(PingHandler.TEXTURE);
 
@@ -112,7 +114,7 @@ public class RenderHandler {
             // Button Background
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
             if (mouseIn) {
-                GlStateManager.color((float) ClientProxy.pingR, (float) ClientProxy.pingG, (float) ClientProxy.pingB, 100);
+                GlStateManager.color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB);
             } else {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             }
