@@ -149,6 +149,8 @@ public class PingHandler {
                 float min = -8;
                 float max =  8;
 
+                int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getMinecraft().theWorld.getWorldTime())) : 255;
+
                 // Ping Notice Background
                 worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
                 GlStateManager.color(ping.color >> 16 & 255, ping.color >> 8 & 255, ping.color & 255, 255);
@@ -159,7 +161,7 @@ public class PingHandler {
                 tessellator.draw();
 
                 // Ping Notice Icon
-                GlStateManager.color(1F, 1F, 1F, 1F);
+                GlStateManager.color(1F, 1F, 1F, alpha);
                 worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
                 worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).endVertex();;
                 worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).endVertex();;
@@ -213,15 +215,17 @@ public class PingHandler {
 
         // Block Overlay Background
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        //GlStateManager.color(ping.color >> 16 & 255, ping.color >> 8 & 255, ping.color & 255, 255);
+        GlStateManager.color(ping.color >> 16 & 255, ping.color >> 8 & 255, ping.color & 255, 255);
         worldrenderer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).endVertex();
         worldrenderer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).endVertex();
         worldrenderer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).endVertex();
         worldrenderer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).endVertex();
         tessellator.draw();
 
+        int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getMinecraft().theWorld.getWorldTime())) : 255;
+
         // Block Overlay Icon
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
         worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).endVertex();
         worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).endVertex();
@@ -244,8 +248,6 @@ public class PingHandler {
         float padding = 0F + (0.20F * (float)ping.animationTimer / (float)20);
         float box = 1 + padding + padding;
 
-        int alpha = ping.type == PingType.ALERT ? (int)(100 * (1 + Math.sin(mc.theWorld.getTotalWorldTime()))) : 25;
-
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
@@ -256,7 +258,7 @@ public class PingHandler {
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.setTranslation(x + 0.5, y + 0.5, z + 0.5);
 
-        PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 150 + alpha);
+        PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 175);
 
         worldrenderer.setTranslation(0, 0, 0);
 
