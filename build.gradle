@@ -19,7 +19,7 @@ archivesBaseName = mod_archive_name
 
 minecraft {
     runDir = "run"
-	mappings = "snapshot_20151129"
+	mappings = "${mappings_version}"
     version = minecraft_version + "-" + forge_version
     replaceIn mod_info_path
     replace "%MOD_VERSION%", mod_version
@@ -27,7 +27,7 @@ minecraft {
 }
 
 display_version = display_version ?: minecraft_version
-version = "${display_version}-${mod_version}.B${System.getenv("BUILD_NUMBER") ?: 0}"
+version = "${display_version}-${mod_version}.B${build_number}"
 
 processResources {
     inputs.property "version", project.version
