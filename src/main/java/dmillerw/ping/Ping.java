@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 /**
  * @author dmillerw
  */
-@Mod(modid = "Ping", name = "Ping", version = "%MOD_VERSION%", dependencies = "required-after:Forge@[%FORGE_VERSION%,)", guiFactory = "dmillerw.ping.client.gui.config.PingGuiFactory")
+@Mod(modid = "Ping", name = "Ping", version = "%MOD_VERSION%", dependencies = "required-after:Forge@[%FORGE_VERSION%,)", acceptedMinecraftVersions = "[1.8.8,1.8.9]", guiFactory = "dmillerw.ping.client.gui.config.PingGuiFactory")
 public class Ping {
 
     @Mod.Instance("Ping")
