@@ -3,6 +3,7 @@ package dmillerw.ping.network.packet;
 import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.data.PingWrapper;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -34,8 +35,13 @@ public class ServerBroadcastPing implements IMessage, IMessageHandler<ServerBroa
     }
 
     @Override
-    public IMessage onMessage(ServerBroadcastPing message, MessageContext ctx) {
-        PingHandler.INSTANCE.onPingPacket(message);
+    public IMessage onMessage(final ServerBroadcastPing message, MessageContext ctx) {
+        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                PingHandler.INSTANCE.onPingPacket(message);
+            }
+        });
         return null;
     }
 }
