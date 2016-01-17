@@ -10,7 +10,7 @@ import net.minecraft.util.Vec3;
 public class RaytraceHelper {
 
     public static MovingObjectPosition raytrace(EntityPlayer player, double distance) {
-        double eyeHeight = player.worldObj.isRemote ? player.getEyeHeight(): player.getEyeHeight(); //TODO Look into. Removing - player.getDefaultEyeHeight() kinda fixes it
+        double eyeHeight = player.getEyeHeight();
         Vec3 lookVec = player.getLookVec();
         Vec3 origin = new Vec3(player.posX, player.posY + eyeHeight, player.posZ);
         Vec3 direction = origin.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);

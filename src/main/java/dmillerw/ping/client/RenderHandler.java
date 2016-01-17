@@ -20,9 +20,6 @@ import org.lwjgl.input.Mouse;
  * @author dmillerw
  */
 public class RenderHandler {
-
-    private static final float Z_LEVEL = 0.05F;
-
     public static final int ITEM_PADDING = 10;
     public static final int ITEM_SIZE = 32;
 
@@ -48,12 +45,12 @@ public class RenderHandler {
 
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.theWorld != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && GuiPingSelect.active) {
-            renderGui(event.resolution, Z_LEVEL);
-            renderText(event.resolution, Z_LEVEL);
+            renderGui(event.resolution);
+            renderText(event.resolution);
         }
     }
 
-    private void renderGui(ScaledResolution resolution, double zLevel) {
+    private void renderGui(ScaledResolution resolution) {
         int numOfItems = PingType.values().length - 1;
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -73,13 +70,11 @@ public class RenderHandler {
             float backgroundX = resolution.getScaledWidth() / 2 - halfWidth;
             float backgroundY = resolution.getScaledHeight() / 4 - halfHeight;
 
-            GlStateManager.color(0F, 0F, 0F, 0.5F);
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION);
-
-            worldrenderer.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).endVertex();
-            worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).endVertex();
-            worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY, 0).endVertex();
-            worldrenderer.pos(backgroundX, backgroundY, 0).endVertex();
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            worldrenderer.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            worldrenderer.pos(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            worldrenderer.pos(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
 
             tessellator.draw();
 
@@ -111,31 +106,36 @@ public class RenderHandler {
             float min = -ITEM_SIZE / 2;
             float max = ITEM_SIZE / 2;
 
+            int r, g, b;
+
             // Button Background
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             if (mouseIn) {
-                GlStateManager.color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB);
+                r = ClientProxy.pingR;
+                g = ClientProxy.pingG;
+                b = ClientProxy.pingB;
             } else {
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                r = 255;
+                g = 255;
+                b = 255;
             }
-            worldrenderer.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).endVertex();
-            worldrenderer.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).endVertex();
-            worldrenderer.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).endVertex();
-            worldrenderer.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).endVertex();
+            worldrenderer.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+            worldrenderer.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+            worldrenderer.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+            worldrenderer.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
             tessellator.draw();
 
             // Button Icon
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            worldrenderer.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).endVertex();
-            worldrenderer.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).endVertex();
-            worldrenderer.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).endVertex();
-            worldrenderer.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).endVertex();
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            worldrenderer.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).color(255, 255, 255, 255).endVertex();
+            worldrenderer.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).color(255, 255, 255, 255).endVertex();
+            worldrenderer.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).color(255, 255, 255, 255).endVertex();
+            worldrenderer.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).color(255, 255, 255, 255).endVertex();
             tessellator.draw();
         }
     }
 
-    private void renderText(ScaledResolution resolution, double zLevel) {
+    private void renderText(ScaledResolution resolution) {
         Minecraft mc = Minecraft.getMinecraft();
         int numOfItems = PingType.values().length - 1;
 
@@ -162,10 +162,8 @@ public class RenderHandler {
 
             if (mouseIn) {
                 GlStateManager.pushMatrix();
-                //GlStateManager.disableLighting();
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.color(255, 255, 255, 255);
                 mc.fontRendererObj.drawString(type.toString(), resolution.getScaledWidth() / 2 - mc.fontRendererObj.getStringWidth(type.toString()) / 2, (int) (backgroundY + halfHeight * 2), 0xFFFFFF);
-                //GlStateManager.enableLighting();
                 GlStateManager.popMatrix();
             }
         }

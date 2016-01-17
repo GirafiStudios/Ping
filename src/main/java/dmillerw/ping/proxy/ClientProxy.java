@@ -43,7 +43,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public static void sendPing(MovingObjectPosition mob, int color, PingType type) {
-        PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos().getX(), mob.getBlockPos().getY(), mob.getBlockPos().getZ(), color, type)));
+        PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void syncConfig() {
-        Property p_pingR = configuration.get("visual", "red", 100, "Value from 0 - 255");
+        Property p_pingR = configuration.get("visual", "red", 255, "Value from 0 - 255");
         Property p_pingG = configuration.get("visual", "green", 0, "Value from 0 - 255");
         Property p_pingB = configuration.get("visual", "blue", 0, "Value from 0 - 255");
 
@@ -74,7 +74,7 @@ public class ClientProxy extends CommonProxy {
         menuBackground = configuration.get("visual", "backgroundMenu", true, "Whether to render the Ping Menu background").getBoolean();
         sound = configuration.get("general", "sound", true, "Whether to play a sound when a Ping is received").getBoolean();
         pingAcceptDistance = configuration.get("general", "pingAcceptDistance", 32D, "Maximum distance a Ping can be from you and still be received").getDouble();
-        pingDuration = configuration.get("general", "pingDuration", 100, "How long a Ping should remain active before disappearing").getInt();
+        pingDuration = configuration.get("general", "pingDuration", 125, "How long a Ping should remain active before disappearing").getInt();
 
         if (configuration.hasChanged()) {
             configuration.save();

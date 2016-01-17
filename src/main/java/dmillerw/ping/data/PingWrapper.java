@@ -2,6 +2,7 @@ package dmillerw.ping.data;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 
 /**
  * @author dmillerw
@@ -14,12 +15,10 @@ public class PingWrapper {
         int z = buffer.readInt();
         int color = buffer.readInt();
         PingType type = PingType.values()[buffer.readInt()];
-        return new PingWrapper(x, y, z, color, type);
+        return new PingWrapper(new BlockPos(x, y, z), color, type);
     }
 
-    public final int x;
-    public final int y;
-    public final int z;
+    public final BlockPos pos;
 
     public final int color;
 
@@ -33,22 +32,20 @@ public class PingWrapper {
     public int animationTimer = 20;
     public int timer;
 
-    public PingWrapper(int x, int y, int z, int color, PingType type) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public PingWrapper(BlockPos pos, int color, PingType type) {
+        this.pos = pos;
         this.color = color;
         this.type = type;
     }
 
     public AxisAlignedBB getAABB() {
-        return AxisAlignedBB.fromBounds(x + 0.5, y + 0.5, z + 0.5, x + 0.5, y + 0.5, z + 0.5);
+        return AxisAlignedBB.fromBounds(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     public void writeToBuffer(ByteBuf buffer) {
-        buffer.writeInt(x);
-        buffer.writeInt(y);
-        buffer.writeInt(z);
+        buffer.writeInt(pos.getX());
+        buffer.writeInt(pos.getY());
+        buffer.writeInt(pos.getZ());
         buffer.writeInt(color);
         buffer.writeInt(type.ordinal());
     }

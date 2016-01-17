@@ -1,7 +1,6 @@
 package dmillerw.ping.helper;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -17,48 +16,48 @@ public class PingRenderHelper {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        GlStateManager.color(color >> 16 & 255, color >> 8 & 255, color & 255, alpha);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        int r = color >> 16 & 255;
+        int g = color >> 8 & 255;
+        int b = color & 255;
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 
-        //worldrenderer.putBrightness4(Integer.MAX_VALUE); //TODO?
-
         // TOP
-        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
-        worldrenderer.pos((width / 2), (height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
-        worldrenderer.pos((width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos(-(width / 2), (height / 2), (length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), (height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2), (length / 2)).tex(icon.getMinU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
 
         // BOTTOM
-        worldrenderer.pos(-(width / 2), -(height / 2), (length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos((width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos((width / 2), -(height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
-        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), (length / 2)).tex(icon.getMinU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), -(height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
 
         // NORTH
-        worldrenderer.pos(-(width / 2), (height / 2), (length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos((width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos((width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
-        worldrenderer.pos(-(width / 2), -(height / 2), (length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2), (length / 2)).tex(icon.getMinU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), (length / 2)).tex(icon.getMinU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
 
         // SOUTH
-        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
-        worldrenderer.pos((width / 2), -(height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
-        worldrenderer.pos((width / 2), (height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), -(height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), (height / 2), -(length / 2)).tex(icon.getMaxU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
 
         // EAST
-        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos(-(width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos(-(width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
-        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos(-(width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
 
         // WEST
-        worldrenderer.pos((width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).endVertex();
-        worldrenderer.pos((width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMinV()).endVertex();
-        worldrenderer.pos((width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
-        worldrenderer.pos((width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+        worldrenderer.pos((width / 2), -(height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), -(height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMinV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), (height / 2), (length / 2)).tex(icon.getMaxU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
+        worldrenderer.pos((width / 2), (height / 2), -(length / 2)).tex(icon.getMinU(), icon.getMaxV()).color(r, g, b, alpha).endVertex();
 
         tessellator.draw();
     }
