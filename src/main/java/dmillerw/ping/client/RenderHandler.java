@@ -59,9 +59,7 @@ public class RenderHandler {
         // Menu Background
         if (ClientProxy.menuBackground) {
             GlStateManager.pushMatrix();
-
             GlStateManager.disableTexture2D();
-
             GlStateManager.enableBlend();
             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 
@@ -79,9 +77,7 @@ public class RenderHandler {
             tessellator.draw();
 
             GlStateManager.disableBlend();
-
             GlStateManager.enableTexture2D();
-
             GlStateManager.popMatrix();
         }
 
