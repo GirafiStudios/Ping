@@ -118,7 +118,7 @@ public class PingHandler {
                 double sin = Math.sin(angle);
                 double m = cos / sin;
 
-                if (cos > 0){
+                if (cos > 0) {
                     pingX = y2 / m;
                     pingY = y2;
                 } else {
@@ -147,7 +147,7 @@ public class PingHandler {
                 worldrenderer.setTranslation(pingX / 2, pingY / 2, 0);
 
                 float min = -8;
-                float max =  8;
+                float max = 8;
 
                 int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(mc.theWorld.getWorldTime())) : (int) 1.0F;
 
@@ -165,10 +165,10 @@ public class PingHandler {
 
                 // Ping Notice Icon
                 worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();;
-                worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();;
-                worldrenderer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();;
-                worldrenderer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();;
+                worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                worldrenderer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                worldrenderer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
                 tessellator.draw();
 
                 worldrenderer.setTranslation(0, 0, 0);
@@ -200,7 +200,6 @@ public class PingHandler {
 
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
-
         GlStateManager.translate(px, py, pz);
 
         GlStateManager.rotate(-renderEntity.rotationYaw, 0, 1, 0);
@@ -212,8 +211,8 @@ public class PingHandler {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
-        float min = -0.25F - (0.25F * (float)ping.animationTimer / 20F);
-        float max =  0.25F + (0.25F * (float)ping.animationTimer / 20F);
+        float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
+        float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
 
         // Block Overlay Background
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -245,10 +244,9 @@ public class PingHandler {
 
     public void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
         Minecraft mc = Minecraft.getMinecraft();
-
         TextureAtlasSprite icon = mc.getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.stained_glass)).getParticleTexture();
 
-        float padding = 0F + (0.20F * (float)ping.animationTimer / (float)20);
+        float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
         GlStateManager.pushMatrix();
@@ -257,13 +255,9 @@ public class PingHandler {
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GlStateManager.disableDepth();
 
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.setTranslation(x + 0.5, y + 0.5, z + 0.5);
-
+        GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
         PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 175);
-
-        worldrenderer.setTranslation(0, 0, 0);
+        GlStateManager.translate(0, 0, 0);
 
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
@@ -282,7 +276,7 @@ public class PingHandler {
         GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
 
 
-        if (GLU.gluProject((float)px, (float)py, (float)pz, modelview, projection, viewport, screenCoords)) {
+        if (GLU.gluProject((float) px, (float) py, (float) pz, modelview, projection, viewport, screenCoords)) {
             ping.screenX = screenCoords.get(0);
             ping.screenY = screenCoords.get(1);
             //TODO Rotation sometimes fucks this up

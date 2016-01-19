@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.awt.*;
@@ -53,8 +52,6 @@ public class ClientProxy extends CommonProxy {
         PingHandler.register();
         KeyHandler.register();
         RenderHandler.register();
-
-        FMLInterModComms.sendRuntimeMessage(this, "VersionChecker", "addVersionCheck", "https://raw.githubusercontent.com/dmillerw/Ping/master/version.json");
 
         configuration = new Configuration(event.getSuggestedConfigurationFile());
         configuration.load();

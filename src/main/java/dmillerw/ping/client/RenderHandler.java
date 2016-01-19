@@ -106,7 +106,9 @@ public class RenderHandler {
             float min = -ITEM_SIZE / 2;
             float max = ITEM_SIZE / 2;
 
-            int r, g, b;
+            int r = 255;
+            int g = 255;
+            int b = 255;
 
             // Button Background
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -114,10 +116,6 @@ public class RenderHandler {
                 r = ClientProxy.pingR;
                 g = ClientProxy.pingG;
                 b = ClientProxy.pingB;
-            } else {
-                r = 255;
-                g = 255;
-                b = 255;
             }
             worldrenderer.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
             worldrenderer.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
