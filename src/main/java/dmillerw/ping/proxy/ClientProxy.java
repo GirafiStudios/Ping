@@ -9,7 +9,7 @@ import dmillerw.ping.helper.RaytraceHelper;
 import dmillerw.ping.network.PacketHandler;
 import dmillerw.ping.network.packet.ClientSendPing;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -35,13 +35,13 @@ public class ClientProxy extends CommonProxy {
     public static Configuration configuration;
 
     public static void sendPing(PingType type) {
-        MovingObjectPosition mob = RaytraceHelper.raytrace(Minecraft.getMinecraft().thePlayer, 50);
-        if (mob != null && mob.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+        RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getMinecraft().thePlayer, 50);
+        if (mob != null && mob.typeOfHit == RayTraceResult.Type.BLOCK) {
             sendPing(mob, new Color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB).getRGB(), type);
         }
     }
 
-    public static void sendPing(MovingObjectPosition mob, int color, PingType type) {
+    public static void sendPing(RayTraceResult mob, int color, PingType type) {
         PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
     }
 

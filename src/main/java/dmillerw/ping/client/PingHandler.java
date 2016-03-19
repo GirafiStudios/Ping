@@ -10,15 +10,18 @@ import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,6 +36,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author dmillerw
@@ -53,7 +57,9 @@ public class PingHandler {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientProxy.pingAcceptDistance) {
             if (ClientProxy.sound) {
-                mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("ping:bloop"), 1.0F));
+                //mc.getSoundHandler().playSound(new PositionedSoundRecord(new SoundEvent(new ResourceLocation("ping:bloop")), SoundCategory.PLAYERS, 0.25F, 1.0F, 0.0F, 0.0F, 0.0F));
+                //mc.getSoundHandler().playSound(new PositionedSoundRecord(SoundEvents.ui_button_click, SoundCategory.PLAYERS, 0.25F, 1.0F, 0.0F, 0.0F, 0.0F));
+                mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(new SoundEvent(new ResourceLocation("ping:bloop")), 1.0F));
             }
             packet.ping.timer = ClientProxy.pingDuration;
             activePings.add(packet.ping);
@@ -142,9 +148,9 @@ public class PingHandler {
                 Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 
                 Tessellator tessellator = Tessellator.getInstance();
-                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+                VertexBuffer vertexbuffer = tessellator.getBuffer();
 
-                worldrenderer.setTranslation(pingX / 2, pingY / 2, 0);
+                vertexbuffer.setTranslation(pingX / 2, pingY / 2, 0);
 
                 float min = -8;
                 float max = 8;
@@ -152,26 +158,26 @@ public class PingHandler {
                 int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(mc.theWorld.getWorldTime())) : (int) 1.0F;
 
                 // Ping Notice Background
-                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
                 int r = ping.color >> 16 & 255;
                 int g = ping.color >> 8 & 255;
                 int b = ping.color & 255;
 
-                worldrenderer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-                worldrenderer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-                worldrenderer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-                worldrenderer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+                vertexbuffer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+                vertexbuffer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+                vertexbuffer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+                vertexbuffer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
                 tessellator.draw();
 
                 // Ping Notice Icon
-                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-                worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-                worldrenderer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-                worldrenderer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                vertexbuffer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                vertexbuffer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                vertexbuffer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                vertexbuffer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
                 tessellator.draw();
 
-                worldrenderer.setTranslation(0, 0, 0);
+                vertexbuffer.setTranslation(0, 0, 0);
 
                 GlStateManager.popMatrix();
             }
@@ -209,30 +215,30 @@ public class PingHandler {
         Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 
         Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        VertexBuffer vertexbuffer = tessellator.getBuffer();
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
 
         // Block Overlay Background
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         int r = ping.color >> 16 & 255;
         int g = ping.color >> 8 & 255;
         int b = ping.color & 255;
-        worldrenderer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-        worldrenderer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-        worldrenderer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-        worldrenderer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+        vertexbuffer.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+        vertexbuffer.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+        vertexbuffer.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+        vertexbuffer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
         tessellator.draw();
 
         int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getMinecraft().theWorld.getWorldTime())) : 175;
 
         // Block Overlay Icon
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        worldrenderer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-        worldrenderer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-        worldrenderer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-        worldrenderer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        vertexbuffer.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        vertexbuffer.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        vertexbuffer.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        vertexbuffer.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
         tessellator.draw();
 
         GlStateManager.depthMask(true);

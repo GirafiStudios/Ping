@@ -1,8 +1,8 @@
 package dmillerw.ping.data;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * @author dmillerw
@@ -39,7 +39,7 @@ public class PingWrapper {
     }
 
     public AxisAlignedBB getAABB() {
-        return AxisAlignedBB.fromBounds(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        return new AxisAlignedBB(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     public void writeToBuffer(ByteBuf buffer) {
