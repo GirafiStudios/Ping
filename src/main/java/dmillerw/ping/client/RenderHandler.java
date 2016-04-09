@@ -39,14 +39,14 @@ public class RenderHandler {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (!(event instanceof RenderGameOverlayEvent.Post) || event.type != RenderGameOverlayEvent.ElementType.ALL) {
+        if (!(event instanceof RenderGameOverlayEvent.Post) || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
             return;
         }
 
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.theWorld != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && GuiPingSelect.active) {
-            renderGui(event.resolution);
-            renderText(event.resolution);
+            renderGui(event.getResolution());
+            renderText(event.getResolution());
         }
     }
 

@@ -26,11 +26,13 @@ public class Ping {
 
         proxy.preInit(event);
         proxy.syncConfig();
+
+        PingSounds.init();
     }
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.PostConfigChangedEvent event) {
-        if (event.modID.equals("Ping")) {
+        if (event.getModID().equals("Ping")) {
             proxy.syncConfig();
         }
     }

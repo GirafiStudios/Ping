@@ -1,8 +1,9 @@
 {
     "bloop": {
-        "category": "neutral",
+        "category": "player",
         "sounds": [
-            "bloop"
-        ]
+            "ping:bloop"
+        ],
+        "subtitle": "ping.subtitle.bloop"
     }
 }

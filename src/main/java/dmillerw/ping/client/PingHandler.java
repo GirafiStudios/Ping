@@ -1,5 +1,6 @@
 package dmillerw.ping.client;
 
+import dmillerw.ping.PingSounds;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.helper.PingRenderHelper;
@@ -17,11 +18,9 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,7 +35,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @author dmillerw
@@ -57,9 +55,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientProxy.pingAcceptDistance) {
             if (ClientProxy.sound) {
-                //mc.getSoundHandler().playSound(new PositionedSoundRecord(new SoundEvent(new ResourceLocation("ping:bloop")), SoundCategory.PLAYERS, 0.25F, 1.0F, 0.0F, 0.0F, 0.0F));
-                //mc.getSoundHandler().playSound(new PositionedSoundRecord(SoundEvents.ui_button_click, SoundCategory.PLAYERS, 0.25F, 1.0F, 0.0F, 0.0F, 0.0F));
-                mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(new SoundEvent(new ResourceLocation("ping:bloop")), 1.0F));
+                mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.bloop, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = ClientProxy.pingDuration;
             activePings.add(packet.ping);
@@ -70,9 +66,9 @@ public class PingHandler {
     public void onRenderWorld(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
         Entity renderEntity = mc.getRenderViewEntity();
-        double interpX = renderEntity.prevPosX + (renderEntity.posX - renderEntity.prevPosX) * event.partialTicks;
-        double interpY = renderEntity.prevPosY + (renderEntity.posY - renderEntity.prevPosY) * event.partialTicks;
-        double interpZ = renderEntity.prevPosZ + (renderEntity.posZ - renderEntity.prevPosZ) * event.partialTicks;
+        double interpX = renderEntity.prevPosX + (renderEntity.posX - renderEntity.prevPosX) * event.getPartialTicks();
+        double interpY = renderEntity.prevPosY + (renderEntity.posY - renderEntity.prevPosY) * event.getPartialTicks();
+        double interpZ = renderEntity.prevPosZ + (renderEntity.posZ - renderEntity.prevPosZ) * event.getPartialTicks();
 
         Frustum camera = new Frustum();
         camera.setPosition(interpX, interpY, interpZ);
@@ -98,7 +94,7 @@ public class PingHandler {
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (event.type == RenderGameOverlayEvent.ElementType.TEXT) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             for (PingWrapper ping : activePings) {
                 if (!ping.isOffscreen) {
                     continue;
