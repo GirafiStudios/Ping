@@ -1,9 +1,10 @@
 package dmillerw.ping.client;
 
-import dmillerw.ping.PingSounds;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.helper.PingRenderHelper;
+import dmillerw.ping.misc.PingSounds;
+import dmillerw.ping.misc.Reference;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -40,16 +41,15 @@ import java.util.List;
  * @author dmillerw
  */
 public class PingHandler {
-
     public static final PingHandler INSTANCE = new PingHandler();
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation("ping:textures/ping.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID + ":" + "textures/ping.png");
 
     public static void register() {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
     }
 
-    private List<PingWrapper> activePings = new ArrayList<PingWrapper>();
+    private final List<PingWrapper> activePings = new ArrayList<PingWrapper>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getMinecraft();
@@ -197,7 +197,7 @@ public class PingHandler {
         }
     }
 
-    public void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
+    private void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
         GlStateManager.pushMatrix();
 
         GlStateManager.disableLighting();
@@ -244,9 +244,8 @@ public class PingHandler {
         GlStateManager.popMatrix();
     }
 
-    public void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
-        Minecraft mc = Minecraft.getMinecraft();
-        TextureAtlasSprite icon = mc.getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.stained_glass)).getParticleTexture();
+    private void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
+        TextureAtlasSprite icon = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.stained_glass)).getParticleTexture();
 
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
@@ -270,15 +269,15 @@ public class PingHandler {
     private void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
         FloatBuffer screenCoords = BufferUtils.createFloatBuffer(4);
         IntBuffer viewport = BufferUtils.createIntBuffer(16);
-        FloatBuffer modelview = BufferUtils.createFloatBuffer(16);
+        FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
         FloatBuffer projection = BufferUtils.createFloatBuffer(16);
 
-        GlStateManager.getFloat(GL11.GL_MODELVIEW_MATRIX, modelview);
+        GlStateManager.getFloat(GL11.GL_MODELVIEW_MATRIX, modelView);
         GlStateManager.getFloat(GL11.GL_PROJECTION_MATRIX, projection);
         GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
 
 
-        if (GLU.gluProject((float) px, (float) py, (float) pz, modelview, projection, viewport, screenCoords)) {
+        if (GLU.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) {
             ping.screenX = screenCoords.get(0);
             ping.screenY = screenCoords.get(1);
             //TODO Rotation sometimes fucks this up

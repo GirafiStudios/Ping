@@ -1,6 +1,6 @@
 [
 {
-  "modid": "Ping",
+  "modid": "ping",
   "name": "Ping",
   "description": "Inspired by Portal 2, this mod brings the Ping tool into Minecraft.",
   "version": "${version}",

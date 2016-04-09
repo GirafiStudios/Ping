@@ -13,7 +13,6 @@ public class PingGuiFactory implements IModGuiFactory {
 
     @Override
     public void initialize(Minecraft minecraftInstance) {
-
     }
 
     @Override

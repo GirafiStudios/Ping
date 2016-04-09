@@ -15,8 +15,7 @@ import org.lwjgl.input.Mouse;
  * @author dmillerw
  */
 public class KeyHandler {
-
-    public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_F, "key.categories.misc");
+    private static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, "key.categories.misc");
 
     public static void register() {
         ClientRegistry.registerKeyBinding(KEY_BINDING);
@@ -46,9 +45,9 @@ public class KeyHandler {
                 GuiPingSelect.activate();
             } else {
                 if (!ignoreNextRelease) {
-                    final CompatibleScaledResolution scaledresolution = new CompatibleScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-                    int i = scaledresolution.getScaledWidth();
-                    int j = scaledresolution.getScaledHeight();
+                    final CompatibleScaledResolution scaledResolution = new CompatibleScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+                    int i = scaledResolution.getScaledWidth();
+                    int j = scaledResolution.getScaledHeight();
                     final int k = Mouse.getX() * i / mc.displayWidth;
                     final int l = j - Mouse.getY() * j / mc.displayHeight - 1;
 

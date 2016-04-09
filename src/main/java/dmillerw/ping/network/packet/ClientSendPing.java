@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  */
 public class ClientSendPing implements IMessage, IMessageHandler<ClientSendPing, IMessage> {
 
-    public PingWrapper ping;
+    private PingWrapper ping;
 
     public ClientSendPing() {
 

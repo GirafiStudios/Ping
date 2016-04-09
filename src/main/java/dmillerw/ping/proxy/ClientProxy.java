@@ -20,7 +20,6 @@ import java.awt.*;
  * @author dmillerw
  */
 public class ClientProxy extends CommonProxy {
-
     public static int pingR;
     public static int pingG;
     public static int pingB;
@@ -41,7 +40,7 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    public static void sendPing(RayTraceResult mob, int color, PingType type) {
+    private static void sendPing(RayTraceResult mob, int color, PingType type) {
         PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
     }
 
@@ -70,7 +69,7 @@ public class ClientProxy extends CommonProxy {
         blockOverlay = configuration.get("visual", "blockOverlay", true, "Whether to render a colored overlay on the Pinged block").getBoolean();
         menuBackground = configuration.get("visual", "backgroundMenu", true, "Whether to render the Ping Menu background").getBoolean();
         sound = configuration.get("general", "sound", true, "Whether to play a sound when a Ping is received").getBoolean();
-        pingAcceptDistance = configuration.get("general", "pingAcceptDistance", 32D, "Maximum distance a Ping can be from you and still be received").getDouble();
+        pingAcceptDistance = configuration.get("general", "pingAcceptDistance", 64D, "Maximum distance a Ping can be from you and still be received").getDouble();
         pingDuration = configuration.get("general", "pingDuration", 125, "How long a Ping should remain active before disappearing").getInt();
 
         if (configuration.hasChanged()) {

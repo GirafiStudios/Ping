@@ -1,5 +1,6 @@
 package dmillerw.ping.client.gui.config;
 
+import dmillerw.ping.misc.Reference;
 import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
@@ -22,13 +23,6 @@ public class PingGuiConfig extends GuiConfig {
     }
 
     public PingGuiConfig(GuiScreen parent) {
-        super(
-                parent,
-                getElements(),
-                "Ping",
-                false,
-                false,
-                GuiConfig.getAbridgedConfigPath(ClientProxy.configuration.toString())
-        );
+        super(parent, getElements(), Reference.MOD_ID, false, false, GuiConfig.getAbridgedConfigPath(ClientProxy.configuration.toString()));
     }
 }

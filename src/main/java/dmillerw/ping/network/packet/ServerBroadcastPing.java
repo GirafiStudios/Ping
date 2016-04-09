@@ -17,10 +17,9 @@ public class ServerBroadcastPing implements IMessage, IMessageHandler<ServerBroa
     public PingWrapper ping;
 
     public ServerBroadcastPing() {
-
     }
 
-    public ServerBroadcastPing(PingWrapper ping) {
+    ServerBroadcastPing(PingWrapper ping) {
         this.ping = ping;
     }
 
