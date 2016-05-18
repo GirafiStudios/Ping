@@ -245,7 +245,7 @@ public class PingHandler {
     }
 
     private void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.stained_glass)).getParticleTexture();
+        TextureAtlasSprite icon = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.STAINED_GLASS)).getParticleTexture();
 
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
