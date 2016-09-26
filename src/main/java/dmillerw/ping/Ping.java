@@ -28,8 +28,6 @@ public class Ping {
 
         proxy.preInit(event);
         proxy.syncConfig();
-
-        PingSounds.init();
     }
 
     @SubscribeEvent

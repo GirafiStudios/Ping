@@ -55,7 +55,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientProxy.pingAcceptDistance) {
             if (ClientProxy.sound) {
-                mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.bloop, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
+                mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = ClientProxy.pingDuration;
             activePings.add(packet.ping);
