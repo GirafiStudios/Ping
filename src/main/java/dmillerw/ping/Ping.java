@@ -1,6 +1,5 @@
 package dmillerw.ping;
 
-import dmillerw.ping.misc.PingSounds;
 import dmillerw.ping.misc.Reference;
 import dmillerw.ping.proxy.CommonProxy;
 import net.minecraftforge.common.MinecraftForge;
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 /**
  * @author dmillerw
  */
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, acceptedMinecraftVersions = "[1.10,1.11)", dependencies = Reference.DEPENDENCIES, acceptableRemoteVersions = "*", guiFactory = Reference.GUI_FACTORY_CLASS)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, acceptedMinecraftVersions = "[1.11,1.12)", dependencies = Reference.DEPENDENCIES, acceptableRemoteVersions = "*", guiFactory = Reference.GUI_FACTORY_CLASS)
 public class Ping {
 
     @Mod.Instance(Reference.MOD_ID)
