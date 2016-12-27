@@ -34,7 +34,7 @@ public class KeyHandler {
 
         Minecraft mc = Minecraft.getMinecraft();
 
-        if (mc.theWorld == null) {
+        if (mc.world == null) {
             return;
         }
 

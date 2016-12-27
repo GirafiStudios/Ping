@@ -14,6 +14,6 @@ public class RaytraceHelper {
         Vec3d lookVec = player.getLookVec();
         Vec3d origin = new Vec3d(player.posX, player.posY + eyeHeight, player.posZ);
         Vec3d direction = origin.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
-        return player.worldObj.rayTraceBlocks(origin, direction);
+        return player.world.rayTraceBlocks(origin, direction);
     }
 }

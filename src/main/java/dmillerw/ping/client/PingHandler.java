@@ -53,7 +53,7 @@ public class PingHandler {
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.thePlayer.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientProxy.pingAcceptDistance) {
+        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientProxy.pingAcceptDistance) {
             if (ClientProxy.sound) {
                 mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
@@ -151,7 +151,7 @@ public class PingHandler {
                 float min = -8;
                 float max = 8;
 
-                int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(mc.theWorld.getWorldTime())) : (int) 1.0F;
+                int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(mc.world.getWorldTime())) : (int) 1.0F;
 
                 // Ping Notice Background
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -227,7 +227,7 @@ public class PingHandler {
         vertexbuffer.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
         tessellator.draw();
 
-        int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getMinecraft().theWorld.getWorldTime())) : 175;
+        int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getMinecraft().world.getWorldTime())) : 175;
 
         // Block Overlay Icon
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);

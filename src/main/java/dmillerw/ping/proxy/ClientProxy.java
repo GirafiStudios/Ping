@@ -34,7 +34,7 @@ public class ClientProxy extends CommonProxy {
     public static Configuration configuration;
 
     public static void sendPing(PingType type) {
-        RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getMinecraft().thePlayer, 50);
+        RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getMinecraft().player, 50);
         if (mob != null && mob.typeOfHit == RayTraceResult.Type.BLOCK) {
             sendPing(mob, new Color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB).getRGB(), type);
         }

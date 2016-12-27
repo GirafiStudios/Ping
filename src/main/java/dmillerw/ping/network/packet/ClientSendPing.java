@@ -35,7 +35,7 @@ public class ClientSendPing implements IMessage, IMessageHandler<ClientSendPing,
 
     @Override
     public IMessage onMessage(ClientSendPing message, MessageContext ctx) {
-        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().playerEntity.worldObj.provider.getDimension());
+        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().playerEntity.world.provider.getDimension());
         return null;
     }
 }

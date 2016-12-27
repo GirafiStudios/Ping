@@ -31,7 +31,7 @@ public class RenderHandler {
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getMinecraft();
-            if ((mc.theWorld == null || mc.isGamePaused()) && GuiPingSelect.active) {
+            if ((mc.world == null || mc.isGamePaused()) && GuiPingSelect.active) {
                 GuiPingSelect.deactivate();
             }
         }
@@ -44,7 +44,7 @@ public class RenderHandler {
         }
 
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.theWorld != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && GuiPingSelect.active) {
+        if (mc.world != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && GuiPingSelect.active) {
             renderGui(event.getResolution());
             renderText(event.getResolution());
         }
