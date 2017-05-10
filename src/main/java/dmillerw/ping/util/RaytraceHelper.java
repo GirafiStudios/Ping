@@ -1,12 +1,9 @@
-package dmillerw.ping.helper;
+package dmillerw.ping.util;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
-/**
- * @author dmillerw
- */
 public class RaytraceHelper {
 
     public static RayTraceResult raytrace(EntityPlayer player, double distance) {

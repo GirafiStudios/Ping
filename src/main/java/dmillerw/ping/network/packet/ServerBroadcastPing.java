@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Sent from the Server, handled on the Client
- * @author dmillerw
  */
 public class ServerBroadcastPing implements IMessage, IMessageHandler<ServerBroadcastPing, IMessage> {
 

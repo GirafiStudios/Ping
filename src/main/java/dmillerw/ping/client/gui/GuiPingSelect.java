@@ -9,13 +9,8 @@ import net.minecraft.client.gui.GuiScreen;
 import static dmillerw.ping.client.RenderHandler.ITEM_PADDING;
 import static dmillerw.ping.client.RenderHandler.ITEM_SIZE;
 
-/**
- * @author dmillerw
- */
 public class GuiPingSelect extends GuiScreen {
-
     public static final GuiPingSelect INSTANCE = new GuiPingSelect();
-
     public static boolean active = false;
 
     public static void activate() {
@@ -39,7 +34,7 @@ public class GuiPingSelect extends GuiScreen {
         int numOfItems = PingType.values().length - 1;
 
         float half = numOfItems / 2;
-        for (int i=0; i<numOfItems; i++) {
+        for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
             float drawX = resolution.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
             float drawY = resolution.getScaledHeight() / 4;

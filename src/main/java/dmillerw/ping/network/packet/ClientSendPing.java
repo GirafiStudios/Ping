@@ -9,7 +9,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Sent from the Client, handled on the Server
- * @author dmillerw
  */
 public class ClientSendPing implements IMessage, IMessageHandler<ClientSendPing, IMessage> {
 
@@ -35,7 +34,7 @@ public class ClientSendPing implements IMessage, IMessageHandler<ClientSendPing,
 
     @Override
     public IMessage onMessage(ClientSendPing message, MessageContext ctx) {
-        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().playerEntity.world.provider.getDimension());
+        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().player.world.provider.getDimension());
         return null;
     }
 }

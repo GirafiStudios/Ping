@@ -16,9 +16,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 
-/**
- * @author dmillerw
- */
 public class RenderHandler {
     public static final int ITEM_PADDING = 10;
     public static final int ITEM_SIZE = 32;
@@ -156,7 +153,7 @@ public class RenderHandler {
             if (mouseIn) {
                 GlStateManager.pushMatrix();
                 GlStateManager.color(255, 255, 255, 255);
-                mc.fontRendererObj.drawString(type.toString(), resolution.getScaledWidth() / 2 - mc.fontRendererObj.getStringWidth(type.toString()) / 2, (int) (backgroundY + halfHeight * 2), 0xFFFFFF);
+                mc.fontRenderer.drawString(type.toString(), resolution.getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, (int) (backgroundY + halfHeight * 2), 0xFFFFFF);
                 GlStateManager.popMatrix();
             }
         }

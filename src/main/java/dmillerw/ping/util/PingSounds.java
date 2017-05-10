@@ -1,4 +1,4 @@
-package dmillerw.ping.misc;
+package dmillerw.ping.util;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;

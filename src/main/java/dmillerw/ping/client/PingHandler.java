@@ -2,11 +2,11 @@ package dmillerw.ping.client;
 
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
-import dmillerw.ping.helper.PingRenderHelper;
-import dmillerw.ping.misc.PingSounds;
-import dmillerw.ping.misc.Reference;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.proxy.ClientProxy;
+import dmillerw.ping.util.PingRenderHelper;
+import dmillerw.ping.util.PingSounds;
+import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,12 +37,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author dmillerw
- */
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
-
     public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID + ":" + "textures/ping.png");
 
     public static void register() {

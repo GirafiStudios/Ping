@@ -1,32 +1,31 @@
 package dmillerw.ping.client.gui.config;
 
-import net.minecraft.client.Minecraft;
+import dmillerw.ping.proxy.ClientProxy;
+import dmillerw.ping.util.Reference;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.client.IModGuiFactory;
+import net.minecraftforge.common.config.ConfigElement;
+import net.minecraftforge.fml.client.DefaultGuiFactory;
+import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.IConfigElement;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author dmillerw
- */
-public class PingGuiFactory implements IModGuiFactory {
+public class PingGuiFactory extends DefaultGuiFactory {
 
-    @Override
-    public void initialize(Minecraft minecraftInstance) {
+    public PingGuiFactory() {
+        super(Reference.MOD_ID, GuiConfig.getAbridgedConfigPath(ClientProxy.configuration.toString()));
     }
 
     @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return PingGuiConfig.class;
+    public GuiScreen createConfigGui(GuiScreen parentScreen) {
+        return new GuiConfig(parentScreen, getElements(), Reference.MOD_ID, false, false, title);
     }
 
-    @Override
-    public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
-        return null;
-    }
-
-    @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
-        return null;
+    private static List<IConfigElement> getElements() {
+        List<IConfigElement> list = new ArrayList<IConfigElement>();
+        list.addAll((new ConfigElement(ClientProxy.configuration.getCategory("general"))).getChildElements());
+        list.addAll((new ConfigElement(ClientProxy.configuration.getCategory("visual"))).getChildElements());
+        return list;
     }
 }

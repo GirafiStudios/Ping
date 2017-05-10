@@ -4,9 +4,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
-/**
- * @author dmillerw
- */
 public class PingWrapper {
 
     public static PingWrapper readFromBuffer(ByteBuf buffer) {

@@ -3,9 +3,6 @@ package dmillerw.ping.client.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.MathHelper;
 
-/**
- * @author dmillerw
- */
 public class CompatibleScaledResolution {
 
     private int scaledWidth;

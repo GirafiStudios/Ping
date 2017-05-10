@@ -1,4 +1,4 @@
-package dmillerw.ping.helper;
+package dmillerw.ping.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -7,9 +7,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
-/**
- * @author dmillerw
- */
 public class PingRenderHelper {
 
     public static void drawBlockOverlay(float width, float height, float length, TextureAtlasSprite icon, int color, int alpha) {

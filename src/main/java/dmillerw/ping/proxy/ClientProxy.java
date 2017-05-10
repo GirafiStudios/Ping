@@ -5,9 +5,9 @@ import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.client.RenderHandler;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
-import dmillerw.ping.helper.RaytraceHelper;
 import dmillerw.ping.network.PacketHandler;
 import dmillerw.ping.network.packet.ClientSendPing;
+import dmillerw.ping.util.RaytraceHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.config.Configuration;
@@ -16,9 +16,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.awt.*;
 
-/**
- * @author dmillerw
- */
 public class ClientProxy extends CommonProxy {
     public static int pingR;
     public static int pingG;

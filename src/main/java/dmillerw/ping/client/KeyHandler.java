@@ -11,9 +11,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-/**
- * @author dmillerw
- */
 public class KeyHandler {
     private static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, "key.categories.misc");
 

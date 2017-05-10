@@ -1,8 +1,5 @@
 package dmillerw.ping.data;
 
-/**
- * @author dmillerw
- */
 public enum PingType {
 
     BACKGROUND,
