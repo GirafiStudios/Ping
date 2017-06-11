@@ -5,10 +5,10 @@ import dmillerw.ping.data.PingType;
 import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -51,7 +51,7 @@ public class RenderHandler {
         int numOfItems = PingType.values().length - 1;
 
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
 
         // Menu Background
         if (ClientProxy.menuBackground) {
@@ -65,11 +65,11 @@ public class RenderHandler {
             float backgroundX = resolution.getScaledWidth() / 2 - halfWidth;
             float backgroundY = resolution.getScaledHeight() / 4 - halfHeight;
 
-            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            vertexbuffer.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            vertexbuffer.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            vertexbuffer.pos(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            vertexbuffer.pos(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            bufferBuilder.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
             tessellator.draw();
 
             GlStateManager.disableBlend();
@@ -103,24 +103,24 @@ public class RenderHandler {
             int b = 255;
 
             // Button Background
-            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             if (mouseIn) {
                 r = ClientProxy.pingR;
                 g = ClientProxy.pingG;
                 b = ClientProxy.pingB;
             }
-            vertexbuffer.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-            vertexbuffer.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-            vertexbuffer.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-            vertexbuffer.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
             tessellator.draw();
 
             // Button Icon
-            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            vertexbuffer.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).color(255, 255, 255, 255).endVertex();
-            vertexbuffer.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).color(255, 255, 255, 255).endVertex();
-            vertexbuffer.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).color(255, 255, 255, 255).endVertex();
-            vertexbuffer.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).color(255, 255, 255, 255).endVertex();
             tessellator.draw();
         }
     }

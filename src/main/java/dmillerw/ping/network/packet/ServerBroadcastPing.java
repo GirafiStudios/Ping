@@ -34,12 +34,7 @@ public class ServerBroadcastPing implements IMessage, IMessageHandler<ServerBroa
 
     @Override
     public IMessage onMessage(final ServerBroadcastPing message, MessageContext ctx) {
-        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                PingHandler.INSTANCE.onPingPacket(message);
-            }
-        });
+        Minecraft.getMinecraft().addScheduledTask(() -> PingHandler.INSTANCE.onPingPacket(message));
         return null;
     }
 }

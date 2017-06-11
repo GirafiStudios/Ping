@@ -23,7 +23,7 @@ public class PingGuiFactory extends DefaultGuiFactory {
     }
 
     private static List<IConfigElement> getElements() {
-        List<IConfigElement> list = new ArrayList<IConfigElement>();
+        List<IConfigElement> list = new ArrayList<>();
         list.addAll((new ConfigElement(ClientProxy.configuration.getCategory("general"))).getChildElements());
         list.addAll((new ConfigElement(ClientProxy.configuration.getCategory("visual"))).getChildElements());
         return list;
