@@ -24,7 +24,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.BufferUtils;
@@ -37,15 +37,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@EventBusSubscriber
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID + ":" + "textures/ping.png");
-
-    public static void register() {
-        MinecraftForge.EVENT_BUS.register(INSTANCE);
-    }
-
-    private final List<PingWrapper> activePings = new ArrayList<>();
+    private static final List<PingWrapper> ACTIVE_PINGS = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getMinecraft();
@@ -54,12 +50,12 @@ public class PingHandler {
                 mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = ClientProxy.pingDuration;
-            activePings.add(packet.ping);
+            ACTIVE_PINGS.add(packet.ping);
         }
     }
 
     @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
+    public static void onRenderWorld(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
         Entity renderEntity = mc.getRenderViewEntity();
         if (renderEntity == null) return;
@@ -70,7 +66,7 @@ public class PingHandler {
         Frustum camera = new Frustum();
         camera.setPosition(interpX, interpY, interpZ);
 
-        for (PingWrapper ping : activePings) {
+        for (PingWrapper ping : ACTIVE_PINGS) {
             double px = ping.pos.getX() + 0.5 - interpX;
             double py = ping.pos.getY() + 0.5 - interpY;
             double pz = ping.pos.getZ() + 0.5 - interpZ;
@@ -89,10 +85,10 @@ public class PingHandler {
     }
 
     @SubscribeEvent
-    public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+    public static void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getMinecraft();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            for (PingWrapper ping : activePings) {
+            for (PingWrapper ping : ACTIVE_PINGS) {
                 if (!ping.isOffscreen) {
                     continue;
                 }
@@ -179,8 +175,8 @@ public class PingHandler {
 
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        Iterator<PingWrapper> iterator = activePings.iterator();
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        Iterator<PingWrapper> iterator = ACTIVE_PINGS.iterator();
         while (iterator.hasNext()) {
             PingWrapper pingWrapper = iterator.next();
             if (pingWrapper.animationTimer > 0) {
@@ -194,7 +190,7 @@ public class PingHandler {
         }
     }
 
-    private void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
+    private static void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
         GlStateManager.pushMatrix();
 
         GlStateManager.disableLighting();
@@ -241,7 +237,7 @@ public class PingHandler {
         GlStateManager.popMatrix();
     }
 
-    private void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
+    private static void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
         TextureAtlasSprite icon = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.STAINED_GLASS)).getParticleTexture();
 
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
@@ -263,7 +259,7 @@ public class PingHandler {
         GlStateManager.popMatrix();
     }
 
-    private void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
+    private static void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
         FloatBuffer screenCoords = BufferUtils.createFloatBuffer(4);
         IntBuffer viewport = BufferUtils.createIntBuffer(16);
         FloatBuffer modelView = BufferUtils.createFloatBuffer(16);

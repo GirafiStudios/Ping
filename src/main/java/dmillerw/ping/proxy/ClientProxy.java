@@ -1,8 +1,6 @@
 package dmillerw.ping.proxy;
 
 import dmillerw.ping.client.KeyHandler;
-import dmillerw.ping.client.PingHandler;
-import dmillerw.ping.client.RenderHandler;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
@@ -12,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.awt.*;
@@ -45,9 +44,7 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
 
-        PingHandler.register();
-        KeyHandler.register();
-        RenderHandler.register();
+        ClientRegistry.registerKeyBinding(KeyHandler.KEY_BINDING);
 
         configuration = new Configuration(event.getSuggestedConfigurationFile());
         configuration.load();

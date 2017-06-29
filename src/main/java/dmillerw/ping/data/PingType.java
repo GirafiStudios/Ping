@@ -1,7 +1,6 @@
 package dmillerw.ping.data;
 
 public enum PingType {
-
     BACKGROUND,
     ALERT,
     MINE,

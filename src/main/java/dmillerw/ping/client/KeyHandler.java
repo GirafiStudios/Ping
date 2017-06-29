@@ -4,27 +4,21 @@ import dmillerw.ping.client.gui.CompatibleScaledResolution;
 import dmillerw.ping.client.gui.GuiPingSelect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+@EventBusSubscriber
 public class KeyHandler {
-    private static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, "key.categories.misc");
-
-    public static void register() {
-        ClientRegistry.registerKeyBinding(KEY_BINDING);
-        MinecraftForge.EVENT_BUS.register(new KeyHandler());
-    }
+    public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, "key.categories.misc");
 
     private static boolean lastKeyState = false;
-
     public static boolean ignoreNextRelease = false;
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             return;
         }

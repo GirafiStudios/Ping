@@ -11,21 +11,18 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 
+@EventBusSubscriber
 public class RenderHandler {
     public static final int ITEM_PADDING = 10;
     public static final int ITEM_SIZE = 32;
 
-    public static void register() {
-        MinecraftForge.EVENT_BUS.register(new RenderHandler());
-    }
-
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getMinecraft();
             if ((mc.world == null || mc.isGamePaused()) && GuiPingSelect.active) {
@@ -35,7 +32,7 @@ public class RenderHandler {
     }
 
     @SubscribeEvent
-    public void onRenderOverlay(RenderGameOverlayEvent event) {
+    public static void onRenderOverlay(RenderGameOverlayEvent event) {
         if (!(event instanceof RenderGameOverlayEvent.Post) || event.getType() != RenderGameOverlayEvent.ElementType.ALL) {
             return;
         }
@@ -47,7 +44,7 @@ public class RenderHandler {
         }
     }
 
-    private void renderGui(ScaledResolution resolution) {
+    private static void renderGui(ScaledResolution resolution) {
         int numOfItems = PingType.values().length - 1;
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -125,7 +122,7 @@ public class RenderHandler {
         }
     }
 
-    private void renderText(ScaledResolution resolution) {
+    private static void renderText(ScaledResolution resolution) {
         Minecraft mc = Minecraft.getMinecraft();
         int numOfItems = PingType.values().length - 1;
 
