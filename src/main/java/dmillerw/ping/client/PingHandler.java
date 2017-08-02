@@ -42,7 +42,7 @@ import java.util.List;
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID + ":" + "textures/ping.png");
-    private static final List<PingWrapper> ACTIVE_PINGS = new ArrayList<>();
+    private static List<PingWrapper> active_pings = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getMinecraft();
@@ -51,7 +51,7 @@ public class PingHandler {
                 mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = ClientProxy.pingDuration;
-            ACTIVE_PINGS.add(packet.ping);
+            active_pings.add(packet.ping);
         }
     }
 
@@ -67,7 +67,7 @@ public class PingHandler {
         Frustum camera = new Frustum();
         camera.setPosition(interpX, interpY, interpZ);
 
-        for (PingWrapper ping : ACTIVE_PINGS) {
+        for (PingWrapper ping : active_pings) {
             double px = ping.pos.getX() + 0.5 - interpX;
             double py = ping.pos.getY() + 0.5 - interpY;
             double pz = ping.pos.getZ() + 0.5 - interpZ;
@@ -89,7 +89,7 @@ public class PingHandler {
     public static void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getMinecraft();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            for (PingWrapper ping : ACTIVE_PINGS) {
+            for (PingWrapper ping : active_pings) {
                 if (!ping.isOffscreen) {
                     continue;
                 }
@@ -177,7 +177,7 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        Iterator<PingWrapper> iterator = ACTIVE_PINGS.iterator();
+        Iterator<PingWrapper> iterator = active_pings.iterator();
         while (iterator.hasNext()) {
             PingWrapper pingWrapper = iterator.next();
             if (pingWrapper.animationTimer > 0) {
