@@ -2,6 +2,8 @@ package dmillerw.ping.client;
 
 import dmillerw.ping.client.gui.CompatibleScaledResolution;
 import dmillerw.ping.client.gui.GuiPingSelect;
+import dmillerw.ping.data.PingType;
+import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -13,7 +15,12 @@ import org.lwjgl.input.Mouse;
 
 @EventBusSubscriber(value = Side.CLIENT)
 public class KeyHandler {
-    public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, "key.categories.misc");
+    public static final String PING_CATEOGRY = "ping:key.categories.ping";
+    public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, PING_CATEOGRY);
+    public static final KeyBinding PING_ALERT = new KeyBinding("ping:key.alert", Keyboard.KEY_NUMPAD4, PING_CATEOGRY);
+    public static final KeyBinding PING_MINE = new KeyBinding("ping:key.mine", Keyboard.KEY_NUMPAD5, PING_CATEOGRY);
+    public static final KeyBinding PING_LOOK = new KeyBinding("ping:key.look", Keyboard.KEY_NUMPAD6, PING_CATEOGRY);
+    public static final KeyBinding PING_GOTO = new KeyBinding("ping:key.goto", Keyboard.KEY_NUMPAD8, PING_CATEOGRY);
 
     private static boolean lastKeyState = false;
     public static boolean ignoreNextRelease = false;
@@ -50,5 +57,15 @@ public class KeyHandler {
             }
         }
         lastKeyState = keyPressed;
+
+        if (PING_ALERT.isPressed()) {
+            ClientProxy.sendPing(PingType.ALERT);
+        } else if (PING_MINE.isPressed()) {
+            ClientProxy.sendPing(PingType.MINE);
+        } else if (PING_LOOK.isPressed()) {
+            ClientProxy.sendPing(PingType.LOOK);
+        } else if (PING_GOTO.isPressed()) {
+            ClientProxy.sendPing(PingType.GOTO);
+        }
     }
 }

@@ -45,6 +45,10 @@ public class ClientProxy extends CommonProxy {
         super.preInit(event);
 
         ClientRegistry.registerKeyBinding(KeyHandler.KEY_BINDING);
+        ClientRegistry.registerKeyBinding(KeyHandler.PING_ALERT);
+        ClientRegistry.registerKeyBinding(KeyHandler.PING_MINE);
+        ClientRegistry.registerKeyBinding(KeyHandler.PING_LOOK);
+        ClientRegistry.registerKeyBinding(KeyHandler.PING_GOTO);
 
         configuration = new Configuration(event.getSuggestedConfigurationFile());
         configuration.load();

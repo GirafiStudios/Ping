@@ -6,10 +6,11 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
 
-@EventBusSubscriber
+@EventBusSubscriber(value = Side.CLIENT)
 public class PingSounds {
     private static List<SoundEvent> sounds = Lists.newArrayList();
     public static final SoundEvent BLOOP = createSound("bloop");
