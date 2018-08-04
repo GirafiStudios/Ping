@@ -15,12 +15,12 @@ import org.lwjgl.input.Mouse;
 
 @EventBusSubscriber(value = Side.CLIENT)
 public class KeyHandler {
-    public static final String PING_CATEOGRY = "ping:key.categories.ping";
+    private static final String PING_CATEOGRY = "ping:key.categories.ping";
     public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", Keyboard.KEY_V, PING_CATEOGRY);
-    public static final KeyBinding PING_ALERT = new KeyBinding("ping:key.alert", Keyboard.KEY_NUMPAD4, PING_CATEOGRY);
-    public static final KeyBinding PING_MINE = new KeyBinding("ping:key.mine", Keyboard.KEY_NUMPAD5, PING_CATEOGRY);
-    public static final KeyBinding PING_LOOK = new KeyBinding("ping:key.look", Keyboard.KEY_NUMPAD6, PING_CATEOGRY);
-    public static final KeyBinding PING_GOTO = new KeyBinding("ping:key.goto", Keyboard.KEY_NUMPAD8, PING_CATEOGRY);
+    public static final KeyBinding PING_ALERT = new KeyBinding("ping.key.alert", Keyboard.KEY_NUMPAD4, PING_CATEOGRY);
+    public static final KeyBinding PING_MINE = new KeyBinding("ping.key.mine", Keyboard.KEY_NUMPAD5, PING_CATEOGRY);
+    public static final KeyBinding PING_LOOK = new KeyBinding("ping.key.look", Keyboard.KEY_NUMPAD6, PING_CATEOGRY);
+    public static final KeyBinding PING_GOTO = new KeyBinding("ping.key.goto", Keyboard.KEY_NUMPAD8, PING_CATEOGRY);
 
     private static boolean lastKeyState = false;
     public static boolean ignoreNextRelease = false;
