@@ -1,29 +1,27 @@
 package dmillerw.ping;
 
-import dmillerw.ping.proxy.CommonProxy;
+import dmillerw.ping.client.ClientHandler;
+import dmillerw.ping.network.PacketHandler;
 import dmillerw.ping.util.Reference;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, dependencies = Reference.DEPENDENCIES, acceptableRemoteVersions = "*", guiFactory = Reference.GUI_FACTORY_CLASS)
-@Mod.EventBusSubscriber
+@Mod(value = Reference.MOD_ID)
 public class Ping {
-    @SidedProxy(serverSide = Reference.SERVER_PROXY_ClASS, clientSide = Reference.CLIENT_PROXY_CLASS)
-    public static CommonProxy proxy;
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        proxy.preInit(event);
-        proxy.syncConfig();
+    public Ping() {
+        FMLModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLModLoadingContext.get().getModEventBus().addListener(this::setupClient);
     }
 
-    @SubscribeEvent
-    public static void onConfigChanged(ConfigChangedEvent.PostConfigChangedEvent event) {
-        if (event.getModID().equals(Reference.MOD_ID)) {
-            proxy.syncConfig();
-        }
+    public void setup(final FMLCommonSetupEvent event) {
+        PacketHandler.initialize();
+    }
+
+    public void setupClient(final FMLClientSetupEvent event) {
+        ClientHandler.preInit();
+        //ClientHandler.syncConfig(); //TODO
     }
 }

@@ -1,6 +1,6 @@
-package dmillerw.ping.client.gui.config;
+/*package dmillerw.ping.client.gui.config;
 
-import dmillerw.ping.proxy.ClientProxy;
+import dmillerw.ping.client.ClientHandler;
 import dmillerw.ping.util.Reference;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
@@ -14,7 +14,7 @@ import java.util.List;
 public class PingGuiFactory extends DefaultGuiFactory {
 
     public PingGuiFactory() {
-        super(Reference.MOD_ID, GuiConfig.getAbridgedConfigPath(ClientProxy.configuration.toString()));
+        super(Reference.MOD_ID, GuiConfig.getAbridgedConfigPath(ClientHandler.configuration.toString()));
     }
 
     @Override
@@ -24,8 +24,8 @@ public class PingGuiFactory extends DefaultGuiFactory {
 
     private static List<IConfigElement> getElements() {
         List<IConfigElement> list = new ArrayList<>();
-        list.addAll((new ConfigElement(ClientProxy.configuration.getCategory("general"))).getChildElements());
-        list.addAll((new ConfigElement(ClientProxy.configuration.getCategory("visual"))).getChildElements());
+        list.addAll((new ConfigElement(ClientHandler.configuration.getCategory("general"))).getChildElements());
+        list.addAll((new ConfigElement(ClientHandler.configuration.getCategory("visual"))).getChildElements());
         return list;
     }
-}
+}*/

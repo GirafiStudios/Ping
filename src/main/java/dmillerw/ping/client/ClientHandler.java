@@ -1,6 +1,5 @@
-package dmillerw.ping.proxy;
+package dmillerw.ping.client;
 
-import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
@@ -8,14 +7,11 @@ import dmillerw.ping.network.packet.ClientSendPing;
 import dmillerw.ping.util.RaytraceHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.awt.*;
 
-public class ClientProxy extends CommonProxy {
+public class ClientHandler {
     public static int pingR;
     public static int pingG;
     public static int pingB;
@@ -27,35 +23,29 @@ public class ClientProxy extends CommonProxy {
     public static double pingAcceptDistance;
     public static int pingDuration;
 
-    public static Configuration configuration;
-
     public static void sendPing(PingType type) {
-        RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getMinecraft().player, 50);
-        if (mob != null && mob.typeOfHit == RayTraceResult.Type.BLOCK) {
-            sendPing(mob, new Color(ClientProxy.pingR, ClientProxy.pingG, ClientProxy.pingB).getRGB(), type);
+        RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getInstance().player, 50);
+        if (mob != null && mob.type == RayTraceResult.Type.BLOCK) {
+            sendPing(mob, new Color(ClientHandler.pingR, ClientHandler.pingG, ClientHandler.pingB).getRGB(), type);
         }
     }
 
     private static void sendPing(RayTraceResult mob, int color, PingType type) {
-        PacketHandler.INSTANCE.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
+        PacketHandler.HANDLER.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
     }
 
-    @Override
-    public void preInit(FMLPreInitializationEvent event) {
-        super.preInit(event);
-
+    public static void preInit() {
         ClientRegistry.registerKeyBinding(KeyHandler.KEY_BINDING);
         ClientRegistry.registerKeyBinding(KeyHandler.PING_ALERT);
         ClientRegistry.registerKeyBinding(KeyHandler.PING_MINE);
         ClientRegistry.registerKeyBinding(KeyHandler.PING_LOOK);
         ClientRegistry.registerKeyBinding(KeyHandler.PING_GOTO);
 
-        configuration = new Configuration(event.getSuggestedConfigurationFile());
-        configuration.load();
+        /*configuration = new Configuration(event.getSuggestedConfigurationFile());
+        configuration.load();*/
     }
 
-    @Override
-    public void syncConfig() {
+    /*public void syncConfig() { //TODO
         Property p_pingR = configuration.get("visual", "red", 255, "Value from 0 - 255");
         Property p_pingG = configuration.get("visual", "green", 0, "Value from 0 - 255");
         Property p_pingB = configuration.get("visual", "blue", 0, "Value from 0 - 255");
@@ -83,5 +73,5 @@ public class ClientProxy extends CommonProxy {
             value = 255;
         }
         return value;
-    }
+    }*/
 }

@@ -1,6 +1,5 @@
 {
     "bloop": {
-        "category": "player",
         "sounds": [
             "ping:bloop"
         ],

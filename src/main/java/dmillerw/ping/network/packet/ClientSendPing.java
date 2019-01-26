@@ -2,39 +2,38 @@ package dmillerw.ping.network.packet;
 
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
-import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * Sent from the Client, handled on the Server
  */
-public class ClientSendPing implements IMessage, IMessageHandler<ClientSendPing, IMessage> {
-
+public class ClientSendPing {
     private PingWrapper ping;
-
-    public ClientSendPing() {
-
-    }
 
     public ClientSendPing(PingWrapper ping) {
         this.ping = ping;
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        ping.writeToBuffer(buf);
+    public static void encode(ClientSendPing pingPacket, PacketBuffer buf) {
+        pingPacket.ping.writeToBuffer(buf);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        ping = PingWrapper.readFromBuffer(buf);
+    public static ClientSendPing decode(PacketBuffer buf) {
+        return new ClientSendPing(PingWrapper.readFromBuffer(buf));
     }
 
-    @Override
-    public IMessage onMessage(ClientSendPing message, MessageContext ctx) {
-        PacketHandler.INSTANCE.sendToDimension(new ServerBroadcastPing(message.ping), ctx.getServerHandler().player.world.provider.getDimension());
-        return null;
+    public static class Handler {
+        public static void handle(ClientSendPing message, Supplier<NetworkEvent.Context> ctx) {
+            EntityPlayerMP player = ctx.get().getSender();
+            if (player != null && !(player instanceof FakePlayer)) {
+                PacketHandler.HANDLER.sendTo(new ServerBroadcastPing(message.ping), player.connection.netManager, NetworkDirection.PLAY_TO_SERVER);
+            }
+        }
     }
 }

@@ -3,7 +3,6 @@ package dmillerw.ping.client;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
-import dmillerw.ping.proxy.ClientProxy;
 import dmillerw.ping.util.PingRenderHelper;
 import dmillerw.ping.util.PingSounds;
 import dmillerw.ping.util.Reference;
@@ -22,15 +21,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -38,26 +36,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@EventBusSubscriber(value = Side.CLIENT)
+@EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID + ":" + "textures/ping.png");
     private static List<PingWrapper> active_pings = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientProxy.pingAcceptDistance) {
-            if (ClientProxy.sound) {
-                mc.getSoundHandler().playSound(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientHandler.pingAcceptDistance) {
+            if (ClientHandler.sound) {
+                mc.getSoundHandler().play(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
-            packet.ping.timer = ClientProxy.pingDuration;
+            packet.ping.timer = ClientHandler.pingDuration;
             active_pings.add(packet.ping);
         }
     }
 
     @SubscribeEvent
     public static void onRenderWorld(RenderWorldLastEvent event) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         Entity renderEntity = mc.getRenderViewEntity();
         if (renderEntity == null) return;
         double interpX = renderEntity.prevPosX + (renderEntity.posX - renderEntity.prevPosX) * event.getPartialTicks();
@@ -74,7 +72,7 @@ public class PingHandler {
 
             if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
                 ping.isOffscreen = false;
-                if (ClientProxy.blockOverlay) {
+                if (ClientHandler.blockOverlay) {
                     renderPingOverlay(ping.pos.getX() - TileEntityRendererDispatcher.staticPlayerX, ping.pos.getY() - TileEntityRendererDispatcher.staticPlayerY, ping.pos.getZ() - TileEntityRendererDispatcher.staticPlayerZ, ping);
                 }
                 renderPing(px, py, pz, renderEntity, ping);
@@ -87,15 +85,15 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void onRenderOverlay(RenderGameOverlayEvent.Post event) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             for (PingWrapper ping : active_pings) {
                 if (!ping.isOffscreen) {
                     continue;
                 }
 
-                int width = mc.displayWidth;
-                int height = mc.displayHeight;
+                int width = mc.mainWindow.getWidth();
+                int height = mc.mainWindow.getHeight();
 
                 int x1 = -(width / 2) + 32;
                 int y1 = -(height / 2) + 32;
@@ -135,7 +133,7 @@ public class PingHandler {
 
                 GlStateManager.pushMatrix();
 
-                Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+                Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
 
                 Tessellator tessellator = Tessellator.getInstance();
                 BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -145,7 +143,7 @@ public class PingHandler {
                 float min = -8;
                 float max = 8;
 
-                int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(mc.world.getWorldTime())) : (int) 1.0F;
+                int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(mc.world.getDayTime())) : (int) 1.0F;
 
                 // Ping Notice Background
                 bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -176,7 +174,8 @@ public class PingHandler {
 
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) { //TODO Not called in Forge
+        System.out.println("Client Tick PingHandler POTATO");
         Iterator<PingWrapper> iterator = active_pings.iterator();
         while (iterator.hasNext()) {
             PingWrapper pingWrapper = iterator.next();
@@ -195,14 +194,14 @@ public class PingHandler {
         GlStateManager.pushMatrix();
 
         GlStateManager.disableLighting();
-        GlStateManager.disableDepth();
-        GlStateManager.translate(px, py, pz);
+        GlStateManager.disableDepthTest();
+        GlStateManager.translated(px, py, pz);
 
-        GlStateManager.rotate(-renderEntity.rotationYaw, 0, 1, 0);
-        GlStateManager.rotate(renderEntity.rotationPitch, 1, 0, 0);
+        GlStateManager.rotatef(-renderEntity.rotationYaw, 0, 1, 0);
+        GlStateManager.rotatef(renderEntity.rotationPitch, 1, 0, 0);
         GL11.glRotated(180, 0, 0, 1);
 
-        Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+        Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -221,7 +220,7 @@ public class PingHandler {
         bufferBuilder.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
         tessellator.draw();
 
-        int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getMinecraft().world.getWorldTime())) : 175;
+        int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getInstance().world.getDayTime())) : 175;
 
         // Block Overlay Icon
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -232,14 +231,14 @@ public class PingHandler {
         tessellator.draw();
 
         GlStateManager.depthMask(true);
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.enableLighting();
 
         GlStateManager.popMatrix();
     }
 
     private static void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(Blocks.STAINED_GLASS)).getParticleTexture();
+        TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleTexture();
 
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
@@ -247,14 +246,14 @@ public class PingHandler {
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-        GlStateManager.disableDepth();
+        OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.disableDepthTest();
 
-        GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+        GlStateManager.translated(x + 0.5, y + 0.5, z + 0.5);
         PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 175);
-        GlStateManager.translate(0, 0, 0);
+        GlStateManager.translated(0, 0, 0);
 
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.disableBlend();
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
@@ -266,15 +265,15 @@ public class PingHandler {
         FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
         FloatBuffer projection = BufferUtils.createFloatBuffer(16);
 
-        GlStateManager.getFloat(GL11.GL_MODELVIEW_MATRIX, modelView);
-        GlStateManager.getFloat(GL11.GL_PROJECTION_MATRIX, projection);
-        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
+        GlStateManager.getFloatv(GL11.GL_MODELVIEW_MATRIX, modelView);
+        GlStateManager.getFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+        GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
 
-        if (GLU.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) {
+        /*if (GLU.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) { //TODO
             ping.screenX = screenCoords.get(0);
             ping.screenY = screenCoords.get(1);
             //TODO Rotation sometimes fucks this up
-        }
+        }*/
     }
 }

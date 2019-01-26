@@ -1,8 +1,8 @@
 package dmillerw.ping.client.gui;
 
+import dmillerw.ping.client.ClientHandler;
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.data.PingType;
-import dmillerw.ping.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -14,23 +14,23 @@ public class GuiPingSelect extends GuiScreen {
     public static boolean active = false;
 
     public static void activate() {
-        if (Minecraft.getMinecraft().currentScreen == null) {
+        if (Minecraft.getInstance().currentScreen == null) {
             active = true;
-            Minecraft.getMinecraft().displayGuiScreen(INSTANCE);
+            Minecraft.getInstance().displayGuiScreen(INSTANCE);
         }
     }
 
     public static void deactivate() {
         active = false;
-        if (Minecraft.getMinecraft().currentScreen == INSTANCE) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+        if (Minecraft.getInstance().currentScreen == INSTANCE) {
+            Minecraft.getInstance().displayGuiScreen(null);
         }
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int button) {
-        Minecraft mc = Minecraft.getMinecraft();
-        CompatibleScaledResolution resolution = new CompatibleScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        Minecraft mc = Minecraft.getInstance();
+        CompatibleScaledResolution resolution = new CompatibleScaledResolution(mc, mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
         int numOfItems = PingType.values().length - 1;
 
         float half = numOfItems / 2;
@@ -45,12 +45,12 @@ public class GuiPingSelect extends GuiScreen {
                     mouseY >= (drawY - ITEM_SIZE / 2) && mouseY <= (drawY + ITEM_SIZE / 2);
 
             if (mouseIn) {
-                ClientProxy.sendPing(type);
+                ClientHandler.sendPing(type);
                 KeyHandler.ignoreNextRelease = true;
-                return;
+                return true;
             }
         }
-
+        return false;
     }
 
     @Override
