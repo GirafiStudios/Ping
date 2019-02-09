@@ -8,15 +8,16 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class PacketHandler {
-    public static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
+    private static final String PROTOCOL_VERSION = Integer.toString(1);
+    public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(Reference.MOD_ID, "ping_channel"))
-            .clientAcceptedVersions(Reference.MOD_ID::equals)
-            .serverAcceptedVersions(Reference.MOD_ID::equals)
-            .networkProtocolVersion(() -> Reference.MOD_ID)
+            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
             .simpleChannel();
 
     public static void initialize() {
-        HANDLER.registerMessage(0, ClientSendPing.class, ClientSendPing::encode, ClientSendPing::decode, ClientSendPing.Handler::handle);
-        HANDLER.registerMessage(1, ServerBroadcastPing.class, ServerBroadcastPing::encode, ServerBroadcastPing::decode, ServerBroadcastPing.Handler::handle);
+        CHANNEL.registerMessage(0, ClientSendPing.class, ClientSendPing::encode, ClientSendPing::decode, ClientSendPing.Handler::handle);
+        CHANNEL.registerMessage(1, ServerBroadcastPing.class, ServerBroadcastPing::encode, ServerBroadcastPing::decode, ServerBroadcastPing.Handler::handle);
     }
 }

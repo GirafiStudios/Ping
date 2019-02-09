@@ -30,9 +30,10 @@ public class ClientSendPing {
 
     public static class Handler {
         public static void handle(ClientSendPing message, Supplier<NetworkEvent.Context> ctx) {
-            EntityPlayerMP player = ctx.get().getSender();
-            if (player != null && !(player instanceof FakePlayer)) {
-                PacketHandler.HANDLER.sendTo(new ServerBroadcastPing(message.ping), player.connection.netManager, NetworkDirection.PLAY_TO_SERVER);
+            EntityPlayerMP playerMP = ctx.get().getSender();
+            if (playerMP != null && !(playerMP instanceof FakePlayer)) {
+                PacketHandler.CHANNEL.sendTo(new ServerBroadcastPing(message.ping), playerMP.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                ctx.get().setPacketHandled(true);
             }
         }
     }

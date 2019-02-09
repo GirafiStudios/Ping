@@ -25,8 +25,7 @@ public class KeyHandler {
     public static boolean ignoreNextRelease = false;
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent event) { //TODO Not called in Forge
-        System.out.println("Client Tick POTATO");
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             return;
         }

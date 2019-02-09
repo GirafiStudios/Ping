@@ -12,16 +12,16 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import java.awt.*;
 
 public class ClientHandler {
-    public static int pingR;
-    public static int pingG;
-    public static int pingB;
+    public static int pingR = 255;
+    public static int pingG = 0;
+    public static int pingB = 0;
 
-    public static boolean blockOverlay;
-    public static boolean menuBackground;
-    public static boolean sound;
+    public static boolean blockOverlay = true;
+    public static boolean menuBackground = true;
+    public static boolean sound = true;
 
-    public static double pingAcceptDistance;
-    public static int pingDuration;
+    public static double pingAcceptDistance = 64;
+    public static int pingDuration = 125;
 
     public static void sendPing(PingType type) {
         RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getInstance().player, 50);
@@ -31,7 +31,7 @@ public class ClientHandler {
     }
 
     private static void sendPing(RayTraceResult mob, int color, PingType type) {
-        PacketHandler.HANDLER.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
+        PacketHandler.CHANNEL.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
     }
 
     public static void preInit() {

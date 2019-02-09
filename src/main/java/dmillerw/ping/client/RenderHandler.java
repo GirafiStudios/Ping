@@ -21,8 +21,7 @@ public class RenderHandler {
     public static final int ITEM_SIZE = 32;
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) { //TODO Not called in Forge
-        System.out.println("Client Tick Render POTATO");
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getInstance();
             if ((mc.world == null || mc.isGamePaused()) && GuiPingSelect.active) {

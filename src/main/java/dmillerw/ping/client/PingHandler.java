@@ -174,8 +174,7 @@ public class PingHandler {
 
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) { //TODO Not called in Forge
-        System.out.println("Client Tick PingHandler POTATO");
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         Iterator<PingWrapper> iterator = active_pings.iterator();
         while (iterator.hasNext()) {
             PingWrapper pingWrapper = iterator.next();
