@@ -39,16 +39,16 @@ import java.util.List;
 @EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID + ":" + "textures/ping.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/ping.png");
     private static List<PingWrapper> active_pings = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientHandler.pingAcceptDistance) {
-            if (ClientHandler.sound) {
+        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientHandler.GENERAL.pingAcceptDistance.get()) {
+            if (ClientHandler.GENERAL.sound.get()) {
                 mc.getSoundHandler().play(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
-            packet.ping.timer = ClientHandler.pingDuration;
+            packet.ping.timer = ClientHandler.GENERAL.pingDuration.get();
             active_pings.add(packet.ping);
         }
     }
@@ -72,7 +72,7 @@ public class PingHandler {
 
             if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
                 ping.isOffscreen = false;
-                if (ClientHandler.blockOverlay) {
+                if (ClientHandler.VISUAL.blockOverlay.get()) {
                     renderPingOverlay(ping.pos.getX() - TileEntityRendererDispatcher.staticPlayerX, ping.pos.getY() - TileEntityRendererDispatcher.staticPlayerY, ping.pos.getZ() - TileEntityRendererDispatcher.staticPlayerZ, ping);
                 }
                 renderPing(px, py, pz, renderEntity, ping);

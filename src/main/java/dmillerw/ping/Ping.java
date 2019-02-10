@@ -21,7 +21,6 @@ public class Ping {
     }
 
     public void setupClient(final FMLClientSetupEvent event) {
-        ClientHandler.preInit();
-        //ClientHandler.syncConfig(); //TODO
+        ClientHandler.registerKeybinds();
     }
 }
