@@ -57,14 +57,21 @@ public class KeyHandler {
         }
         lastKeyState = keyPressed;
 
-        if (PING_ALERT.isPressed()) {
+        if (canSendQuickPing(PING_ALERT)) {
             ClientHandler.sendPing(PingType.ALERT);
-        } else if (PING_MINE.isPressed()) {
+        } else if (canSendQuickPing(PING_MINE)) {
             ClientHandler.sendPing(PingType.MINE);
-        } else if (PING_LOOK.isPressed()) {
+        } else if (canSendQuickPing(PING_LOOK)) {
             ClientHandler.sendPing(PingType.LOOK);
-        } else if (PING_GOTO.isPressed()) {
+        } else if (canSendQuickPing(PING_GOTO)) {
             ClientHandler.sendPing(PingType.GOTO);
         }
+    }
+
+    private static boolean canSendQuickPing(KeyBinding keyBinding) {
+        if (InputMappings.isKeyDown(keyBinding.getKey().getKeyCode())) {
+            return true;
+        }
+        return false;
     }
 }

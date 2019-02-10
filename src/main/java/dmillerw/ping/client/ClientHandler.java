@@ -1,17 +1,21 @@
 package dmillerw.ping.client;
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
 import dmillerw.ping.network.packet.ClientSendPing;
-import dmillerw.ping.util.RaytraceHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.common.ForgeConfig;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.awt.*;
+import java.nio.file.Path;
 
 public class ClientHandler {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -19,7 +23,7 @@ public class ClientHandler {
     public static final Visual VISUAL = new Visual(BUILDER);
 
     public static void sendPing(PingType type) {
-        RayTraceResult mob = RaytraceHelper.raytrace(Minecraft.getInstance().player, 50);
+        RayTraceResult mob = raytrace(Minecraft.getInstance().player, 50);
         if (mob != null && mob.type == RayTraceResult.Type.BLOCK) {
             sendPing(mob, new Color(ClientHandler.VISUAL.pingR.get(), ClientHandler.VISUAL.pingG.get(), ClientHandler.VISUAL.pingB.get()).getRGB(), type);
         }
@@ -27,6 +31,14 @@ public class ClientHandler {
 
     private static void sendPing(RayTraceResult mob, int color, PingType type) {
         PacketHandler.CHANNEL.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
+    }
+
+    public static RayTraceResult raytrace(EntityPlayer player, double distance) {
+        double eyeHeight = player.getEyeHeight();
+        Vec3d lookVec = player.getLookVec();
+        Vec3d origin = new Vec3d(player.posX, player.posY + eyeHeight, player.posZ);
+        Vec3d direction = origin.add(lookVec.x * distance, lookVec.y * distance, lookVec.z * distance);
+        return player.world.rayTraceBlocks(origin, direction);
     }
 
     public static void registerKeybinds() {
@@ -68,16 +80,7 @@ public class ClientHandler {
         public ForgeConfigSpec.BooleanValue menuBackground;
 
         Visual(ForgeConfigSpec.Builder builder) {
-            builder.push("general");
-            pingR = builder
-                    .translation("ping.configgui.pingR")
-                    .defineInRange("pingR", 255, 0, 255);
-            pingG = builder
-                    .translation("ping.configgui.pingG")
-                    .defineInRange("pingG", 0, 0, 255);
-            pingB = builder
-                    .translation("ping.configgui.pingB")
-                    .defineInRange("pingB", 0, 0, 255);
+            builder.push("visual");
             blockOverlay = builder
                     .comment("Whether to render the Ping Menu background")
                     .translation("ping.configgui.blockOverlay")
@@ -86,11 +89,33 @@ public class ClientHandler {
                     .comment("Whether to render a colored overlay on the Pinged block")
                     .translation("ping.configgui.menuBackground")
                     .define("menuBackground", true);
+            builder.push("pingColor");
+            pingR = builder
+                    .translation("ping.configgui.pingRed")
+                    .defineInRange("red", 255, 0, 255);
+            pingG = builder
+                    .translation("ping.configgui.pingGreen")
+                    .defineInRange("green", 0, 0, 255);
+            pingB = builder
+                    .translation("ping.configgui.pingBlue")
+                    .defineInRange("blue", 0, 0, 255);
             builder.pop();
         }
     }
 
     static final ForgeConfigSpec spec = BUILDER.build();
 
-    ForgeConfig
+    public static void initConfig() {
+        loadConfig(spec, FMLPaths.CONFIGDIR.get().resolve("ping.toml"));
+    }
+
+    private static void loadConfig(ForgeConfigSpec spec, Path path) {
+        final CommentedFileConfig configData = CommentedFileConfig.builder(path)
+                .sync()
+                .autosave()
+                .writingMode(WritingMode.REPLACE)
+                .build();
+        configData.load();
+        spec.setConfig(configData);
+    }
 }

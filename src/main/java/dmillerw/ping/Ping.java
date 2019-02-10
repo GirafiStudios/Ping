@@ -14,6 +14,8 @@ public class Ping {
     public Ping() {
         FMLModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLModLoadingContext.get().getModEventBus().addListener(this::setupClient);
+
+        ClientHandler.initConfig();
     }
 
     public void setup(final FMLCommonSetupEvent event) {
