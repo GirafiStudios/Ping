@@ -3,6 +3,7 @@ package dmillerw.ping.client;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
+import dmillerw.ping.util.GLUUtils;
 import dmillerw.ping.util.PingRenderHelper;
 import dmillerw.ping.util.PingSounds;
 import dmillerw.ping.util.Reference;
@@ -103,9 +104,10 @@ public class PingHandler {
                 double pingX = ping.screenX;
                 double pingY = ping.screenY;
 
-                pingX -= width / 2;
-                pingY -= height / 2;
+                pingX -= width * 0.5D;
+                pingY -= height * 0.5D;
 
+                //TODO Fix that player rotation is not being taken into account
                 double angle = Math.atan2(pingY, pingX);
                 angle += (Math.toRadians(90));
                 double cos = Math.cos(angle);
@@ -128,8 +130,8 @@ public class PingHandler {
                     pingY = x1 * m;
                 }
 
-                pingX += width / 2;
-                pingY += height / 2;
+                pingX += width * 0.5D;
+                pingY += height * 0.5D;
 
                 GlStateManager.pushMatrix();
 
@@ -268,11 +270,9 @@ public class PingHandler {
         GlStateManager.getFloatv(GL11.GL_PROJECTION_MATRIX, projection);
         GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
-
-        /*if (GLU.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) { //TODO
+        if (GLUUtils.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) {
             ping.screenX = screenCoords.get(0);
             ping.screenY = screenCoords.get(1);
-            //TODO Rotation sometimes fucks this up
-        }*/
+        }
     }
 }

@@ -33,7 +33,7 @@ public class ClientHandler {
         PacketHandler.CHANNEL.sendToServer(new ClientSendPing(new PingWrapper(mob.getBlockPos(), color, type)));
     }
 
-    public static RayTraceResult raytrace(EntityPlayer player, double distance) {
+    private static RayTraceResult raytrace(EntityPlayer player, double distance) {
         double eyeHeight = player.getEyeHeight();
         Vec3d lookVec = player.getLookVec();
         Vec3d origin = new Vec3d(player.posX, player.posY + eyeHeight, player.posZ);
