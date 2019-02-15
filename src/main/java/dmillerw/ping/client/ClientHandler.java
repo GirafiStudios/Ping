@@ -1,7 +1,5 @@
 package dmillerw.ping.client;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.io.WritingMode;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
@@ -12,10 +10,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 public class ClientHandler {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -82,11 +78,11 @@ public class ClientHandler {
         Visual(ForgeConfigSpec.Builder builder) {
             builder.push("visual");
             blockOverlay = builder
-                    .comment("Whether to render the Ping Menu background")
+                    .comment("Whether to render a colored overlay on the Pinged block")
                     .translation("ping.configgui.blockOverlay")
                     .define("blockOverlay", true);
             menuBackground = builder
-                    .comment("Whether to render a colored overlay on the Pinged block")
+                    .comment("Whether to render the Ping Menu background")
                     .translation("ping.configgui.menuBackground")
                     .define("menuBackground", true);
             builder.push("pingColor");
@@ -103,19 +99,5 @@ public class ClientHandler {
         }
     }
 
-    static final ForgeConfigSpec spec = BUILDER.build();
-
-    public static void initConfig() {
-        loadConfig(spec, FMLPaths.CONFIGDIR.get().resolve("ping.toml"));
-    }
-
-    private static void loadConfig(ForgeConfigSpec spec, Path path) {
-        final CommentedFileConfig configData = CommentedFileConfig.builder(path)
-                .sync()
-                .autosave()
-                .writingMode(WritingMode.REPLACE)
-                .build();
-        configData.load();
-        spec.setConfig(configData);
-    }
+    public static final ForgeConfigSpec spec = BUILDER.build();
 }

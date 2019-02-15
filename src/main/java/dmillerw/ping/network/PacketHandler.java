@@ -8,12 +8,11 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class PacketHandler {
-    private static final String PROTOCOL_VERSION = Integer.toString(1);
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(Reference.MOD_ID, "ping_channel"))
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .clientAcceptedVersions(v -> true)
+            .serverAcceptedVersions(v -> true)
+            .networkProtocolVersion(() -> "PING1")
             .simpleChannel();
 
     public static void initialize() {

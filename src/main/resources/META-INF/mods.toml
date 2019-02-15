@@ -1,14 +1,14 @@
 modLoader="javafml"
-loaderVersion="[24,)"
+loaderVersion="[25,)"
 issueTrackerURL="https://github.com/dmillerw/Ping/issues"
-displayURL="https://minecraft.curseforge.com/projects/ping"
 logoFile="logo.png"
-credits="Thanks to Wiiv for making the models!"
-authors="Girafi, dmillerw"
-[[mods]] #mandatory
-modId="ping"
-version="${version}"
-displayName="Ping"
-description='''
-Inspired by Portal 2, this mod brings the Ping tool into Minecraft.
-'''
+
+[[mods]]
+    modId="ping"
+    version="${version}"
+    displayName="Ping"
+    displayURL="https://minecraft.curseforge.com/projects/ping"
+    authors="Girafi, dmillerw"
+    description='''
+    Inspired by Portal 2, this mod brings the Ping tool into Minecraft.
+    '''

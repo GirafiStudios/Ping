@@ -11,15 +11,16 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class KeyHandler {
     private static final String PING_CATEOGRY = "ping:key.categories.ping";
-    public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", 86, PING_CATEOGRY); //V
-    public static final KeyBinding PING_ALERT = new KeyBinding("ping.key.alert", 324, PING_CATEOGRY); //Numpad 4
-    public static final KeyBinding PING_MINE = new KeyBinding("ping.key.mine", 325, PING_CATEOGRY); //Numpad 5
-    public static final KeyBinding PING_LOOK = new KeyBinding("ping.key.look", 326, PING_CATEOGRY); //Numpad 6
-    public static final KeyBinding PING_GOTO = new KeyBinding("ping.key.goto", 328, PING_CATEOGRY); //Numpad 8
+    public static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", GLFW.GLFW_KEY_V, PING_CATEOGRY);
+    public static final KeyBinding PING_ALERT = new KeyBinding("ping.key.alert", GLFW.GLFW_KEY_KP_4, PING_CATEOGRY);
+    public static final KeyBinding PING_MINE = new KeyBinding("ping.key.mine", GLFW.GLFW_KEY_KP_5, PING_CATEOGRY);
+    public static final KeyBinding PING_LOOK = new KeyBinding("ping.key.look", GLFW.GLFW_KEY_KP_6, PING_CATEOGRY);
+    public static final KeyBinding PING_GOTO = new KeyBinding("ping.key.goto", GLFW.GLFW_KEY_KP_8, PING_CATEOGRY);
 
     private static boolean lastKeyState = false;
     public static boolean ignoreNextRelease = false;

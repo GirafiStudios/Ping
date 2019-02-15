@@ -8,7 +8,7 @@ import dmillerw.ping.util.PingRenderHelper;
 import dmillerw.ping.util.PingSounds;
 import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -47,7 +47,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientHandler.GENERAL.pingAcceptDistance.get()) {
             if (ClientHandler.GENERAL.sound.get()) {
-                mc.getSoundHandler().play(new PositionedSoundRecord(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
+                mc.getSoundHandler().play(new SimpleSound(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = ClientHandler.GENERAL.pingDuration.get();
             active_pings.add(packet.ping);
