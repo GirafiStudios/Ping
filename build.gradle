@@ -21,6 +21,7 @@ archivesBaseName = "Ping"
 
 minecraft {
     mappings channel: 'snapshot', version: '20190215-1.13.1'
+	accessTransformer = file('ping_at.cfg')
 
     runs {
         client = {
