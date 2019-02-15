@@ -9,7 +9,6 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
 
 ext.buildnumber=""
 if (System.getenv().BUILD_NUMBER) {
@@ -21,21 +20,26 @@ group = "dmillerw.ping"
 archivesBaseName = "Ping"
 
 minecraft {
-    mappings channel: 'stable', version: '43-1.13'
+    mappings channel: 'snapshot', version: '20180921-1.13'
 
     runs {
         client = {
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            properties 'forge.logging.console.level': 'debug'
             workingDirectory project.file('run').canonicalPath
             source sourceSets.main
         }
         server = {
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            properties 'forge.logging.console.level': 'debug'
             workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
         }
     }
 }
 
 dependencies {
-    minecraft "net.minecraftforge.test:forge:${minecraft_version}-${forge_version}"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 }
 
 processResources {
