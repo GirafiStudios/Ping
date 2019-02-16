@@ -3,10 +3,7 @@ package dmillerw.ping.client;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
-import dmillerw.ping.util.GLUUtils;
-import dmillerw.ping.util.PingRenderHelper;
-import dmillerw.ping.util.PingSounds;
-import dmillerw.ping.util.Reference;
+import dmillerw.ping.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -45,11 +42,11 @@ public class PingHandler {
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= ClientHandler.GENERAL.pingAcceptDistance.get()) {
-            if (ClientHandler.GENERAL.sound.get()) {
+        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= Config.GENERAL.pingAcceptDistance.get()) {
+            if (Config.GENERAL.sound.get()) {
                 mc.getSoundHandler().play(new SimpleSound(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
-            packet.ping.timer = ClientHandler.GENERAL.pingDuration.get();
+            packet.ping.timer = Config.GENERAL.pingDuration.get();
             active_pings.add(packet.ping);
         }
     }
@@ -73,7 +70,7 @@ public class PingHandler {
 
             if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
                 ping.isOffscreen = false;
-                if (ClientHandler.VISUAL.blockOverlay.get()) {
+                if (Config.VISUAL.blockOverlay.get()) {
                     renderPingOverlay(ping.pos.getX() - TileEntityRendererDispatcher.staticPlayerX, ping.pos.getY() - TileEntityRendererDispatcher.staticPlayerY, ping.pos.getZ() - TileEntityRendererDispatcher.staticPlayerZ, ping);
                 }
                 renderPing(px, py, pz, renderEntity, ping);

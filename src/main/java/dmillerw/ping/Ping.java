@@ -2,6 +2,7 @@ package dmillerw.ping;
 
 import dmillerw.ping.client.ClientHandler;
 import dmillerw.ping.network.PacketHandler;
+import dmillerw.ping.util.Config;
 import dmillerw.ping.util.Reference;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -18,7 +19,7 @@ public class Ping {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientHandler.spec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.spec);
     }
 
     public void setup(final FMLCommonSetupEvent event) {

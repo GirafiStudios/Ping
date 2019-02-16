@@ -2,6 +2,7 @@ package dmillerw.ping.network.packet;
 
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -32,7 +33,11 @@ public class ClientSendPing {
         public static void handle(ClientSendPing message, Supplier<NetworkEvent.Context> ctx) {
             EntityPlayerMP playerMP = ctx.get().getSender();
             if (playerMP != null && !(playerMP instanceof FakePlayer)) {
-                PacketHandler.CHANNEL.sendTo(new ServerBroadcastPing(message.ping), playerMP.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                for (EntityPlayer player : playerMP.world.playerEntities) {
+                    if (player instanceof EntityPlayerMP) {
+                        PacketHandler.CHANNEL.sendTo(new ServerBroadcastPing(message.ping), ((EntityPlayerMP) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                    }
+                }
                 ctx.get().setPacketHandled(true);
             }
         }

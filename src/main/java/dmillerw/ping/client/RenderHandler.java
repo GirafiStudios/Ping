@@ -2,6 +2,7 @@ package dmillerw.ping.client;
 
 import dmillerw.ping.client.gui.GuiPingSelect;
 import dmillerw.ping.data.PingType;
+import dmillerw.ping.util.Config;
 import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -51,7 +52,7 @@ public class RenderHandler {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
 
         // Menu Background
-        if (ClientHandler.VISUAL.menuBackground.get()) {
+        if (Config.VISUAL.menuBackground.get()) {
             GlStateManager.pushMatrix();
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();
@@ -102,9 +103,9 @@ public class RenderHandler {
             // Button Background
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             if (mouseIn) {
-                r = ClientHandler.VISUAL.pingR.get();
-                g = ClientHandler.VISUAL.pingG.get();
-                b = ClientHandler.VISUAL.pingB.get();
+                r = Config.VISUAL.pingR.get();
+                g = Config.VISUAL.pingG.get();
+                b = Config.VISUAL.pingB.get();
             }
             bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
             bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();

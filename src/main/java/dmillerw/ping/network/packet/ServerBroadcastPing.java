@@ -2,7 +2,6 @@ package dmillerw.ping.network.packet;
 
 import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.data.PingWrapper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -28,7 +27,7 @@ public class ServerBroadcastPing {
 
     public static class Handler {
         public static void handle(ServerBroadcastPing message, Supplier<NetworkEvent.Context> ctx) {
-            Minecraft.getInstance().addScheduledTask(() -> PingHandler.INSTANCE.onPingPacket(message));
+            ctx.get().enqueueWork(() -> PingHandler.INSTANCE.onPingPacket(message));
             ctx.get().setPacketHandled(true);
         }
     }
