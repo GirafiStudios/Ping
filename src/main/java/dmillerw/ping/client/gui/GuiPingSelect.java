@@ -33,10 +33,10 @@ public class GuiPingSelect extends GuiScreen {
         CompatibleScaledResolution resolution = new CompatibleScaledResolution(mc, mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
         int numOfItems = PingType.values().length - 1;
 
-        float half = numOfItems / 2;
+        float half = numOfItems * 0.5F;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            float drawX = resolution.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            float drawX = resolution.getScaledWidth() * 0.5F - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
             float drawY = resolution.getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
