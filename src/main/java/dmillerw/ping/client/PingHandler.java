@@ -194,7 +194,6 @@ public class PingHandler {
     private static void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
         GlStateManager.pushMatrix();
 
-        GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         GlStateManager.translate(px, py, pz);
 
@@ -231,10 +230,7 @@ public class PingHandler {
         bufferBuilder.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
         tessellator.draw();
 
-        GlStateManager.depthMask(true);
         GlStateManager.enableDepth();
-        GlStateManager.enableLighting();
-
         GlStateManager.popMatrix();
     }
 
@@ -245,7 +241,6 @@ public class PingHandler {
         float box = 1 + padding + padding;
 
         GlStateManager.pushMatrix();
-        GlStateManager.disableLighting();
         GlStateManager.enableBlend();
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GlStateManager.disableDepth();
@@ -256,7 +251,6 @@ public class PingHandler {
 
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
-        GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
 
