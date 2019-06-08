@@ -1,13 +1,12 @@
 package dmillerw.ping.client;
 
-import dmillerw.ping.client.gui.GuiPingSelect;
+import com.mojang.blaze3d.platform.GlStateManager;
+import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.util.Config;
 import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,8 +24,8 @@ public class RenderHandler {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getInstance();
-            if ((mc.world == null || mc.isGamePaused()) && GuiPingSelect.active) {
-                GuiPingSelect.deactivate();
+            if ((mc.world == null || mc.isGamePaused()) && PingSelectGui.active) {
+                PingSelectGui.deactivate();
             }
         }
     }
@@ -38,7 +37,7 @@ public class RenderHandler {
         }
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.world != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && GuiPingSelect.active) {
+        if (mc.world != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && PingSelectGui.active) {
             renderGui();
             renderText();
         }
@@ -54,14 +53,14 @@ public class RenderHandler {
         // Menu Background
         if (Config.VISUAL.menuBackground.get()) {
             GlStateManager.pushMatrix();
-            GlStateManager.disableTexture2D();
+            GlStateManager.disableTexture();
             GlStateManager.enableBlend();
-            OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
+            GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 
-            float halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
-            float halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-            float backgroundX = mc.mainWindow.getScaledWidth() / 2 - halfWidth;
-            float backgroundY = mc.mainWindow.getScaledHeight() / 4 - halfHeight;
+            int halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
+            int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
+            int backgroundX = mc.mainWindow.getScaledWidth() / 2 - halfWidth;
+            int backgroundY = mc.mainWindow.getScaledHeight() / 4 - halfHeight;
 
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
             bufferBuilder.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
@@ -71,27 +70,25 @@ public class RenderHandler {
             tessellator.draw();
 
             GlStateManager.disableBlend();
-            GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture();
             GlStateManager.popMatrix();
         }
 
         Minecraft.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
 
-        int width = mc.mainWindow.getScaledWidth();
-        int height = mc.mainWindow.getScaledHeight();
-        final int mouseX = (int) (mc.mouseHelper.getMouseX() * width / mc.mainWindow.getWidth());
-        final int mouseY = (int) (height - mc.mouseHelper.getMouseY() * height / mc.mainWindow.getHeight() - 1);
+        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.mainWindow.getScaledWidth() / mc.mainWindow.getWidth());
+        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.mainWindow.getScaledHeight() / mc.mainWindow.getHeight());
 
-        float half = numOfItems / 2;
+        int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            float drawX = mc.mainWindow.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            float drawY = mc.mainWindow.getScaledHeight() / 4;
+            int drawX = mc.mainWindow.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.mainWindow.getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
-            boolean mouseIn = mouseX >= (drawX - ITEM_SIZE / 2) && mouseX <= (drawX + ITEM_SIZE / 2) &&
-                    mouseY >= (drawY - ITEM_SIZE / 2) && mouseY <= (drawY + ITEM_SIZE / 2);
+            boolean mouseIn = mouseX >= (drawX - ITEM_SIZE * 0.5D) && mouseX <= (drawX + ITEM_SIZE * 0.5D) &&
+                    mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
             float min = -ITEM_SIZE / 2;
             float max = ITEM_SIZE / 2;
@@ -127,31 +124,27 @@ public class RenderHandler {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
-        int width = mc.mainWindow.getScaledWidth();
-        int height = mc.mainWindow.getScaledHeight();
-        final int mouseX = (int) (mc.mouseHelper.getMouseX() * width / mc.mainWindow.getWidth());
-        final int mouseY = (int) (height - mc.mouseHelper.getMouseY() * height / mc.mainWindow.getHeight() - 1);
+        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.mainWindow.getScaledWidth() / mc.mainWindow.getWidth());
+        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.mainWindow.getScaledHeight() / mc.mainWindow.getHeight());
 
-        float halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
-        float halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-        float backgroundX = mc.mainWindow.getScaledWidth() / 2 - halfWidth;
-        float backgroundY = mc.mainWindow.getScaledHeight() / 4 - halfHeight;
+        int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
+        int backgroundY = mc.mainWindow.getScaledHeight() / 4 - halfHeight;
 
-        float half = numOfItems / 2;
+        int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            float drawX = mc.mainWindow.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            float drawY = mc.mainWindow.getScaledHeight() / 4;
+            int drawX = mc.mainWindow.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.mainWindow.getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
-            boolean mouseIn = mouseX >= (drawX - ITEM_SIZE / 2) && mouseX <= (drawX + ITEM_SIZE / 2) &&
-                    mouseY >= (drawY - ITEM_SIZE / 2) && mouseY <= (drawY + ITEM_SIZE / 2);
+            boolean mouseIn = mouseX >= (drawX - ITEM_SIZE * 0.5D) && mouseX <= (drawX + ITEM_SIZE * 0.5D) &&
+                    mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
             if (mouseIn) {
                 GlStateManager.pushMatrix();
                 GlStateManager.color4f(255, 255, 255, 255);
-                mc.fontRenderer.drawString(type.toString(), mc.mainWindow.getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, (int) (backgroundY + halfHeight * 2), 0xFFFFFF);
+                mc.fontRenderer.drawString(type.toString(), mc.mainWindow.getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, backgroundY + halfHeight * 2, 0xFFFFFF);
                 GlStateManager.popMatrix();
             }
         }

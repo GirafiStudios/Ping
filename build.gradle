@@ -20,7 +20,7 @@ group = "dmillerw.ping"
 archivesBaseName = "Ping"
 
 minecraft {
-    mappings channel: 'snapshot', version: '20190215-1.13.1'
+    mappings channel: 'snapshot', version: '20190608-1.14.2'
 
     runs {
         client = {

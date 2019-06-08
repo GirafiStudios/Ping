@@ -1,24 +1,24 @@
 package dmillerw.ping.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.util.*;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -42,7 +42,7 @@ public class PingHandler {
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player.getDistance(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()) <= Config.GENERAL.pingAcceptDistance.get()) {
+        if (MathHelper.sqrt(mc.player.getDistanceSq(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= Config.GENERAL.pingAcceptDistance.get()) {
             if (Config.GENERAL.sound.get()) {
                 mc.getSoundHandler().play(new SimpleSound(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
@@ -65,7 +65,7 @@ public class PingHandler {
 
         for (PingWrapper ping : active_pings) {
             double px = ping.pos.getX() + 0.5 - interpX;
-            double py = ping.pos.getY() + 0.5 - interpY;
+            double py = ping.pos.getY() + 0.5 - interpY - renderEntity.getEyeHeight();
             double pz = ping.pos.getZ() + 0.5 - interpZ;
 
             if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
@@ -196,7 +196,7 @@ public class PingHandler {
 
         GlStateManager.rotatef(-renderEntity.rotationYaw, 0, 1, 0);
         GlStateManager.rotatef(renderEntity.rotationPitch, 1, 0, 0);
-        GL11.glRotated(180, 0, 0, 1);
+        GlStateManager.rotated(180, 0, 0, 1);
 
         Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
 
@@ -239,7 +239,7 @@ public class PingHandler {
 
         GlStateManager.pushMatrix();
         GlStateManager.enableBlend();
-        OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.blendFuncSeparate(770, 771, 1, 0);
         GlStateManager.disableDepthTest();
 
         GlStateManager.translated(x + 0.5, y + 0.5, z + 0.5);
@@ -257,8 +257,8 @@ public class PingHandler {
         FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
         FloatBuffer projection = BufferUtils.createFloatBuffer(16);
 
-        GlStateManager.getFloatv(GL11.GL_MODELVIEW_MATRIX, modelView);
-        GlStateManager.getFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+        GlStateManager.getMatrix(GL11.GL_MODELVIEW_MATRIX, modelView);
+        GlStateManager.getMatrix(GL11.GL_PROJECTION_MATRIX, projection);
         GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
         if (GLUUtils.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) {

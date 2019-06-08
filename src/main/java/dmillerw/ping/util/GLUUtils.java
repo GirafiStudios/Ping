@@ -37,9 +37,9 @@ public class GLUUtils {
     private static void gluMultMatrixVecf(FloatBuffer m, float[] in, float[] out) {
         for (int i = 0; i < 4; i++) {
             out[i] = in[0] * m.get(m.position() + i)
-                            + in[1] * m.get(m.position() + 4 + i)
-                            + in[2] * m.get(m.position() + 2 * 4 + i)
-                            + in[3] * m.get(m.position() + 3 * 4 + i);
+                    + in[1] * m.get(m.position() + 4 + i)
+                    + in[2] * m.get(m.position() + 2 * 4 + i)
+                    + in[3] * m.get(m.position() + 3 * 4 + i);
 
         }
     }

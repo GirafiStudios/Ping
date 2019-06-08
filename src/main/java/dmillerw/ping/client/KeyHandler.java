@@ -1,7 +1,6 @@
 package dmillerw.ping.client;
 
-import dmillerw.ping.client.gui.CompatibleScaledResolution;
-import dmillerw.ping.client.gui.GuiPingSelect;
+import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
@@ -37,23 +36,21 @@ public class KeyHandler {
             return;
         }
 
-        boolean keyPressed = (KEY_BINDING.getKey().getKeyCode() >= 0 ? InputMappings.isKeyDown(KEY_BINDING.getKey().getKeyCode()) : InputMappings.isKeyDown(KEY_BINDING.getKey().getKeyCode() + 100));
+        long handle = Minecraft.getInstance().mainWindow.getHandle();
+        boolean keyPressed = (KEY_BINDING.getKey().getKeyCode() >= 0 ? InputMappings.func_216506_a(handle, KEY_BINDING.getKey().getKeyCode()) : InputMappings.func_216506_a(handle, KEY_BINDING.getKey().getKeyCode() + 100));
 
         if (keyPressed != lastKeyState) {
             if (keyPressed) {
-                GuiPingSelect.activate();
+                PingSelectGui.activate();
             } else {
                 if (!ignoreNextRelease) {
-                    final CompatibleScaledResolution scaledResolution = new CompatibleScaledResolution(mc, mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
-                    int i = scaledResolution.getScaledWidth();
-                    int j = scaledResolution.getScaledHeight();
-                    final int k = (int) (mc.mouseHelper.getMouseX() * i / mc.mainWindow.getWidth());
-                    final int l = (int) (j - mc.mouseHelper.getMouseY() * j / mc.mainWindow.getHeight() - 1);
+                    final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.mainWindow.getScaledWidth() / mc.mainWindow.getWidth());
+                    final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.mainWindow.getScaledHeight() / mc.mainWindow.getHeight());
 
-                    GuiPingSelect.INSTANCE.mouseClicked(k, l, 0);
+                    PingSelectGui.INSTANCE.mouseClicked(mouseX, mouseY, 0);
                 }
                 ignoreNextRelease = false;
-                GuiPingSelect.deactivate();
+                PingSelectGui.deactivate();
             }
         }
         lastKeyState = keyPressed;
@@ -70,9 +67,6 @@ public class KeyHandler {
     }
 
     private static boolean canSendQuickPing(KeyBinding keyBinding) {
-        if (InputMappings.isKeyDown(keyBinding.getKey().getKeyCode())) {
-            return true;
-        }
-        return false;
+        return keyBinding.isKeyDown() && !keyBinding.isPressed();
     }
 }

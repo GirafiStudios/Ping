@@ -10,5 +10,8 @@
   "ping.key.goto": "Ping (Go to)",
 
   "_comment": "Subtitles",
-  "ping.subtitle.bloop": "Ping bloops"
+  "ping.subtitle.bloop": "Ping bloops",
+
+  "_comment": "Gui",
+  "ping.pingSelect.title" : "Ping Select"
 }
