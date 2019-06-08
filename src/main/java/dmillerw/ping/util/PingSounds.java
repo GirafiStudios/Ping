@@ -12,20 +12,20 @@ import java.util.List;
 
 @EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class PingSounds {
-    private static List<SoundEvent> sounds = Lists.newArrayList();
+    private static final List<SoundEvent> SOUNDS = Lists.newArrayList();
     public static final SoundEvent BLOOP = createSound("bloop");
 
     private static SoundEvent createSound(String name) {
         ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID, name);
         SoundEvent sound = new SoundEvent(resourceLocation);
         sound.setRegistryName(resourceLocation);
-        sounds.add(sound);
+        SOUNDS.add(sound);
         return sound;
     }
 
     @SubscribeEvent
     public static void registerSound(RegistryEvent.Register<SoundEvent> event) {
-        for (SoundEvent sound : sounds) {
+        for (SoundEvent sound : SOUNDS) {
             event.getRegistry().register(sound);
         }
     }
