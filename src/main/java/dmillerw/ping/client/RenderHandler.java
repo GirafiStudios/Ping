@@ -1,10 +1,10 @@
 package dmillerw.ping.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import dmillerw.ping.Ping;
 import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.util.Config;
-import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -15,7 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-@EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ping.MOD_ID, value = Dist.CLIENT)
 public class RenderHandler {
     public static final int ITEM_PADDING = 10;
     public static final int ITEM_SIZE = 32;

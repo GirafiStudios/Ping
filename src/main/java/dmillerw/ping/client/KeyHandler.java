@@ -1,8 +1,8 @@
 package dmillerw.ping.client;
 
+import dmillerw.ping.Ping;
 import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
-import dmillerw.ping.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.glfw.GLFW;
 
-@EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ping.MOD_ID, value = Dist.CLIENT)
 public class KeyHandler {
     private static final String PING_CATEGORY = "ping:key.categories.ping";
     static final KeyBinding KEY_BINDING = new KeyBinding("key.ping", GLFW.GLFW_KEY_V, PING_CATEGORY);

@@ -1,15 +1,15 @@
 package dmillerw.ping.network;
 
+import dmillerw.ping.Ping;
 import dmillerw.ping.network.packet.ClientSendPing;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
-import dmillerw.ping.util.Reference;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class PacketHandler {
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(Reference.MOD_ID, "ping_channel"))
+            .named(new ResourceLocation(Ping.MOD_ID, "ping_channel"))
             .clientAcceptedVersions(v -> true)
             .serverAcceptedVersions(v -> true)
             .networkProtocolVersion(() -> "PING1")

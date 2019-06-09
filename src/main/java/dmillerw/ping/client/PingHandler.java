@@ -1,6 +1,7 @@
 package dmillerw.ping.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import dmillerw.ping.Ping;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
@@ -34,10 +35,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Ping.MOD_ID, value = Dist.CLIENT)
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/ping.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Ping.MOD_ID, "textures/ping.png");
     private static List<PingWrapper> active_pings = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
