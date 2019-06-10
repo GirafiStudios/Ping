@@ -37,7 +37,7 @@ public class KeyHandler {
         }
 
         long handle = Minecraft.getInstance().mainWindow.getHandle();
-        boolean keyPressed = (KEY_BINDING.getKey().getKeyCode() >= 0 ? InputMappings.func_216506_a(handle, KEY_BINDING.getKey().getKeyCode()) : InputMappings.func_216506_a(handle, KEY_BINDING.getKey().getKeyCode() + 100));
+        boolean keyPressed = (KEY_BINDING.getKey().getKeyCode() >= 0 ? InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode()) : InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode() + 100));
 
         if (keyPressed != lastKeyState) {
             if (keyPressed) {
@@ -67,6 +67,7 @@ public class KeyHandler {
     }
 
     private static boolean canSendQuickPing(KeyBinding keyBinding) {
+
         return keyBinding.isKeyDown() && !keyBinding.isPressed();
     }
 }

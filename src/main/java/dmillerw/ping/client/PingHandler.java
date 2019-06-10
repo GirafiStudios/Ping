@@ -61,16 +61,16 @@ public class PingHandler {
         Entity renderEntity = mc.getRenderViewEntity();
         if (renderEntity == null) return;
         double interpX = renderEntity.prevPosX + (renderEntity.posX - renderEntity.prevPosX) * event.getPartialTicks();
-        double interpY = renderEntity.prevPosY + (renderEntity.posY - renderEntity.prevPosY) * event.getPartialTicks();
+        double interpY = (renderEntity.prevPosY + (renderEntity.posY - renderEntity.prevPosY) * event.getPartialTicks()) + 1;
         double interpZ = renderEntity.prevPosZ + (renderEntity.posZ - renderEntity.prevPosZ) * event.getPartialTicks();
 
         Frustum camera = new Frustum();
         camera.setPosition(interpX, interpY, interpZ);
 
         for (PingWrapper ping : active_pings) {
-            double px = ping.pos.getX() + 0.5 - interpX;
-            double py = ping.pos.getY() + 0.5 - interpY - renderEntity.getEyeHeight();
-            double pz = ping.pos.getZ() + 0.5 - interpZ;
+            double px = ping.pos.getX() + 0.5D - interpX;
+            double py = ping.pos.getY() + 0.5D - interpY + 1 - renderEntity.getEyeHeight();
+            double pz = ping.pos.getZ() + 0.5D - interpZ;
 
             if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
                 ping.isOffscreen = false;

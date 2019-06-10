@@ -31,7 +31,7 @@ public class PingWrapper {
     }
 
     public AxisAlignedBB getAABB() {
-        return new AxisAlignedBB(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
     }
 
     public void writeToBuffer(ByteBuf buffer) {
