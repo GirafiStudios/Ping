@@ -1,0 +1,17 @@
+{
+  "_comment": "Categories",
+  "ping:key.categories.ping": "Ping",
+
+  "_comment": "Pings",
+  "key.ping": "打开 Ping 菜单",
+  "ping.key.alert": "Ping (警告)",
+  "ping.key.mine": "Ping (挖掘)",
+  "ping.key.look": "Ping (查看)",
+  "ping.key.goto": "Ping (前往)",
+
+  "_comment": "Subtitles",
+  "ping.subtitle.bloop": "Ping 噪音",
+
+  "_comment": "Gui",
+  "ping.pingSelect.title" : "Ping 选择"
+}
