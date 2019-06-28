@@ -22,7 +22,7 @@ public class PingSelectGui extends Screen {
     }
 
     public static void activate() {
-        if (Minecraft.getInstance().field_71462_r == null) {
+        if (Minecraft.getInstance().currentScreen == null) {
             active = true;
             Minecraft.getInstance().displayGuiScreen(INSTANCE);
         }
@@ -30,7 +30,7 @@ public class PingSelectGui extends Screen {
 
     public static void deactivate() {
         active = false;
-        if (Minecraft.getInstance().field_71462_r == INSTANCE) {
+        if (Minecraft.getInstance().currentScreen == INSTANCE) {
             Minecraft.getInstance().displayGuiScreen(null);
         }
     }

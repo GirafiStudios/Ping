@@ -67,7 +67,6 @@ public class KeyHandler {
     }
 
     private static boolean canSendQuickPing(KeyBinding keyBinding) {
-
-        return keyBinding.isKeyDown() && !keyBinding.isPressed();
+        return keyBinding.isKeyDown(); //Will continuously be triggered when key is held down due to vanilla issue.
     }
 }
