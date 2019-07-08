@@ -3,14 +3,14 @@
   "ping:key.categories.ping": "Ping",
 
   "_comment": "Pings",
-  "key.ping": "Opens Ping menu",
-  "ping.key.alert": "Ping (Alert)",
+  "key.ping": "Open pinging menu",
+  "ping.key.alert": "Ping (Attention!)",
   "ping.key.mine": "Ping (Mine)",
   "ping.key.look": "Ping (Look)",
-  "ping.key.goto": "Ping (Go to)",
+  "ping.key.goto": "Ping (Go here)",
 
   "_comment": "Subtitles",
-  "ping.subtitle.bloop": "Ping bloops",
+  "ping.subtitle.bloop": "Ping bloop",
 
   "_comment": "Gui",
   "ping.pingSelect.title" : "Ping Select"
