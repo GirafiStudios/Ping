@@ -1,0 +1,12 @@
+#Categories
+ping:key.categories.ping=Ping
+
+#Pings
+key.ping=Otwórz menu pingowania
+ping.key.alert=Ping (uwaga!)
+ping.key.mine=Ping (wykop)
+ping.key.look=Ping (zobacz)
+ping.key.goto=Ping (idź do)
+
+#Subtitles
+ping.subtitle.bloop=Dźwięk pingowania
