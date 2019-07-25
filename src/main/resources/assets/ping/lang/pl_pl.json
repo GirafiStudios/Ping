@@ -1,0 +1,17 @@
+{
+  "_comment": "Categories",
+  "ping:key.categories.ping": "Ping",
+
+  "_comment": "Pings",
+  "key.ping": "Otwórz menu pingowania",
+  "ping.key.alert": "Ping (uwaga!)",
+  "ping.key.mine": "Ping (wykop)",
+  "ping.key.look": "Ping (zobacz)",
+  "ping.key.goto": "Ping (idź do)",
+
+  "_comment": "Subtitles",
+  "ping.subtitle.bloop": "Dźwięk pingowania",
+
+  "_comment": "Gui",
+  "ping.pingSelect.title" : "Wybór pingu"
+}
