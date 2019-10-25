@@ -1,0 +1,8 @@
+{
+	"screens" : [{
+			"COMMENT" : "PING SUPPORT", 
+			"class" : "dmillerw.ping.client.gui.PingSelectGui", 
+			"texture" : "ping:textures/gui/ping_gui.png", 
+			"fullSize" : 255
+		}]
+}
