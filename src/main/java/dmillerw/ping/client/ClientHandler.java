@@ -34,7 +34,7 @@ public class ClientHandler {
     @OnlyIn(Dist.CLIENT)
     private static BlockRayTraceResult raytrace(PlayerEntity player, double distance) {
         float eyeHeight = player.getEyeHeight();
-        return (BlockRayTraceResult) player.func_213324_a(distance, eyeHeight, false);
+        return (BlockRayTraceResult) player.pick(distance, eyeHeight, false);
     }
 
     @OnlyIn(Dist.CLIENT)
