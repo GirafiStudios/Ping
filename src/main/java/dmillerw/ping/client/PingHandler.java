@@ -1,20 +1,18 @@
 package dmillerw.ping.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dmillerw.ping.Ping;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.util.Config;
 import dmillerw.ping.util.GLUUtils;
-import dmillerw.ping.util.PingRenderHelper;
 import dmillerw.ping.util.PingSounds;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -22,7 +20,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -60,28 +60,30 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         Entity renderEntity = mc.getRenderViewEntity();
         if (renderEntity == null) return;
-        double interpX = renderEntity.prevPosX + (renderEntity.posX - renderEntity.prevPosX) * event.getPartialTicks();
-        double interpY = (renderEntity.prevPosY + (renderEntity.posY - renderEntity.prevPosY) * event.getPartialTicks()) + 1;
-        double interpZ = renderEntity.prevPosZ + (renderEntity.posZ - renderEntity.prevPosZ) * event.getPartialTicks();
+        BlockPos renderEntityPos = renderEntity.getPosition();
+        double interpX = renderEntity.prevPosX + (renderEntityPos.getX() - renderEntity.prevPosX) * event.getPartialTicks();
+        double interpY = (renderEntity.prevPosY + (renderEntityPos.getY() - renderEntity.prevPosY) * event.getPartialTicks()) + 1;
+        double interpZ = renderEntity.prevPosZ + (renderEntityPos.getZ() - renderEntity.prevPosZ) * event.getPartialTicks();
 
-        Frustum camera = new Frustum();
-        camera.setPosition(interpX, interpY, interpZ);
+        //Frustum camera = new Frustum();
+        //camera.setPosition(interpX, interpY, interpZ);
 
         for (PingWrapper ping : active_pings) {
             double px = ping.pos.getX() + 0.5D - interpX;
             double py = ping.pos.getY() + 0.5D - interpY + 1 - renderEntity.getEyeHeight();
             double pz = ping.pos.getZ() + 0.5D - interpZ;
 
-            if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
+            //if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
-                    renderPingOverlay(ping.pos.getX() - TileEntityRendererDispatcher.staticPlayerX, ping.pos.getY() - TileEntityRendererDispatcher.staticPlayerY, ping.pos.getZ() - TileEntityRendererDispatcher.staticPlayerZ, ping);
+                    Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
+                    renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), ping);
                 }
                 renderPing(px, py, pz, renderEntity, ping);
-            } else {
+            /*} else {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
-            }
+            }*/
         }
     }
 
@@ -94,8 +96,8 @@ public class PingHandler {
                     continue;
                 }
 
-                int width = mc.mainWindow.getWidth();
-                int height = mc.mainWindow.getHeight();
+                int width = mc.func_228018_at_().getWidth();
+                int height = mc.func_228018_at_().getHeight();
 
                 int x1 = -(width / 2) + 32;
                 int y1 = -(height / 2) + 32;
@@ -134,14 +136,14 @@ public class PingHandler {
                 pingX += width * 0.5D;
                 pingY += height * 0.5D;
 
-                GlStateManager.pushMatrix();
+                RenderSystem.pushMatrix();
 
                 Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
 
                 Tessellator tessellator = Tessellator.getInstance();
                 BufferBuilder bufferBuilder = tessellator.getBuffer();
 
-                bufferBuilder.setTranslation(pingX / 2, pingY / 2, 0);
+                //bufferBuilder.setTranslation(pingX / 2, pingY / 2, 0); //TODO
 
                 float min = -8;
                 float max = 8;
@@ -154,23 +156,23 @@ public class PingHandler {
                 int g = ping.color >> 8 & 255;
                 int b = ping.color & 255;
 
-                bufferBuilder.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-                bufferBuilder.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-                bufferBuilder.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-                bufferBuilder.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+                bufferBuilder.func_225582_a_(min, max, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
+                bufferBuilder.func_225582_a_(max, max, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
+                bufferBuilder.func_225582_a_(max, min, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
+                bufferBuilder.func_225582_a_(min, min, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
                 tessellator.draw();
 
                 // Ping Notice Icon
                 bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                bufferBuilder.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-                bufferBuilder.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-                bufferBuilder.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-                bufferBuilder.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                bufferBuilder.func_225582_a_(min, max, 0).func_225583_a_(ping.type.minU, ping.type.maxV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                bufferBuilder.func_225582_a_(max, max, 0).func_225583_a_(ping.type.maxU, ping.type.maxV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                bufferBuilder.func_225582_a_(max, min, 0).func_225583_a_(ping.type.maxU, ping.type.minV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
+                bufferBuilder.func_225582_a_(min, min, 0).func_225583_a_(ping.type.minU, ping.type.minV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
                 tessellator.draw();
 
-                bufferBuilder.setTranslation(0, 0, 0);
+                //bufferBuilder.setTranslation(0, 0, 0); //TODO
 
-                GlStateManager.popMatrix();
+                RenderSystem.popMatrix();
             }
         }
     }
@@ -193,14 +195,14 @@ public class PingHandler {
     }
 
     private static void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
 
-        GlStateManager.disableDepthTest();
-        GlStateManager.translated(px, py, pz);
+        RenderSystem.disableDepthTest();
+        RenderSystem.translated(px, py, pz);
 
-        GlStateManager.rotatef(-renderEntity.rotationYaw, 0, 1, 0);
-        GlStateManager.rotatef(renderEntity.rotationPitch, 1, 0, 0);
-        GlStateManager.rotated(180, 0, 0, 1);
+        RenderSystem.rotatef(-renderEntity.rotationYaw, 0.0F, 1.0F, 0.0F);
+        RenderSystem.rotatef(renderEntity.rotationPitch, 1.0F, 0.0F, 0.0F);
+        RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 
         Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
 
@@ -215,24 +217,24 @@ public class PingHandler {
         int r = ping.color >> 16 & 255;
         int g = ping.color >> 8 & 255;
         int b = ping.color & 255;
-        bufferBuilder.pos(min, max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-        bufferBuilder.pos(max, max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-        bufferBuilder.pos(max, min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-        bufferBuilder.pos(min, min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+        bufferBuilder.func_225582_a_(min, max, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
+        bufferBuilder.func_225582_a_(max, max, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
+        bufferBuilder.func_225582_a_(max, min, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
+        bufferBuilder.func_225582_a_(min, min, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
         tessellator.draw();
 
         int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getInstance().world.getDayTime())) : 175;
 
         // Block Overlay Icon
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        bufferBuilder.pos(min, max, 0).tex(ping.type.minU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-        bufferBuilder.pos(max, max, 0).tex(ping.type.maxU, ping.type.maxV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-        bufferBuilder.pos(max, min, 0).tex(ping.type.maxU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
-        bufferBuilder.pos(min, min, 0).tex(ping.type.minU, ping.type.minV).color(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        bufferBuilder.func_225582_a_(min, max, 0).func_225583_a_(ping.type.minU, ping.type.maxV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        bufferBuilder.func_225582_a_(max, max, 0).func_225583_a_(ping.type.maxU, ping.type.maxV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        bufferBuilder.func_225582_a_(max, min, 0).func_225583_a_(ping.type.maxU, ping.type.minV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
+        bufferBuilder.func_225582_a_(min, min, 0).func_225583_a_(ping.type.minU, ping.type.minV).func_227885_a_(1.0F, 1.0F, 1.0F, alpha).endVertex();
         tessellator.draw();
 
-        GlStateManager.enableDepthTest();
-        GlStateManager.popMatrix();
+        RenderSystem.enableDepthTest();
+        RenderSystem.popMatrix();
     }
 
     private static void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
@@ -241,18 +243,18 @@ public class PingHandler {
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.disableDepthTest();
+        RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+        RenderSystem.disableDepthTest();
 
-        GlStateManager.translated(x + 0.5, y + 0.5, z + 0.5);
+        RenderSystem.translated(x + 0.5, y + 0.5, z + 0.5);
         PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 175);
-        GlStateManager.translated(0, 0, 0);
+        RenderSystem.translated(0, 0, 0);
 
-        GlStateManager.enableDepthTest();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.popMatrix();
     }
 
     private static void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
@@ -261,8 +263,8 @@ public class PingHandler {
         FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
         FloatBuffer projection = BufferUtils.createFloatBuffer(16);
 
-        GlStateManager.getMatrix(GL11.GL_MODELVIEW_MATRIX, modelView);
-        GlStateManager.getMatrix(GL11.GL_PROJECTION_MATRIX, projection);
+        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelView);
+        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
         GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
         if (GLUUtils.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) {

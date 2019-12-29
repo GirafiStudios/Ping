@@ -1,6 +1,6 @@
 package dmillerw.ping.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dmillerw.ping.Ping;
 import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
@@ -52,38 +52,38 @@ public class RenderHandler {
 
         // Menu Background
         if (Config.VISUAL.menuBackground.get()) {
-            GlStateManager.pushMatrix();
-            GlStateManager.disableTexture();
-            GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+            RenderSystem.pushMatrix();
+            RenderSystem.disableTexture();
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
 
             int halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-            int backgroundX = mc.mainWindow.getScaledWidth() / 2 - halfWidth;
-            int backgroundY = mc.mainWindow.getScaledHeight() / 4 - halfHeight;
+            int backgroundX = mc.func_228018_at_().getScaledWidth() / 2 - halfWidth;
+            int backgroundY = mc.func_228018_at_().getScaledHeight() / 4 - halfHeight;
 
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            bufferBuilder.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.pos(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.func_225582_a_(backgroundX, backgroundY + 15 + halfHeight * 2, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.func_225582_a_(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.func_225582_a_(backgroundX + halfWidth * 2, backgroundY, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.func_225582_a_(backgroundX, backgroundY, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
             tessellator.draw();
 
-            GlStateManager.disableBlend();
-            GlStateManager.enableTexture();
-            GlStateManager.popMatrix();
+            RenderSystem.disableBlend();
+            RenderSystem.enableTexture();
+            RenderSystem.popMatrix();
         }
 
         Minecraft.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
 
-        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.mainWindow.getScaledWidth() / mc.mainWindow.getWidth());
-        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.mainWindow.getScaledHeight() / mc.mainWindow.getHeight());
+        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.func_228018_at_().getScaledWidth() / mc.func_228018_at_().getWidth());
+        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.func_228018_at_().getScaledHeight() / mc.func_228018_at_().getHeight());
 
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.mainWindow.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.mainWindow.getScaledHeight() / 4;
+            int drawX = mc.func_228018_at_().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.func_228018_at_().getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -104,18 +104,18 @@ public class RenderHandler {
                 g = Config.VISUAL.pingG.get();
                 b = Config.VISUAL.pingB.get();
             }
-            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + min, drawY + max, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + max, drawY + max, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + max, drawY + min, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + min, drawY + min, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
             tessellator.draw();
 
             // Button Icon
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + min, drawY + max, 0).func_225583_a_(type.minU, type.maxV).func_225586_a_(255, 255, 255, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + max, drawY + max, 0).func_225583_a_(type.maxU, type.maxV).func_225586_a_(255, 255, 255, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + max, drawY + min, 0).func_225583_a_(type.maxU, type.minV).func_225586_a_(255, 255, 255, 255).endVertex();
+            bufferBuilder.func_225582_a_(drawX + min, drawY + min, 0).func_225583_a_(type.minU, type.minV).func_225586_a_(255, 255, 255, 255).endVertex();
             tessellator.draw();
         }
     }
@@ -124,17 +124,17 @@ public class RenderHandler {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
-        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.mainWindow.getScaledWidth() / mc.mainWindow.getWidth());
-        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.mainWindow.getScaledHeight() / mc.mainWindow.getHeight());
+        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.func_228018_at_().getScaledWidth() / mc.func_228018_at_().getWidth());
+        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.func_228018_at_().getScaledHeight() / mc.func_228018_at_().getHeight());
 
         int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-        int backgroundY = mc.mainWindow.getScaledHeight() / 4 - halfHeight;
+        int backgroundY = mc.func_228018_at_().getScaledHeight() / 4 - halfHeight;
 
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.mainWindow.getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.mainWindow.getScaledHeight() / 4;
+            int drawX = mc.func_228018_at_().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.func_228018_at_().getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -142,10 +142,10 @@ public class RenderHandler {
                     mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
             if (mouseIn) {
-                GlStateManager.pushMatrix();
-                GlStateManager.color4f(255, 255, 255, 255);
-                mc.fontRenderer.drawString(type.toString(), mc.mainWindow.getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, backgroundY + halfHeight * 2, 0xFFFFFF);
-                GlStateManager.popMatrix();
+                RenderSystem.pushMatrix();
+                RenderSystem.color4f(255, 255, 255, 255);
+                mc.fontRenderer.drawString(type.toString(), mc.func_228018_at_().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, backgroundY + halfHeight * 2, 0xFFFFFF);
+                RenderSystem.popMatrix();
             }
         }
     }
