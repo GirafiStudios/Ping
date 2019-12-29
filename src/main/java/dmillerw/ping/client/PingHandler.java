@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
@@ -60,10 +59,9 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         Entity renderEntity = mc.getRenderViewEntity();
         if (renderEntity == null) return;
-        BlockPos renderEntityPos = renderEntity.getPosition();
-        double interpX = renderEntity.prevPosX + (renderEntityPos.getX() - renderEntity.prevPosX) * event.getPartialTicks();
-        double interpY = (renderEntity.prevPosY + (renderEntityPos.getY() - renderEntity.prevPosY) * event.getPartialTicks()) + 1;
-        double interpZ = renderEntity.prevPosZ + (renderEntityPos.getZ() - renderEntity.prevPosZ) * event.getPartialTicks();
+        double interpX = renderEntity.prevPosX + (renderEntity.func_226277_ct_() - renderEntity.prevPosX) * event.getPartialTicks();
+        double interpY = (renderEntity.prevPosY + (renderEntity.func_226278_cu_() - renderEntity.prevPosY) * event.getPartialTicks()) + 1;
+        double interpZ = renderEntity.prevPosZ + (renderEntity.func_226281_cx_() - renderEntity.prevPosZ) * event.getPartialTicks();
 
         //Frustum camera = new Frustum();
         //camera.setPosition(interpX, interpY, interpZ);
@@ -78,8 +76,8 @@ public class PingHandler {
                 if (Config.VISUAL.blockOverlay.get()) {
                     Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
                     renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), ping);
+                    //renderPing(px, py, pz, renderEntity, ping);
                 }
-                renderPing(px, py, pz, renderEntity, ping);
             /*} else {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
@@ -88,7 +86,7 @@ public class PingHandler {
     }
 
     @SubscribeEvent
-    public static void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+    public static void renderPingOffscreen(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             for (PingWrapper ping : active_pings) {
@@ -196,9 +194,9 @@ public class PingHandler {
 
     private static void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
         RenderSystem.pushMatrix();
-
         RenderSystem.disableDepthTest();
         RenderSystem.translated(px, py, pz);
+        //System.out.println("X:" + px + " Y:" + py + " Z:" + pz);
 
         RenderSystem.rotatef(-renderEntity.rotationYaw, 0.0F, 1.0F, 0.0F);
         RenderSystem.rotatef(renderEntity.rotationPitch, 1.0F, 0.0F, 0.0F);
@@ -243,6 +241,7 @@ public class PingHandler {
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
+        //System.out.println("X:" + x + " Y:" + y + " Z:" + z);
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(770, 771, 1, 0);

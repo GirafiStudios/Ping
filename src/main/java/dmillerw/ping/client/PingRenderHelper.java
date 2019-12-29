@@ -9,15 +9,15 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 public class PingRenderHelper {
 
-    public static void drawBlockOverlay(float width, float height, float length, TextureAtlasSprite icon, int func_225586_a_, int alpha) {
+    public static void drawBlockOverlay(float width, float height, float length, TextureAtlasSprite icon, int color, int alpha) {
         Minecraft mc = Minecraft.getInstance();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
 
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        int r = func_225586_a_ >> 16 & 255;
-        int g = func_225586_a_ >> 8 & 255;
-        int b = func_225586_a_ & 255;
+        int r = color >> 16 & 255;
+        int g = color >> 8 & 255;
+        int b = color & 255;
 
         mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
