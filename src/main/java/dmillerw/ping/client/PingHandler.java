@@ -4,17 +4,18 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import dmillerw.ping.Ping;
+import dmillerw.ping.client.util.GLUUtils;
+import dmillerw.ping.client.util.PingRenderHelper;
+import dmillerw.ping.client.util.VertexHelper;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.util.Config;
-import dmillerw.ping.util.GLUUtils;
 import dmillerw.ping.util.PingSounds;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -79,9 +80,9 @@ public class PingHandler {
             ping.isOffscreen = false;
             if (Config.VISUAL.blockOverlay.get()) {
                 Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
-                //renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), ping);
+                renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), event.getMatrixStack(), ping);
             }
-            renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
+            //renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
             /*} else {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
@@ -219,41 +220,32 @@ public class PingHandler {
         int r = ping.color >> 16 & 255;
         int g = ping.color >> 8 & 255;
         int b = ping.color & 255;
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
 
         // Block Overlay Icon
         int alpha = ping.type == PingType.ALERT ? mc.world != null ? (int) (1.3F + Math.sin(mc.world.getDayTime())) : 175 : 175;
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, min, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
-        renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, min, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, min, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, min, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
         tessellator.draw();
 
         matrixStack.func_227865_b_(); //pop
     }
 
-    private static void renderPingOverlay(double x, double y, double z, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleTexture();
-
+    private static void renderPingOverlay(double x, double y, double z, MatrixStack matrixStack, PingWrapper ping) {
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
-        //System.out.println("X:" + x + " Y:" + y + " Z:" + z);
-        RenderSystem.pushMatrix();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-        RenderSystem.disableDepthTest();
+        matrixStack.func_227860_a_();
+        matrixStack.func_227861_a_(x + 0.5, y + 0.5, z + 0.5);
+        PingRenderHelper.drawBlockOverlay(box, box, box, matrixStack, ping.color, 175);
+        matrixStack.func_227861_a_(0, 0, 0);
 
-        RenderSystem.translated(x + 0.5, y + 0.5, z + 0.5);
-        PingRenderHelper.drawBlockOverlay(box, box, box, icon, ping.color, 175);
-        RenderSystem.translated(0, 0, 0);
-
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
+        matrixStack.func_227865_b_();
     }
 
     private static void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
@@ -270,9 +262,5 @@ public class PingHandler {
             ping.screenX = screenCoords.get(0);
             ping.screenY = screenCoords.get(1);
         }
-    }
-
-    private static void renderPosTexColor(IVertexBuilder builder, Matrix4f matrix4f, Matrix3f matrix3f, float x, float y, float u, float v, float r, float g, float b, float a) {
-        builder.func_227888_a_(matrix4f, x - 0.5F, y - 0.5F, 0.0F).func_227885_a_(r, g, b, 0).func_225583_a_(u, v).func_227891_b_(OverlayTexture.field_229196_a_).func_227886_a_(1).func_227887_a_(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
     }
 }

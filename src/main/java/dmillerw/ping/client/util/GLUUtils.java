@@ -1,4 +1,4 @@
-package dmillerw.ping.util;
+package dmillerw.ping.client.util;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
