@@ -25,6 +25,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.model.pipeline.TRSRTransformer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -72,12 +73,12 @@ public class PingHandler {
             double pz = ping.pos.getZ() + 0.5D - interpZ;
 
             //if (camera.isBoundingBoxInFrustum(ping.getAABB())) {
-                ping.isOffscreen = false;
-                if (Config.VISUAL.blockOverlay.get()) {
-                    Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
-                    renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), ping);
-                    //renderPing(px, py, pz, renderEntity, ping);
-                }
+            ping.isOffscreen = false;
+            if (Config.VISUAL.blockOverlay.get()) {
+                Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
+                renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), ping);
+            }
+            renderPing(px, py, pz, renderEntity, ping);
             /*} else {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
@@ -193,6 +194,7 @@ public class PingHandler {
     }
 
     private static void renderPing(double px, double py, double pz, Entity renderEntity, PingWrapper ping) {
+        Minecraft mc = Minecraft.getInstance();
         RenderSystem.pushMatrix();
         RenderSystem.disableDepthTest();
         RenderSystem.translated(px, py, pz);
@@ -202,7 +204,7 @@ public class PingHandler {
         RenderSystem.rotatef(renderEntity.rotationPitch, 1.0F, 0.0F, 0.0F);
         RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 
-        Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
+        mc.textureManager.bindTexture(TEXTURE);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -221,7 +223,7 @@ public class PingHandler {
         bufferBuilder.func_225582_a_(min, min, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
         tessellator.draw();
 
-        int alpha = ping.type == PingType.ALERT ? (int) (1.3F + Math.sin(Minecraft.getInstance().world.getDayTime())) : 175;
+        int alpha = ping.type == PingType.ALERT ? mc.world != null ? (int) (1.3F + Math.sin(mc.world.getDayTime())) : 175 : 175;
 
         // Block Overlay Icon
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
