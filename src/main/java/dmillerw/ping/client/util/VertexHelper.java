@@ -14,4 +14,8 @@ public class VertexHelper {
     public static void renderPosTexColor(IVertexBuilder builder, Matrix4f matrix4f, Matrix3f matrix3f, float x, float y, float u, float v, float r, float g, float b, float a) {
         builder.func_227888_a_(matrix4f, x, y, 0.0F).func_227885_a_(r, g, b, a).func_225583_a_(u, v).func_227891_b_(OverlayTexture.field_229196_a_).func_227886_a_(1).func_227887_a_(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
     }
+
+    public static void renderPosTexColor(IVertexBuilder builder, Matrix4f matrix4f, Matrix3f matrix3f, float x, float y, float u, float v, int r, int g, int b, int a) {
+        builder.func_227888_a_(matrix4f, x, y, 0.0F).func_225586_a_(r, g, b, a).func_225583_a_(u, v).func_227891_b_(OverlayTexture.field_229196_a_).func_227886_a_(1).func_227887_a_(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+    }
 }
