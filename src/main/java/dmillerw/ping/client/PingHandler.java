@@ -44,7 +44,6 @@ public class PingHandler {
     public static final ResourceLocation TEXTURE = new ResourceLocation(Ping.MOD_ID, "textures/ping.png");
     private static final RenderType PING_RENDER = RenderType.func_228638_b_(TEXTURE);
     private static List<PingWrapper> active_pings = new ArrayList<>();
-    private static MatrixStack matrixStack;
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
@@ -94,7 +93,6 @@ public class PingHandler {
                 renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
             } else {
                 ping.isOffscreen = true;
-                matrixStack = event.getMatrixStack();
                 translatePingCoordinates(px, py, pz, ping);
             }
         }
@@ -105,7 +103,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             for (PingWrapper ping : active_pings) {
-                if (!ping.isOffscreen) {
+                if (!ping.isOffscreen || mc.currentScreen != null || mc.gameSettings.showDebugInfo) {
                     continue;
                 }
                 int width = mc.func_228018_at_().getWidth();
@@ -148,7 +146,7 @@ public class PingHandler {
                 pingX += width * 0.5D;
                 pingY += height * 0.5D;
 
-                MatrixStack matrixStack = PingHandler.matrixStack;
+                MatrixStack matrixStack = new MatrixStack();
                 matrixStack.func_227860_a_();
                 MatrixStack.Entry matrixEntry = matrixStack.func_227866_c_();
                 Matrix4f matrix4f = matrixEntry.func_227870_a_();
@@ -174,7 +172,7 @@ public class PingHandler {
                 VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.minV, r, g, b, 255);
 
                 // Ping Notice Icon
-                int alpha = ping.type == PingType.ALERT ? mc.world != null ? (int) (1.3F + Math.sin(mc.world.getDayTime())) : (int) 1.0F : (int) 1.0F;
+                float alpha = ping.type == PingType.ALERT ? mc.world != null ? (float) (1.3F + Math.sin(mc.world.getDayTime())) : 1.0F : 1.0F;
                 VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, max, ping.type.maxU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, min, ping.type.maxU, ping.type.minV, 1.0F, 1.0F, 1.0F, alpha);
@@ -235,7 +233,7 @@ public class PingHandler {
         VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
 
         // Block Overlay Icon
-        int alpha = ping.type == PingType.ALERT ? mc.world != null ? (int) (1.3F + Math.sin(mc.world.getDayTime())) : 175 : 175;
+        float alpha = ping.type == PingType.ALERT ? mc.world != null ? (float) (1.3F + Math.sin(mc.world.getDayTime())) : 0.68F : 0.68F;
         VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, min, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, max, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColor(vertexBuilder, matrix4f, matrix3f, max, min, ping.type.minU, ping.type.maxV, 1.0F, 1.0F, 1.0F, alpha);
