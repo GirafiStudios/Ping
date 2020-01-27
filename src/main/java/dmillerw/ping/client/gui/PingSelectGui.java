@@ -43,8 +43,8 @@ public class PingSelectGui extends Screen {
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.func_228018_at_().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.func_228018_at_().getScaledHeight() / 4;
+            int drawX = mc.getMainWindow().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.getMainWindow().getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 

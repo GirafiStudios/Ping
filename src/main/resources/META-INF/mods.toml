@@ -16,6 +16,6 @@ logoFile="logo.png"
 [[dependencies.ping]]
     modId="forge"
     mandatory=true
-    versionRange="[30.0.17,)"
+    versionRange="[30.0.39,)"
     ordering="NONE"
     side="BOTH"

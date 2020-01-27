@@ -36,7 +36,7 @@ public class KeyHandler {
             return;
         }
 
-        long handle = Minecraft.getInstance().func_228018_at_().getHandle();
+        long handle = Minecraft.getInstance().getMainWindow().getHandle();
         boolean keyPressed = (KEY_BINDING.getKey().getKeyCode() >= 0 ? InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode()) : InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode() + 100));
 
         if (keyPressed != lastKeyState) {
@@ -44,8 +44,8 @@ public class KeyHandler {
                 PingSelectGui.activate();
             } else {
                 if (!ignoreNextRelease) {
-                    final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.func_228018_at_().getScaledWidth() / mc.func_228018_at_().getWidth());
-                    final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.func_228018_at_().getScaledHeight() / mc.func_228018_at_().getHeight());
+                    final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth());
+                    final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight());
 
                     PingSelectGui.INSTANCE.mouseClicked(mouseX, mouseY, 0);
                 }

@@ -59,14 +59,14 @@ public class RenderHandler {
 
             int halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-            int backgroundX = mc.func_228018_at_().getScaledWidth() / 2 - halfWidth;
-            int backgroundY = mc.func_228018_at_().getScaledHeight() / 4 - halfHeight;
+            int backgroundX = mc.getMainWindow().getScaledWidth() / 2 - halfWidth;
+            int backgroundY = mc.getMainWindow().getScaledHeight() / 4 - halfHeight;
 
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            bufferBuilder.func_225582_a_(backgroundX, backgroundY + 15 + halfHeight * 2, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.func_225582_a_(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.func_225582_a_(backgroundX + halfWidth * 2, backgroundY, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.func_225582_a_(backgroundX, backgroundY, 0).func_227885_a_(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.pos(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
             tessellator.draw();
 
             RenderSystem.disableBlend();
@@ -76,14 +76,14 @@ public class RenderHandler {
 
         Minecraft.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
 
-        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.func_228018_at_().getScaledWidth() / mc.func_228018_at_().getWidth());
-        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.func_228018_at_().getScaledHeight() / mc.func_228018_at_().getHeight());
+        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth());
+        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight());
 
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.func_228018_at_().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.func_228018_at_().getScaledHeight() / 4;
+            int drawX = mc.getMainWindow().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.getMainWindow().getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -104,18 +104,18 @@ public class RenderHandler {
                 g = Config.VISUAL.pingG.get();
                 b = Config.VISUAL.pingB.get();
             }
-            bufferBuilder.func_225582_a_(drawX + min, drawY + max, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
-            bufferBuilder.func_225582_a_(drawX + max, drawY + max, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).func_225586_a_(r, g, b, 255).endVertex();
-            bufferBuilder.func_225582_a_(drawX + max, drawY + min, 0).func_225583_a_(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
-            bufferBuilder.func_225582_a_(drawX + min, drawY + min, 0).func_225583_a_(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).func_225586_a_(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
             tessellator.draw();
 
             // Button Icon
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferBuilder.func_225582_a_(drawX + min, drawY + max, 0).func_225583_a_(type.minU, type.maxV).func_225586_a_(255, 255, 255, 255).endVertex();
-            bufferBuilder.func_225582_a_(drawX + max, drawY + max, 0).func_225583_a_(type.maxU, type.maxV).func_225586_a_(255, 255, 255, 255).endVertex();
-            bufferBuilder.func_225582_a_(drawX + max, drawY + min, 0).func_225583_a_(type.maxU, type.minV).func_225586_a_(255, 255, 255, 255).endVertex();
-            bufferBuilder.func_225582_a_(drawX + min, drawY + min, 0).func_225583_a_(type.minU, type.minV).func_225586_a_(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).color(255, 255, 255, 255).endVertex();
             tessellator.draw();
         }
     }
@@ -124,17 +124,17 @@ public class RenderHandler {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
-        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.func_228018_at_().getScaledWidth() / mc.func_228018_at_().getWidth());
-        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.func_228018_at_().getScaledHeight() / mc.func_228018_at_().getHeight());
+        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth());
+        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight());
 
         int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-        int backgroundY = mc.func_228018_at_().getScaledHeight() / 4 - halfHeight;
+        int backgroundY = mc.getMainWindow().getScaledHeight() / 4 - halfHeight;
 
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.func_228018_at_().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.func_228018_at_().getScaledHeight() / 4;
+            int drawX = mc.getMainWindow().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.getMainWindow().getScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -144,7 +144,7 @@ public class RenderHandler {
             if (mouseIn) {
                 RenderSystem.pushMatrix();
                 RenderSystem.color4f(255, 255, 255, 255);
-                mc.fontRenderer.drawString(type.toString(), mc.func_228018_at_().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, backgroundY + halfHeight * 2, 0xFFFFFF);
+                mc.fontRenderer.drawString(type.toString(), mc.getMainWindow().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, backgroundY + halfHeight * 2, 0xFFFFFF);
                 RenderSystem.popMatrix();
             }
         }
