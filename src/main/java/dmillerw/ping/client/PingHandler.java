@@ -27,6 +27,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
@@ -45,6 +46,7 @@ import java.util.List;
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Ping.MOD_ID, "textures/ping.png");
+    public static final RenderType PING_TYPE = PingRenderType.getPingIcon(TEXTURE);
     private static List<PingWrapper> active_pings = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
@@ -152,9 +154,8 @@ public class PingHandler {
                 matrixStack.push();
                 MatrixStack.Entry matrixEntry = matrixStack.getLast();
                 Matrix4f matrix4f = matrixEntry.getPositionMatrix();
-                Matrix3f matrix3f = matrixEntry.getNormalMatrix();
                 RenderType pingOffset = null; //TODO
-                IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+                IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
                 IVertexBuilder vertexBuilder = buffer.getBuffer(pingOffset);
                 Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
 
@@ -206,18 +207,16 @@ public class PingHandler {
 
     private static void renderPing(double px, double py, double pz, MatrixStack matrixStack, Entity renderEntity, PingWrapper ping) {
         Minecraft mc = Minecraft.getInstance();
-        matrixStack.push(); //push
-        matrixStack.translate(px, py, pz); //translate
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(-renderEntity.rotationYaw)); //rotate
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(renderEntity.rotationPitch)); //rotate
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(180.0F)); //rotate
+        matrixStack.push();
+        matrixStack.translate(px, py, pz);
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(-renderEntity.rotationYaw));
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(renderEntity.rotationPitch));
+        matrixStack.rotate(Vector3f.ZP.rotationDegrees(180.0F));
 
         MatrixStack.Entry matrixEntry = matrixStack.getLast();
         Matrix4f matrix4f = matrixEntry.getPositionMatrix();
-        Matrix3f matrix3f = matrixEntry.getNormalMatrix();
-        RenderType pingIcon = PingRenderType.getPingIcon();
-        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-        IVertexBuilder vertexBuilder = buffer.getBuffer(pingIcon);
+        IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
+        IVertexBuilder vertexBuilder = buffer.getBuffer(PING_TYPE);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -237,9 +236,9 @@ public class PingHandler {
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
-        buffer.finish(pingIcon);
+        buffer.finish(PING_TYPE);
 
-        matrixStack.pop(); //pop
+        matrixStack.pop();
     }
 
     private static void renderPingOverlay(double x, double y, double z, MatrixStack matrixStack, PingWrapper ping) {
