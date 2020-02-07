@@ -65,19 +65,22 @@ public class PingHandler {
         if (renderEntity == null || activePings.isEmpty()) return;
         Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
         ActiveRenderInfo renderInfo = TileEntityRendererDispatcher.instance.renderInfo;
+        double clipX = staticPos.getX() + (renderEntity.getPosX() - staticPos.getX());
+        double clipY = staticPos.getY() + (renderEntity.getPosY() - staticPos.getY()) + 1;
+        double clipZ = staticPos.getZ() + (renderEntity.getPosZ() - staticPos.getZ());
 
         MatrixStack projectionLook = new MatrixStack();
         EntityViewRenderEvent.CameraSetup cameraSetup = ForgeHooksClient.onCameraSetup(mc.gameRenderer, renderInfo, event.getPartialTicks());
         renderInfo.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
-        projectionLook.rotate(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
         projectionLook.rotate(Vector3f.XP.rotationDegrees(renderInfo.getPitch()));
         projectionLook.rotate(Vector3f.YP.rotationDegrees(renderInfo.getYaw() + 180.0F));
+        projectionLook.rotate(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
 
         MatrixStack entityLocation = new MatrixStack();
-        entityLocation.getLast().getPositionMatrix().multiply(mc.gameRenderer.getProjectionMatrix(renderInfo, event.getPartialTicks(), true));
+        entityLocation.getLast().getPositionMatrix().multiply(mc.gameRenderer.getProjectionMatrix(renderInfo, event.getPartialTicks(), false)); //Don't use FOV
 
         ClippingHelperImpl clippingHelper = new ClippingHelperImpl(projectionLook.getLast().getPositionMatrix(), entityLocation.getLast().getPositionMatrix());
-        clippingHelper.setCameraPosition(staticPos.getX(), staticPos.getY(), staticPos.getZ());
+        clippingHelper.setCameraPosition(clipX, clipY, clipZ);
 
         for (PingWrapper ping : activePings) {
             double px = ping.pos.getX() + 0.5D - staticPos.getX();
