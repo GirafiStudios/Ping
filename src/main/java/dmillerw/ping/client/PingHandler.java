@@ -27,7 +27,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
@@ -46,8 +45,7 @@ import java.util.List;
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Ping.MOD_ID, "textures/ping.png");
-    public static final RenderType PING_TYPE = PingRenderType.getPingIcon(TEXTURE);
-    private static List<PingWrapper> active_pings = new ArrayList<>();
+    private static List<PingWrapper> activePings = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
@@ -56,7 +54,7 @@ public class PingHandler {
                 mc.getSoundHandler().play(new SimpleSound(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = Config.GENERAL.pingDuration.get();
-            active_pings.add(packet.ping);
+            activePings.add(packet.ping);
         }
     }
 
@@ -64,10 +62,8 @@ public class PingHandler {
     public static void onRenderWorld(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
         Entity renderEntity = mc.getRenderViewEntity();
-        if (renderEntity == null || active_pings.isEmpty()) return;
-        double interpX = renderEntity.prevPosX + (renderEntity.getPosX() - renderEntity.prevPosX) * event.getPartialTicks();
-        double interpY = (renderEntity.prevPosY + (renderEntity.getPosY() - renderEntity.prevPosY) * event.getPartialTicks()) + 1;
-        double interpZ = renderEntity.prevPosZ + (renderEntity.getPosZ() - renderEntity.prevPosZ) * event.getPartialTicks();
+        if (renderEntity == null || activePings.isEmpty()) return;
+        Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
         ActiveRenderInfo renderInfo = TileEntityRendererDispatcher.instance.renderInfo;
 
         MatrixStack projectionLook = new MatrixStack();
@@ -81,24 +77,23 @@ public class PingHandler {
         entityLocation.getLast().getPositionMatrix().multiply(mc.gameRenderer.getProjectionMatrix(renderInfo, event.getPartialTicks(), true));
 
         ClippingHelperImpl clippingHelper = new ClippingHelperImpl(projectionLook.getLast().getPositionMatrix(), entityLocation.getLast().getPositionMatrix());
-        clippingHelper.setCameraPosition(interpX, interpY, interpZ);
+        clippingHelper.setCameraPosition(staticPos.getX(), staticPos.getY(), staticPos.getZ());
 
-        for (PingWrapper ping : active_pings) {
-            double px = ping.pos.getX() + 0.5D - interpX;
-            double py = ping.pos.getY() + 0.5D - interpY + 1 - renderEntity.getEyeHeight();
-            double pz = ping.pos.getZ() + 0.5D - interpZ;
+        for (PingWrapper ping : activePings) {
+            double px = ping.pos.getX() + 0.5D - staticPos.getX();
+            double py = ping.pos.getY() + 0.5D - staticPos.getY();
+            double pz = ping.pos.getZ() + 0.5D - staticPos.getZ();
 
-            //if (clippingHelper.isBoundingBoxInFrustum(ping.getAABB())) {
+            if (clippingHelper.isBoundingBoxInFrustum(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
-                    Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
                     renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), event.getMatrixStack(), ping);
                 }
                 renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
-            /*} else {
+            } else {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
-            }*/
+            }
         }
     }
 
@@ -106,7 +101,7 @@ public class PingHandler {
     public static void renderPingOffscreen(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            for (PingWrapper ping : active_pings) {
+            for (PingWrapper ping : activePings) {
                 if (!ping.isOffscreen || mc.currentScreen != null || mc.gameSettings.showDebugInfo) {
                     continue;
                 }
@@ -154,10 +149,9 @@ public class PingHandler {
                 matrixStack.push();
                 MatrixStack.Entry matrixEntry = matrixStack.getLast();
                 Matrix4f matrix4f = matrixEntry.getPositionMatrix();
-                RenderType pingOffset = null; //TODO
+                RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
                 IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
-                IVertexBuilder vertexBuilder = buffer.getBuffer(pingOffset);
-                Minecraft.getInstance().textureManager.bindTexture(TEXTURE);
+                IVertexBuilder vertexBuilder = buffer.getBuffer(pingType);
 
                 matrixStack.translate(pingX / 2, pingY / 2, 0);
 
@@ -168,18 +162,18 @@ public class PingHandler {
                 int r = ping.color >> 16 & 255;
                 int g = ping.color >> 8 & 255;
                 int b = ping.color & 255;
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV, r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV, r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.minV, r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
                 // Ping Notice Icon
-                int alpha = ping.type == PingType.ALERT ? (int) (mc.world != null ? (1.3F + Math.sin(mc.world.getDayTime())) : 173) : 173;
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.maxU, ping.type.maxV, 255, 255, 255, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.maxU, ping.type.minV, 255, 255, 255, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.minU, ping.type.minV, 255, 255, 255, alpha);
-                buffer.finish(pingOffset);
+                float alpha = ping.type == PingType.ALERT ? mc.world != null ? (float) (1.0F + (0.01D * Math.sin(mc.world.getDayTime()))) : 0.85F : 0.85F;
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+                buffer.finish(pingType);
 
                 matrixStack.translate(0, 0, 0);
 
@@ -188,10 +182,9 @@ public class PingHandler {
         }
     }
 
-
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        Iterator<PingWrapper> iterator = active_pings.iterator();
+        Iterator<PingWrapper> iterator = activePings.iterator();
         while (iterator.hasNext()) {
             PingWrapper pingWrapper = iterator.next();
             if (pingWrapper.animationTimer > 0) {
@@ -216,7 +209,8 @@ public class PingHandler {
         MatrixStack.Entry matrixEntry = matrixStack.getLast();
         Matrix4f matrix4f = matrixEntry.getPositionMatrix();
         IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
-        IVertexBuilder vertexBuilder = buffer.getBuffer(PING_TYPE);
+        RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
+        IVertexBuilder vertexBuilder = buffer.getBuffer(pingType);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -225,18 +219,18 @@ public class PingHandler {
         int r = ping.color >> 16 & 255;
         int g = ping.color >> 8 & 255;
         int b = ping.color & 255;
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV, r, g, b, 255);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
         // Block Overlay Icon
-        int alpha = ping.type == PingType.ALERT ? (int) (mc.world != null ? (1.3F + Math.sin(mc.world.getDayTime())) : 173) : 173;
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.minU, ping.type.maxV, 255, 255, 255, alpha);
-        buffer.finish(PING_TYPE);
+        float alpha = ping.type == PingType.ALERT ? mc.world != null ? (float) (1.0F + (0.01D * Math.sin(mc.world.getDayTime()))) : 0.85F : 0.85F;
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+        buffer.finish(pingType);
 
         matrixStack.pop();
     }

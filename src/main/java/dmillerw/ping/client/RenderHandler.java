@@ -104,18 +104,18 @@ public class RenderHandler {
                 g = Config.VISUAL.pingG.get();
                 b = Config.VISUAL.pingB.get();
             }
-            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.maxV).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.maxU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.minU, PingType.BACKGROUND.minV).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
             tessellator.draw();
 
             // Button Icon
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(type.minU, type.maxV).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(type.maxU, type.maxV).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(type.maxU, type.minV).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(type.minU, type.minV).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(type.getMinU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(type.getMaxU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(type.getMaxU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(type.getMinU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
             tessellator.draw();
         }
     }
