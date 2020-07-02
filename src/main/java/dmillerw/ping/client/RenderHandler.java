@@ -1,5 +1,6 @@
 package dmillerw.ping.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dmillerw.ping.Ping;
 import dmillerw.ping.client.gui.PingSelectGui;
@@ -39,7 +40,7 @@ public class RenderHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.world != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && PingSelectGui.active) {
             renderGui();
-            renderText();
+            renderText(event.getMatrixStack());
         }
     }
 
@@ -90,8 +91,8 @@ public class RenderHandler {
             boolean mouseIn = mouseX >= (drawX - ITEM_SIZE * 0.5D) && mouseX <= (drawX + ITEM_SIZE * 0.5D) &&
                     mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
-            float min = -ITEM_SIZE / 2;
-            float max = ITEM_SIZE / 2;
+            float min = -ITEM_SIZE / 2.0F;
+            float max = ITEM_SIZE / 2.0F;
 
             int r = 255;
             int g = 255;
@@ -120,7 +121,7 @@ public class RenderHandler {
         }
     }
 
-    private static void renderText() {
+    private static void renderText(MatrixStack matrixStack) {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
@@ -144,7 +145,7 @@ public class RenderHandler {
             if (mouseIn) {
                 RenderSystem.pushMatrix();
                 RenderSystem.color4f(255, 255, 255, 255);
-                mc.fontRenderer.drawString(type.toString(), mc.getMainWindow().getScaledWidth() / 2 - mc.fontRenderer.getStringWidth(type.toString()) / 2, backgroundY + halfHeight * 2, 0xFFFFFF);
+                mc.fontRenderer.func_238405_a_(matrixStack, type.toString(), mc.getMainWindow().getScaledWidth() / 2.0F - mc.fontRenderer.getStringWidth(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF);
                 RenderSystem.popMatrix();
             }
         }

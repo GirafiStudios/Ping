@@ -5,15 +5,15 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import dmillerw.ping.client.PingRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.math.vector.Matrix4f;
 
 public class PingRenderHelper {
 
     public static void drawBlockOverlay(float width, float height, float length, MatrixStack matrixStack, TextureAtlasSprite icon, int color, int alpha) {
         MatrixStack.Entry matrixEntry = matrixStack.getLast();
-        Matrix4f posMatrix = matrixEntry.getPositionMatrix();
+        Matrix4f posMatrix = matrixEntry.getMatrix();
         RenderType pingOverlay = PingRenderType.getPingOverlay();
         IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
         IVertexBuilder vertexBuilder = buffer.getBuffer(pingOverlay);
