@@ -14,8 +14,10 @@ import dmillerw.ping.util.PingSounds;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.culling.ClippingHelperImpl;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
@@ -23,7 +25,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -63,7 +67,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         Entity renderEntity = mc.getRenderViewEntity();
         if (renderEntity == null || activePings.isEmpty()) return;
-        Vec3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
+        Vector3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
         ActiveRenderInfo renderInfo = TileEntityRendererDispatcher.instance.renderInfo;
         double clipX = staticPos.getX() + (renderEntity.getPosX() - staticPos.getX());
         double clipY = staticPos.getY() + (renderEntity.getPosY() - staticPos.getY()) + 1;
@@ -77,9 +81,9 @@ public class PingHandler {
         projectionLook.rotate(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
 
         MatrixStack entityLocation = new MatrixStack();
-        entityLocation.getLast().getPositionMatrix().multiply(mc.gameRenderer.getProjectionMatrix(renderInfo, event.getPartialTicks(), false)); //Don't use FOV
+        entityLocation.getLast().getMatrix().mul(mc.gameRenderer.getProjectionMatrix(renderInfo, event.getPartialTicks(), false)); //Don't use FOV
 
-        ClippingHelperImpl clippingHelper = new ClippingHelperImpl(projectionLook.getLast().getPositionMatrix(), entityLocation.getLast().getPositionMatrix());
+        ClippingHelper clippingHelper = new ClippingHelper(projectionLook.getLast().getMatrix(), entityLocation.getLast().getMatrix());
         clippingHelper.setCameraPosition(clipX, clipY, clipZ);
 
         for (PingWrapper ping : activePings) {
@@ -151,7 +155,7 @@ public class PingHandler {
                 MatrixStack matrixStack = new MatrixStack();
                 matrixStack.push();
                 MatrixStack.Entry matrixEntry = matrixStack.getLast();
-                Matrix4f matrix4f = matrixEntry.getPositionMatrix();
+                Matrix4f matrix4f = matrixEntry.getMatrix();
                 RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
                 IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
                 IVertexBuilder vertexBuilder = buffer.getBuffer(pingType);
@@ -210,7 +214,7 @@ public class PingHandler {
         matrixStack.rotate(Vector3f.ZP.rotationDegrees(180.0F));
 
         MatrixStack.Entry matrixEntry = matrixStack.getLast();
-        Matrix4f matrix4f = matrixEntry.getPositionMatrix();
+        Matrix4f matrix4f = matrixEntry.getMatrix();
         IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
         RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
         IVertexBuilder vertexBuilder = buffer.getBuffer(pingType);

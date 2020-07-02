@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[31,)"
+loaderVersion="[32,)"
 issueTrackerURL="https://github.com/dmillerw/Ping/issues"
 logoFile="logo.png"
 
@@ -9,6 +9,7 @@ logoFile="logo.png"
     displayName="Ping"
     displayURL="https://minecraft.curseforge.com/projects/ping"
     authors="Girafi, dmillerw"
+    credits="Koeddk"
     description='''
     Inspired by Portal 2, this mod brings the Ping tool into Minecraft.
     '''
@@ -16,6 +17,6 @@ logoFile="logo.png"
 [[dependencies.ping]]
     modId="forge"
     mandatory=true
-    versionRange="[31.1,)"
+    versionRange="[32,)"
     ordering="NONE"
     side="BOTH"
