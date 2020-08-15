@@ -47,7 +47,7 @@ public class KeyHandler {
                     final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth());
                     final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight());
 
-                    PingSelectGui.INSTANCE.func_231044_a_(mouseX, mouseY, 0);
+                    PingSelectGui.INSTANCE.mouseClicked(mouseX, mouseY, 0);
                 }
                 ignoreNextRelease = false;
                 PingSelectGui.deactivate();

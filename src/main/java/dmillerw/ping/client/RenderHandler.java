@@ -145,7 +145,7 @@ public class RenderHandler {
             if (mouseIn) {
                 RenderSystem.pushMatrix();
                 RenderSystem.color4f(255, 255, 255, 255);
-                mc.fontRenderer.func_238405_a_(matrixStack, type.toString(), mc.getMainWindow().getScaledWidth() / 2.0F - mc.fontRenderer.getStringWidth(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF);
+                mc.fontRenderer.drawStringWithShadow(matrixStack, type.toString(), mc.getMainWindow().getScaledWidth() / 2.0F - mc.fontRenderer.getStringWidth(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF);
                 RenderSystem.popMatrix();
             }
         }

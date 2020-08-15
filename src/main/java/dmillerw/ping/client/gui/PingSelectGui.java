@@ -36,7 +36,7 @@ public class PingSelectGui extends Screen {
     }
 
     @Override
-    public boolean func_231044_a_(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
@@ -61,13 +61,13 @@ public class PingSelectGui extends Screen {
     }
 
     @Override
-    public void func_231164_f_() {
-        super.func_231164_f_();
+    public void onClose() {
+        super.onClose();
         active = false;
     }
 
     @Override
-    public boolean func_231177_au__() {
+    public boolean isPauseScreen() {
         return false;
     }
 }

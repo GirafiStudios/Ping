@@ -2,6 +2,7 @@ modLoader="javafml"
 loaderVersion="[32,)"
 issueTrackerURL="https://github.com/dmillerw/Ping/issues"
 logoFile="logo.png"
+license="MIT"
 
 [[mods]]
     modId="ping"
