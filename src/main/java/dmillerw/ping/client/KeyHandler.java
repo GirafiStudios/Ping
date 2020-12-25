@@ -37,7 +37,7 @@ public class KeyHandler {
         }
 
         long handle = Minecraft.getInstance().getMainWindow().getHandle();
-        boolean keyPressed = (KEY_BINDING.getKey().getKeyCode() >= 0 ? InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode()) : InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode() + 100));
+        boolean keyPressed = (KEY_BINDING.matchesMouseKey(KEY_BINDING.getKey().getKeyCode()) ? GLFW.glfwGetMouseButton(handle, KEY_BINDING.getKey().getKeyCode()) == 1 : InputMappings.isKeyDown(handle, KEY_BINDING.getKey().getKeyCode()));
 
         if (keyPressed != lastKeyState) {
             if (keyPressed) {
