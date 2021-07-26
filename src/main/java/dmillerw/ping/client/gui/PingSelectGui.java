@@ -4,8 +4,8 @@ import dmillerw.ping.client.ClientHandler;
 import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.data.PingType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -18,20 +18,20 @@ public class PingSelectGui extends Screen {
     public static boolean active = false;
 
     public PingSelectGui() {
-        super(new TranslationTextComponent("ping.pingSelect.title"));
+        super(new TranslatableComponent("ping.pingSelect.title"));
     }
 
     public static void activate() {
-        if (Minecraft.getInstance().currentScreen == null) {
+        if (Minecraft.getInstance().screen == null) {
             active = true;
-            Minecraft.getInstance().displayGuiScreen(INSTANCE);
+            Minecraft.getInstance().setScreen(INSTANCE);
         }
     }
 
     public static void deactivate() {
         active = false;
-        if (Minecraft.getInstance().currentScreen == INSTANCE) {
-            Minecraft.getInstance().displayGuiScreen(null);
+        if (Minecraft.getInstance().screen == INSTANCE) {
+            Minecraft.getInstance().setScreen(null);
         }
     }
 
@@ -43,8 +43,8 @@ public class PingSelectGui extends Screen {
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.getMainWindow().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.getMainWindow().getScaledHeight() / 4;
+            int drawX = mc.getWindow().getGuiScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.getWindow().getGuiScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -61,8 +61,8 @@ public class PingSelectGui extends Screen {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
         active = false;
     }
 

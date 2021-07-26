@@ -2,8 +2,8 @@ package dmillerw.ping.network.packet;
 
 import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.data.PingWrapper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -17,11 +17,11 @@ public class ServerBroadcastPing {
         this.ping = ping;
     }
 
-    public static void encode(ServerBroadcastPing pingPacket, PacketBuffer buf) {
+    public static void encode(ServerBroadcastPing pingPacket, FriendlyByteBuf buf) {
         pingPacket.ping.writeToBuffer(buf);
     }
 
-    public static ServerBroadcastPing decode(PacketBuffer buf) {
+    public static ServerBroadcastPing decode(FriendlyByteBuf buf) {
         return new ServerBroadcastPing(PingWrapper.readFromBuffer(buf));
     }
 

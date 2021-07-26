@@ -1,25 +1,26 @@
 package dmillerw.ping.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.RenderState;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
-public class PingRenderType extends RenderState {
-    protected static final RenderState.LayerState DISABLE_DEPTH = new RenderState.LayerState("disable_depth", GlStateManager::disableDepthTest, GlStateManager::enableDepthTest);
+public class PingRenderType extends RenderStateShard {
+    protected static final RenderStateShard.LayeringStateShard DISABLE_DEPTH = new RenderStateShard.LayeringStateShard("disable_depth", GlStateManager::_disableDepthTest, GlStateManager::_enableDepthTest);
 
     public PingRenderType(String string, Runnable r, Runnable r1) {
         super(string, r, r1);
     }
 
     public static RenderType getPingOverlay() {
-        RenderType.State renderTypeState = RenderType.State.getBuilder().transparency(TRANSLUCENT_TRANSPARENCY).texture(BLOCK_SHEET).layer(DISABLE_DEPTH).build(true);
-        return RenderType.makeType("ping_overlay", DefaultVertexFormats.POSITION_TEX_COLOR, 7, 262144, true, true, renderTypeState);
+        RenderType.CompositeState renderTypeState = RenderType.CompositeState.builder().setTransparencyState(TRANSLUCENT_TRANSPARENCY).setTextureState(BLOCK_SHEET).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
+        return RenderType.create("ping_overlay", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 262144, true, true, renderTypeState);
     }
 
     public static RenderType getPingIcon(ResourceLocation location) {
-        RenderType.State renderTypeState = RenderType.State.getBuilder().texture(new RenderState.TextureState(location, false, true)).transparency(TRANSLUCENT_TRANSPARENCY).layer(DISABLE_DEPTH).build(true);
-        return RenderType.makeType("ping_icon", DefaultVertexFormats.POSITION_TEX_COLOR, 7, 262144, true, true, renderTypeState);
+        RenderType.CompositeState renderTypeState = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(location, false, true)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
+        return RenderType.create("ping_icon", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 262144, true, true, renderTypeState);
     }
 }

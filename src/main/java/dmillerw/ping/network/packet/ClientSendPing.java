@@ -2,12 +2,12 @@ package dmillerw.ping.network.packet;
 
 import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.PacketHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -21,21 +21,21 @@ public class ClientSendPing {
         this.ping = ping;
     }
 
-    public static void encode(ClientSendPing pingPacket, PacketBuffer buf) {
+    public static void encode(ClientSendPing pingPacket, FriendlyByteBuf buf) {
         pingPacket.ping.writeToBuffer(buf);
     }
 
-    public static ClientSendPing decode(PacketBuffer buf) {
+    public static ClientSendPing decode(FriendlyByteBuf buf) {
         return new ClientSendPing(PingWrapper.readFromBuffer(buf));
     }
 
     public static class Handler {
         public static void handle(ClientSendPing message, Supplier<NetworkEvent.Context> ctx) {
-            ServerPlayerEntity playerMP = ctx.get().getSender();
+            ServerPlayer playerMP = ctx.get().getSender();
             if (playerMP != null && !(playerMP instanceof FakePlayer)) {
-                for (PlayerEntity player : playerMP.world.getPlayers()) {
-                    if (player instanceof ServerPlayerEntity) {
-                        PacketHandler.CHANNEL.sendTo(new ServerBroadcastPing(message.ping), ((ServerPlayerEntity) player).connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+                for (Player player : playerMP.level.players()) {
+                    if (player instanceof ServerPlayer) {
+                        PacketHandler.CHANNEL.sendTo(new ServerBroadcastPing(message.ping), ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
                     }
                 }
                 ctx.get().setPacketHandled(true);

@@ -1,15 +1,12 @@
 package dmillerw.ping.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import dmillerw.ping.Ping;
 import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.util.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
@@ -25,7 +22,7 @@ public class RenderHandler {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getInstance();
-            if ((mc.world == null || mc.isGamePaused()) && PingSelectGui.active) {
+            if ((mc.level == null || mc.isPaused()) && PingSelectGui.active) {
                 PingSelectGui.deactivate();
             }
         }
@@ -38,53 +35,53 @@ public class RenderHandler {
         }
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.world != null && !mc.gameSettings.hideGUI && !mc.isGamePaused() && PingSelectGui.active) {
-            renderGui();
+        if (mc.level != null && !mc.options.hideGui && !mc.isPaused() && PingSelectGui.active) {
+            renderGui(event.getMatrixStack());
             renderText(event.getMatrixStack());
         }
     }
 
-    private static void renderGui() {
+    private static void renderGui(PoseStack poseStack) {
         int numOfItems = PingType.values().length - 1;
 
         Minecraft mc = Minecraft.getInstance();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
 
         // Menu Background
         if (Config.VISUAL.menuBackground.get()) {
-            RenderSystem.pushMatrix();
+            poseStack.pushPose();
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+            RenderSystem.defaultBlendFunc();
 
             int halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-            int backgroundX = mc.getMainWindow().getScaledWidth() / 2 - halfWidth;
-            int backgroundY = mc.getMainWindow().getScaledHeight() / 4 - halfHeight;
+            int backgroundX = mc.getWindow().getGuiScaledWidth() / 2 - halfWidth;
+            int backgroundY = mc.getWindow().getGuiScaledHeight() / 4 - halfHeight;
 
-            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            bufferBuilder.pos(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.pos(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            bufferBuilder.pos(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
-            tessellator.draw();
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            bufferBuilder.vertex(backgroundX, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.vertex(backgroundX + halfWidth * 2, backgroundY + 15 + halfHeight * 2, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.vertex(backgroundX + halfWidth * 2, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            bufferBuilder.vertex(backgroundX, backgroundY, 0).color(0F, 0F, 0F, 0.5F).endVertex();
+            tessellator.end();
 
             RenderSystem.disableBlend();
             RenderSystem.enableTexture();
-            RenderSystem.popMatrix();
+            poseStack.popPose();
         }
 
-        Minecraft.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
+        RenderSystem.setShaderTexture(0, PingHandler.TEXTURE);
 
-        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth());
-        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight());
+        final double mouseX = mc.mouseHandler.xpos() * ((double) mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
+        final double mouseY = mc.mouseHandler.ypos() * ((double) mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
 
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.getMainWindow().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.getMainWindow().getScaledHeight() / 4;
+            int drawX = mc.getWindow().getGuiScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.getWindow().getGuiScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -99,43 +96,43 @@ public class RenderHandler {
             int b = 255;
 
             // Button Background
-            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             if (mouseIn) {
                 r = Config.VISUAL.pingR.get();
                 g = Config.VISUAL.pingG.get();
                 b = Config.VISUAL.pingB.get();
             }
-            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
-            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
-            tessellator.draw();
+            bufferBuilder.vertex(drawX + min, drawY + max, 0).uv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
+            bufferBuilder.vertex(drawX + max, drawY + max, 0).uv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
+            bufferBuilder.vertex(drawX + max, drawY + min, 0).uv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
+            bufferBuilder.vertex(drawX + min, drawY + min, 0).uv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
+            tessellator.end();
 
             // Button Icon
-            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferBuilder.pos(drawX + min, drawY + max, 0).tex(type.getMinU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + max, 0).tex(type.getMaxU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + max, drawY + min, 0).tex(type.getMaxU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.pos(drawX + min, drawY + min, 0).tex(type.getMinU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
-            tessellator.draw();
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            bufferBuilder.vertex(drawX + min, drawY + max, 0).uv(type.getMinU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.vertex(drawX + max, drawY + max, 0).uv(type.getMaxU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.vertex(drawX + max, drawY + min, 0).uv(type.getMaxU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
+            bufferBuilder.vertex(drawX + min, drawY + min, 0).uv(type.getMinU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
+            tessellator.end();
         }
     }
 
-    private static void renderText(MatrixStack matrixStack) {
+    private static void renderText(PoseStack poseStack) {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
-        final double mouseX = mc.mouseHelper.getMouseX() * ((double) mc.getMainWindow().getScaledWidth() / mc.getMainWindow().getWidth());
-        final double mouseY = mc.mouseHelper.getMouseY() * ((double) mc.getMainWindow().getScaledHeight() / mc.getMainWindow().getHeight());
+        final double mouseX = mc.mouseHandler.xpos() * ((double) mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
+        final double mouseY = mc.mouseHandler.ypos() * ((double) mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
 
         int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-        int backgroundY = mc.getMainWindow().getScaledHeight() / 4 - halfHeight;
+        int backgroundY = mc.getWindow().getGuiScaledHeight() / 4 - halfHeight;
 
         int half = numOfItems / 2;
         for (int i = 0; i < numOfItems; i++) {
             PingType type = PingType.values()[i + 1];
-            int drawX = mc.getMainWindow().getScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
-            int drawY = mc.getMainWindow().getScaledHeight() / 4;
+            int drawX = mc.getWindow().getGuiScaledWidth() / 2 - (ITEM_SIZE * half) - (ITEM_PADDING * (half));
+            int drawY = mc.getWindow().getGuiScaledHeight() / 4;
 
             drawX += ITEM_SIZE / 2 + ITEM_PADDING / 2 + (ITEM_PADDING * i) + ITEM_SIZE * i;
 
@@ -143,10 +140,10 @@ public class RenderHandler {
                     mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
             if (mouseIn) {
-                RenderSystem.pushMatrix();
-                RenderSystem.color4f(255, 255, 255, 255);
-                mc.fontRenderer.drawStringWithShadow(matrixStack, type.toString(), mc.getMainWindow().getScaledWidth() / 2.0F - mc.fontRenderer.getStringWidth(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF);
-                RenderSystem.popMatrix();
+                poseStack.pushPose();
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                mc.font.drawShadow(poseStack, type.toString(), mc.getWindow().getGuiScaledWidth() / 2.0F - mc.font.width(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF);
+                poseStack.popPose();
             }
         }
     }

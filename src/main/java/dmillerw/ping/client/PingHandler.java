@@ -1,7 +1,10 @@
 package dmillerw.ping.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import dmillerw.ping.Ping;
 import dmillerw.ping.client.util.GLUUtils;
 import dmillerw.ping.client.util.PingRenderHelper;
@@ -11,23 +14,21 @@ import dmillerw.ping.data.PingWrapper;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import dmillerw.ping.util.Config;
 import dmillerw.ping.util.PingSounds;
-import net.minecraft.block.Blocks;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -53,9 +54,9 @@ public class PingHandler {
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && MathHelper.sqrt(mc.player.getDistanceSq(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= Config.GENERAL.pingAcceptDistance.get()) {
+        if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= Config.GENERAL.pingAcceptDistance.get()) {
             if (Config.GENERAL.sound.get()) {
-                mc.getSoundHandler().play(new SimpleSound(PingSounds.BLOOP, SoundCategory.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
+                mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP, SoundSource.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = Config.GENERAL.pingDuration.get();
             activePings.add(packet.ping);
@@ -65,36 +66,36 @@ public class PingHandler {
     @SubscribeEvent
     public static void onRenderWorld(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        Entity renderEntity = mc.getRenderViewEntity();
+        Entity renderEntity = mc.getCameraEntity();
         if (renderEntity == null || activePings.isEmpty()) return;
-        Vector3d staticPos = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
-        ActiveRenderInfo renderInfo = TileEntityRendererDispatcher.instance.renderInfo;
-        double clipX = staticPos.getX() + (renderEntity.getPosX() - staticPos.getX());
-        double clipY = staticPos.getY() + (renderEntity.getPosY() - staticPos.getY()) + 1;
-        double clipZ = staticPos.getZ() + (renderEntity.getPosZ() - staticPos.getZ());
+        Vec3 staticPos = mc.getBlockEntityRenderDispatcher().camera.getPosition();
+        Camera renderInfo = mc.getBlockEntityRenderDispatcher().camera;
+        double clipX = staticPos.x() + (renderEntity.getX() - staticPos.x());
+        double clipY = staticPos.y() + (renderEntity.getY() - staticPos.y()) + 1;
+        double clipZ = staticPos.z() + (renderEntity.getZ() - staticPos.z());
 
-        MatrixStack projectionLook = new MatrixStack();
+        PoseStack projectionLook = new PoseStack();
         EntityViewRenderEvent.CameraSetup cameraSetup = ForgeHooksClient.onCameraSetup(mc.gameRenderer, renderInfo, event.getPartialTicks());
         renderInfo.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
-        projectionLook.rotate(Vector3f.XP.rotationDegrees(renderInfo.getPitch()));
-        projectionLook.rotate(Vector3f.YP.rotationDegrees(renderInfo.getYaw() + 180.0F));
-        projectionLook.rotate(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
+        projectionLook.mulPose(Vector3f.XP.rotationDegrees(renderInfo.getXRot()));
+        projectionLook.mulPose(Vector3f.YP.rotationDegrees(renderInfo.getYRot() + 180.0F));
+        projectionLook.mulPose(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
 
-        MatrixStack entityLocation = new MatrixStack();
-        entityLocation.getLast().getMatrix().mul(mc.gameRenderer.getProjectionMatrix(renderInfo, event.getPartialTicks(), false)); //Don't use FOV
+        PoseStack entityLocation = new PoseStack();
+        entityLocation.last().pose().multiply(mc.gameRenderer.getProjectionMatrix(event.getPartialTicks())); //Don't use FOV
 
-        ClippingHelper clippingHelper = new ClippingHelper(projectionLook.getLast().getMatrix(), entityLocation.getLast().getMatrix());
-        clippingHelper.setCameraPosition(clipX, clipY, clipZ);
+        Frustum clippingHelper = new Frustum(projectionLook.last().pose(), entityLocation.last().pose());
+        clippingHelper.prepare(clipX, clipY, clipZ);
 
         for (PingWrapper ping : activePings) {
-            double px = ping.pos.getX() + 0.5D - staticPos.getX();
-            double py = ping.pos.getY() + 0.5D - staticPos.getY();
-            double pz = ping.pos.getZ() + 0.5D - staticPos.getZ();
+            double px = ping.pos.getX() + 0.5D - staticPos.x();
+            double py = ping.pos.getY() + 0.5D - staticPos.y();
+            double pz = ping.pos.getZ() + 0.5D - staticPos.z();
 
-            if (clippingHelper.isBoundingBoxInFrustum(ping.getAABB())) {
+            if (clippingHelper.isVisible(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
-                    renderPingOverlay(ping.pos.getX() - staticPos.getX(), ping.pos.getY() - staticPos.getY(), ping.pos.getZ() - staticPos.getZ(), event.getMatrixStack(), ping);
+                    renderPingOverlay(ping.pos.getX() - staticPos.x(), ping.pos.getY() - staticPos.y(), ping.pos.getZ() - staticPos.z(), event.getMatrixStack(), ping);
                 }
                 renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
             } else {
@@ -109,11 +110,11 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             for (PingWrapper ping : activePings) {
-                if (!ping.isOffscreen || mc.currentScreen != null || mc.gameSettings.showDebugInfo) {
+                if (!ping.isOffscreen || mc.screen != null || mc.options.renderDebug) {
                     continue;
                 }
-                int width = mc.getMainWindow().getWidth();
-                int height = mc.getMainWindow().getHeight();
+                int width = mc.getWindow().getScreenWidth();
+                int height = mc.getWindow().getScreenHeight();
 
                 int x1 = -(width / 2) + 32;
                 int y1 = -(height / 2) + 32;
@@ -152,15 +153,15 @@ public class PingHandler {
                 pingX += width * 0.5D;
                 pingY += height * 0.5D;
 
-                MatrixStack matrixStack = new MatrixStack();
-                matrixStack.push();
-                MatrixStack.Entry matrixEntry = matrixStack.getLast();
-                Matrix4f matrix4f = matrixEntry.getMatrix();
+                PoseStack poseStack = new PoseStack();
+                poseStack.pushPose();
+                PoseStack.Pose matrixEntry = poseStack.last();
+                Matrix4f matrix4f = matrixEntry.pose();
                 RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
-                IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
-                IVertexBuilder vertexBuilder = buffer.getBuffer(pingType);
+                MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
+                VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
-                matrixStack.translate(pingX / 2, pingY / 2, 0);
+                poseStack.translate(pingX / 2, pingY / 2, 0);
 
                 float min = -8;
                 float max = 8;
@@ -175,16 +176,16 @@ public class PingHandler {
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
                 // Ping Notice Icon
-                float alpha = ping.type == PingType.ALERT ? mc.world != null ? (float) (1.0F + (0.01D * Math.sin(mc.world.getDayTime()))) : 0.85F : 0.85F;
+                float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-                buffer.finish(pingType);
+                buffer.endBatch(pingType);
 
-                matrixStack.translate(0, 0, 0);
+                poseStack.translate(0, 0, 0);
 
-                matrixStack.pop();
+                poseStack.popPose();
             }
         }
     }
@@ -205,19 +206,19 @@ public class PingHandler {
         }
     }
 
-    private static void renderPing(double px, double py, double pz, MatrixStack matrixStack, Entity renderEntity, PingWrapper ping) {
+    private static void renderPing(double px, double py, double pz, PoseStack poseStack, Entity renderEntity, PingWrapper ping) {
         Minecraft mc = Minecraft.getInstance();
-        matrixStack.push();
-        matrixStack.translate(px, py, pz);
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(-renderEntity.rotationYaw));
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(renderEntity.rotationPitch));
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(180.0F));
+        poseStack.pushPose();
+        poseStack.translate(px, py, pz);
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(-renderEntity.getYRot()));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(renderEntity.getXRot()));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 
-        MatrixStack.Entry matrixEntry = matrixStack.getLast();
-        Matrix4f matrix4f = matrixEntry.getMatrix();
-        IRenderTypeBuffer.Impl buffer = mc.getRenderTypeBuffers().getBufferSource();
+        PoseStack.Pose matrixEntry = poseStack.last();
+        Matrix4f matrix4f = matrixEntry.pose();
+        MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
         RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
-        IVertexBuilder vertexBuilder = buffer.getBuffer(pingType);
+        VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -232,27 +233,27 @@ public class PingHandler {
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
         // Block Overlay Icon
-        float alpha = ping.type == PingType.ALERT ? mc.world != null ? (float) (1.0F + (0.01D * Math.sin(mc.world.getDayTime()))) : 0.85F : 0.85F;
+        float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-        buffer.finish(pingType);
+        buffer.endBatch(pingType);
 
-        matrixStack.pop();
+        poseStack.popPose();
     }
 
-    private static void renderPingOverlay(double x, double y, double z, MatrixStack matrixStack, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelMesher().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleTexture();
+    private static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
+        TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleIcon();
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
-        matrixStack.push();
-        matrixStack.translate(x + 0.5, y + 0.5, z + 0.5);
-        PingRenderHelper.drawBlockOverlay(box, box, box, matrixStack, icon, ping.color, 175);
-        matrixStack.translate(0, 0, 0);
+        poseStack.pushPose();
+        poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
+        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
+        poseStack.translate(0, 0, 0);
 
-        matrixStack.pop();
+        poseStack.popPose();
     }
 
     private static void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
