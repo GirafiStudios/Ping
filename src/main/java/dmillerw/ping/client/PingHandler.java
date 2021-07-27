@@ -95,11 +95,14 @@ public class PingHandler {
             if (clippingHelper.isVisible(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
+                    System.out.println("Block overlay");
                     renderPingOverlay(ping.pos.getX() - staticPos.x(), ping.pos.getY() - staticPos.y(), ping.pos.getZ() - staticPos.z(), event.getMatrixStack(), ping);
                 }
+                System.out.println("Icon");
                 renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
             } else {
                 ping.isOffscreen = true;
+                System.out.println("Offscren");
                 translatePingCoordinates(px, py, pz, ping);
             }
         }
@@ -162,6 +165,7 @@ public class PingHandler {
                 VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
                 poseStack.translate(pingX / 2, pingY / 2, 0);
+                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
                 float min = -8;
                 float max = 8;
@@ -219,6 +223,7 @@ public class PingHandler {
         MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
         RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
         VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);

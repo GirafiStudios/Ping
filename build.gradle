@@ -8,7 +8,6 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 

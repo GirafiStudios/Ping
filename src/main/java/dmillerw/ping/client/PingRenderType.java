@@ -14,13 +14,13 @@ public class PingRenderType extends RenderStateShard {
         super(string, r, r1);
     }
 
-    public static RenderType getPingOverlay() {
-        RenderType.CompositeState renderTypeState = RenderType.CompositeState.builder().setTransparencyState(TRANSLUCENT_TRANSPARENCY).setTextureState(BLOCK_SHEET).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
+    public static RenderType getPingOverlay() { //TODO ShaderState might be wrong
+        RenderType.CompositeState renderTypeState = RenderType.CompositeState.builder().setShaderState(POSITION_COLOR_TEX_SHADER).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setTextureState(BLOCK_SHEET).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
         return RenderType.create("ping_overlay", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 262144, true, true, renderTypeState);
     }
 
-    public static RenderType getPingIcon(ResourceLocation location) {
-        RenderType.CompositeState renderTypeState = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(location, false, true)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
+    public static RenderType getPingIcon(ResourceLocation location) { //TODO ShaderState might be wrong
+        RenderType.CompositeState renderTypeState = RenderType.CompositeState.builder().setShaderState(POSITION_COLOR_TEX_SHADER).setTextureState(new RenderStateShard.TextureStateShard(location, false, true)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
         return RenderType.create("ping_icon", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 262144, true, true, renderTypeState);
     }
 }

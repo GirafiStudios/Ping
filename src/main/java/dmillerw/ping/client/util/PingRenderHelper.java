@@ -1,10 +1,12 @@
 package dmillerw.ping.client.util;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import dmillerw.ping.client.PingRenderType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -17,6 +19,7 @@ public class PingRenderHelper {
         RenderType pingOverlay = PingRenderType.getPingOverlay();
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         VertexConsumer vertexBuilder = buffer.getBuffer(pingOverlay);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         int r = color >> 16 & 255;
         int g = color >> 8 & 255;

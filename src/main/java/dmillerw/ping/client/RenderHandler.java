@@ -7,6 +7,7 @@ import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.util.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
@@ -54,6 +55,7 @@ public class RenderHandler {
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
             int halfWidth = (ITEM_SIZE * (numOfItems)) - (ITEM_PADDING * (numOfItems));
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
@@ -71,8 +73,9 @@ public class RenderHandler {
             RenderSystem.enableTexture();
             poseStack.popPose();
         }
-
+        poseStack.pushPose();
         RenderSystem.setShaderTexture(0, PingHandler.TEXTURE);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
         final double mouseX = mc.mouseHandler.xpos() * ((double) mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
         final double mouseY = mc.mouseHandler.ypos() * ((double) mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
@@ -116,6 +119,7 @@ public class RenderHandler {
             bufferBuilder.vertex(drawX + min, drawY + min, 0).uv(type.getMinU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
             tessellator.end();
         }
+        poseStack.popPose();
     }
 
     private static void renderText(PoseStack poseStack) {
