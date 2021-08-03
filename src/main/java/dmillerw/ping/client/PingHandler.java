@@ -82,7 +82,7 @@ public class PingHandler {
         projectionLook.mulPose(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
 
         PoseStack entityLocation = new PoseStack();
-        entityLocation.last().pose().multiply(mc.gameRenderer.getProjectionMatrix(event.getPartialTicks())); //Don't use FOV
+        entityLocation.last().pose().multiply(mc.gameRenderer.getProjectionMatrix(mc.gameRenderer.getFov(renderInfo, event.getPartialTicks(), false))); //Don't use FOV
 
         Frustum clippingHelper = new Frustum(projectionLook.last().pose(), entityLocation.last().pose());
         clippingHelper.prepare(clipX, clipY, clipZ);
@@ -165,7 +165,6 @@ public class PingHandler {
                 VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
                 poseStack.translate(pingX / 2, pingY / 2, 0);
-                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
                 float min = -8;
                 float max = 8;
@@ -205,7 +204,7 @@ public class PingHandler {
             pingWrapper.timer--;
 
             if (pingWrapper.timer <= 0) {
-                iterator.remove();
+//                iterator.remove();
             }
         }
     }
@@ -257,7 +256,6 @@ public class PingHandler {
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
         PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
         poseStack.translate(0, 0, 0);
-
         poseStack.popPose();
     }
 
