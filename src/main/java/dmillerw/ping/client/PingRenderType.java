@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public class PingRenderType extends RenderStateShard {
     protected static final RenderStateShard.ShaderStateShard RENDERTYPE_PING = new RenderStateShard.ShaderStateShard(ClientHandler::getRenderTypePing);
-
     protected static final RenderStateShard.LayeringStateShard DISABLE_DEPTH = new RenderStateShard.LayeringStateShard("disable_depth", GlStateManager::_disableDepthTest, GlStateManager::_enableDepthTest);
+
     public PingRenderType(String string, Runnable r, Runnable r1) {
         super(string, r, r1);
     }

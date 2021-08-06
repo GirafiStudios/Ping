@@ -80,14 +80,11 @@ public class PingHandler {
             if (clippingHelper.isVisible(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
-                    System.out.println("Block overlay");
                     renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), event.getMatrixStack(), ping);
                 }
-                System.out.println("Icon");
                 renderPing(px, py, pz, event.getMatrixStack(), camera, ping);
             } else {
                 ping.isOffscreen = true;
-                System.out.println("Offscren");
                 translatePingCoordinates(px, py, pz, ping);
             }
         }
