@@ -1,8 +1,7 @@
 package dmillerw.ping.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import dmillerw.ping.Ping;
@@ -50,7 +49,7 @@ import java.util.List;
 public class PingHandler {
     public static final PingHandler INSTANCE = new PingHandler();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Ping.MOD_ID, "textures/ping.png");
-    private static List<PingWrapper> activePings = new ArrayList<>();
+    private static final List<PingWrapper> ACTIVE_PINGS = new ArrayList<>();
 
     public void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
@@ -59,47 +58,33 @@ public class PingHandler {
                 mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP, SoundSource.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = Config.GENERAL.pingDuration.get();
-            activePings.add(packet.ping);
+            ACTIVE_PINGS.add(packet.ping);
         }
     }
 
     @SubscribeEvent
     public static void onRenderWorld(RenderWorldLastEvent event) {
+        if (ACTIVE_PINGS.isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
-        Entity renderEntity = mc.getCameraEntity();
-        if (renderEntity == null || activePings.isEmpty()) return;
-        Vec3 staticPos = mc.getBlockEntityRenderDispatcher().camera.getPosition();
-        Camera renderInfo = mc.getBlockEntityRenderDispatcher().camera;
-        double clipX = staticPos.x() + (renderEntity.getX() - staticPos.x());
-        double clipY = staticPos.y() + (renderEntity.getY() - staticPos.y()) + 1;
-        double clipZ = staticPos.z() + (renderEntity.getZ() - staticPos.z());
+        Camera camera = mc.getBlockEntityRenderDispatcher().camera;
+        Vec3 cameraPos = camera.getPosition();
 
-        PoseStack projectionLook = new PoseStack();
-        EntityViewRenderEvent.CameraSetup cameraSetup = ForgeHooksClient.onCameraSetup(mc.gameRenderer, renderInfo, event.getPartialTicks());
-        renderInfo.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
-        projectionLook.mulPose(Vector3f.XP.rotationDegrees(renderInfo.getXRot()));
-        projectionLook.mulPose(Vector3f.YP.rotationDegrees(renderInfo.getYRot() + 180.0F));
-        projectionLook.mulPose(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
+        Frustum clippingHelper = new Frustum(event.getMatrixStack().last().pose(), event.getProjectionMatrix());
+        clippingHelper.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-        PoseStack entityLocation = new PoseStack();
-        entityLocation.last().pose().multiply(mc.gameRenderer.getProjectionMatrix(event.getPartialTicks())); //Don't use FOV
-
-        Frustum clippingHelper = new Frustum(projectionLook.last().pose(), entityLocation.last().pose());
-        clippingHelper.prepare(clipX, clipY, clipZ);
-
-        for (PingWrapper ping : activePings) {
-            double px = ping.pos.getX() + 0.5D - staticPos.x();
-            double py = ping.pos.getY() + 0.5D - staticPos.y();
-            double pz = ping.pos.getZ() + 0.5D - staticPos.z();
+        for (PingWrapper ping : ACTIVE_PINGS) {
+            double px = ping.pos.getX() + 0.5D - cameraPos.x();
+            double py = ping.pos.getY() + 0.5D - cameraPos.y();
+            double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
 
             if (clippingHelper.isVisible(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
                     System.out.println("Block overlay");
-                    renderPingOverlay(ping.pos.getX() - staticPos.x(), ping.pos.getY() - staticPos.y(), ping.pos.getZ() - staticPos.z(), event.getMatrixStack(), ping);
+                    renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), event.getMatrixStack(), ping);
                 }
                 System.out.println("Icon");
-                renderPing(px, py, pz, event.getMatrixStack(), renderEntity, ping);
+                renderPing(px, py, pz, event.getMatrixStack(), camera, ping);
             } else {
                 ping.isOffscreen = true;
                 System.out.println("Offscren");
@@ -110,9 +95,9 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void renderPingOffscreen(RenderGameOverlayEvent.Post event) {
-        Minecraft mc = Minecraft.getInstance();
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            for (PingWrapper ping : activePings) {
+            Minecraft mc = Minecraft.getInstance();
+            for (PingWrapper ping : ACTIVE_PINGS) {
                 if (!ping.isOffscreen || mc.screen != null || mc.options.renderDebug) {
                     continue;
                 }
@@ -159,14 +144,16 @@ public class PingHandler {
                 PoseStack poseStack = new PoseStack();
                 poseStack.pushPose();
                 PoseStack.Pose matrixEntry = poseStack.last();
-                Matrix4f matrix4f = matrixEntry.pose();
-                RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
-                MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-                VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
-
                 poseStack.translate(pingX / 2, pingY / 2, 0);
-                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                RenderSystem.applyModelViewMatrix();
 
+                Tesselator tesselator = Tesselator.getInstance();
+                BufferBuilder vertexBuilder = tesselator.getBuilder();
+                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                RenderSystem.setShaderTexture(0, TEXTURE);
+                final Matrix4f matrix4f = matrixEntry.pose();
+
+                vertexBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
                 float min = -8;
                 float max = 8;
 
@@ -185,18 +172,17 @@ public class PingHandler {
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
                 VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-                buffer.endBatch(pingType);
-
-                poseStack.translate(0, 0, 0);
+                tesselator.end();
 
                 poseStack.popPose();
+                RenderSystem.applyModelViewMatrix();
             }
         }
     }
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        Iterator<PingWrapper> iterator = activePings.iterator();
+        Iterator<PingWrapper> iterator = ACTIVE_PINGS.iterator();
         while (iterator.hasNext()) {
             PingWrapper pingWrapper = iterator.next();
             if (pingWrapper.animationTimer > 0) {
@@ -210,12 +196,12 @@ public class PingHandler {
         }
     }
 
-    private static void renderPing(double px, double py, double pz, PoseStack poseStack, Entity renderEntity, PingWrapper ping) {
+    private static void renderPing(double px, double py, double pz, PoseStack poseStack, Camera camera, PingWrapper ping) {
         Minecraft mc = Minecraft.getInstance();
         poseStack.pushPose();
         poseStack.translate(px, py, pz);
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(-renderEntity.getYRot()));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(renderEntity.getXRot()));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(-camera.getYRot()));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(camera.getXRot()));
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 
         PoseStack.Pose matrixEntry = poseStack.last();
@@ -257,7 +243,6 @@ public class PingHandler {
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
         PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
         poseStack.translate(0, 0, 0);
-
         poseStack.popPose();
     }
 
