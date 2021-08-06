@@ -56,16 +56,16 @@ public class KeyHandler {
                 }
             }
             lastKeyState = keyPressed;
+        }
 
-            if (canSendQuickPing(PING_ALERT)) {
-                ClientHandler.sendPing(PingType.ALERT);
-            } else if (canSendQuickPing(PING_MINE)) {
-                ClientHandler.sendPing(PingType.MINE);
-            } else if (canSendQuickPing(PING_LOOK)) {
-                ClientHandler.sendPing(PingType.LOOK);
-            } else if (canSendQuickPing(PING_GOTO)) {
-                ClientHandler.sendPing(PingType.GOTO);
-            }
+        if (canSendQuickPing(PING_ALERT)) {
+            ClientHandler.sendPing(PingType.ALERT);
+        } else if (canSendQuickPing(PING_MINE)) {
+            ClientHandler.sendPing(PingType.MINE);
+        } else if (canSendQuickPing(PING_LOOK)) {
+            ClientHandler.sendPing(PingType.LOOK);
+        } else if (canSendQuickPing(PING_GOTO)) {
+            ClientHandler.sendPing(PingType.GOTO);
         }
     }
 
