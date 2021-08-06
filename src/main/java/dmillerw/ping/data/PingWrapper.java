@@ -1,19 +1,12 @@
 package dmillerw.ping.data;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 
 public class PingWrapper {
-
-    public static PingWrapper readFromBuffer(ByteBuf buffer) {
-        int x = buffer.readInt();
-        int y = buffer.readInt();
-        int z = buffer.readInt();
-        int color = buffer.readInt();
-        PingType type = PingType.values()[buffer.readInt()];
-        return new PingWrapper(new BlockPos(x, y, z), color, type);
-    }
+    private static final float OFFSET = 1f;
 
     public final BlockPos pos;
     public final int color;
@@ -31,7 +24,16 @@ public class PingWrapper {
     }
 
     public AABB getAABB() {
-        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + OFFSET, pos.getY() + OFFSET, pos.getZ() + OFFSET);
+    }
+
+    public static PingWrapper readFromBuffer(ByteBuf buffer) {
+        int x = buffer.readInt();
+        int y = buffer.readInt();
+        int z = buffer.readInt();
+        int color = buffer.readInt();
+        PingType type = PingType.values()[buffer.readInt()];
+        return new PingWrapper(new BlockPos(x, y, z), color, type);
     }
 
     public void writeToBuffer(ByteBuf buffer) {
