@@ -3,7 +3,7 @@ package dmillerw.ping.network.packet;
 import dmillerw.ping.client.PingHandler;
 import dmillerw.ping.data.PingWrapper;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

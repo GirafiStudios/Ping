@@ -4,8 +4,8 @@ import dmillerw.ping.Ping;
 import dmillerw.ping.network.packet.ClientSendPing;
 import dmillerw.ping.network.packet.ServerBroadcastPing;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder

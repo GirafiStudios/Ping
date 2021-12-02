@@ -24,15 +24,12 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -63,13 +60,13 @@ public class PingHandler {
     }
 
     @SubscribeEvent
-    public static void onRenderWorld(RenderWorldLastEvent event) {
+    public static void onRenderWorld(RenderLevelLastEvent event) {
         if (ACTIVE_PINGS.isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
         Camera camera = mc.getBlockEntityRenderDispatcher().camera;
         Vec3 cameraPos = camera.getPosition();
 
-        Frustum clippingHelper = new Frustum(event.getMatrixStack().last().pose(), event.getProjectionMatrix());
+        Frustum clippingHelper = new Frustum(event.getPoseStack().last().pose(), event.getProjectionMatrix());
         clippingHelper.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
 
         for (PingWrapper ping : ACTIVE_PINGS) {
@@ -80,9 +77,9 @@ public class PingHandler {
             if (clippingHelper.isVisible(ping.getAABB())) {
                 ping.isOffscreen = false;
                 if (Config.VISUAL.blockOverlay.get()) {
-                    renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), event.getMatrixStack(), ping);
+                    renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), event.getPoseStack(), ping);
                 }
-                renderPing(px, py, pz, event.getMatrixStack(), camera, ping);
+                renderPing(px, py, pz, event.getPoseStack(), camera, ping);
             } else {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
