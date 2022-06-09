@@ -5,7 +5,7 @@ import dmillerw.ping.client.KeyHandler;
 import dmillerw.ping.data.PingType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -18,7 +18,7 @@ public class PingSelectGui extends Screen {
     public static boolean active = false;
 
     public PingSelectGui() {
-        super(new TranslatableComponent("ping.pingSelect.title"));
+        super(Component.translatable("ping.pingSelect.title"));
     }
 
     public static void activate() {

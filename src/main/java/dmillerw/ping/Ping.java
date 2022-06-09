@@ -3,6 +3,7 @@ package dmillerw.ping;
 import dmillerw.ping.client.ClientHandler;
 import dmillerw.ping.network.PacketHandler;
 import dmillerw.ping.util.Config;
+import dmillerw.ping.util.PingSounds;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -19,6 +20,7 @@ public class Ping {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::setupClient);
+        this.registerDeferredRegistries(modEventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.spec);
     }
 
@@ -28,5 +30,9 @@ public class Ping {
 
     public void setupClient(final FMLClientSetupEvent event) {
         ClientHandler.registerKeybinds();
+    }
+
+    public void registerDeferredRegistries(IEventBus modBus) {
+        PingSounds.SOUND_DEFERRED.register(modBus);
     }
 }

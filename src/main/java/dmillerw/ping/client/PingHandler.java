@@ -52,7 +52,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= Config.GENERAL.pingAcceptDistance.get()) {
             if (Config.GENERAL.sound.get()) {
-                mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP, SoundSource.PLAYERS, 0.25F, 1.0F, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
+                mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP.get(), SoundSource.PLAYERS, 0.25F, 1.0F, mc.player.level.random, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = Config.GENERAL.pingDuration.get();
             ACTIVE_PINGS.add(packet.ping);

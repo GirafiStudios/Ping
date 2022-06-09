@@ -1,33 +1,25 @@
 package dmillerw.ping.util;
 
-import com.google.common.collect.Lists;
 import dmillerw.ping.Ping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
-import java.util.List;
-
-@EventBusSubscriber(modid = Ping.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class PingSounds {
-    private static final List<SoundEvent> SOUNDS = Lists.newArrayList();
-    public static final SoundEvent BLOOP = createSound("bloop");
+    public static final DeferredRegister<SoundEvent> SOUND_DEFERRED = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Ping.MOD_ID);
+    public static final RegistryObject<SoundEvent> BLOOP = registerSound("bloop");
 
-    private static SoundEvent createSound(String name) {
+    /**
+     * Registers a sound
+     *
+     * @param name The name to register the sound with
+     * @return The Sound that was registered
+     */
+    public static RegistryObject<SoundEvent> registerSound(String name) {
         ResourceLocation resourceLocation = new ResourceLocation(Ping.MOD_ID, name);
         SoundEvent sound = new SoundEvent(resourceLocation);
-        sound.setRegistryName(resourceLocation);
-        SOUNDS.add(sound);
-        return sound;
-    }
-
-    @SubscribeEvent
-    public static void registerSound(RegistryEvent.Register<SoundEvent> event) {
-        for (SoundEvent sound : SOUNDS) {
-            event.getRegistry().register(sound);
-        }
+        return SOUND_DEFERRED.register(name, () -> sound);
     }
 }

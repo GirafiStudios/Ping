@@ -37,8 +37,8 @@ public class RenderHandler {
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && !mc.options.hideGui && !mc.isPaused() && PingSelectGui.active) {
-            renderGui(event.getMatrixStack());
-            renderText(event.getMatrixStack());
+            renderGui(event.getPoseStack());
+            renderText(event.getPoseStack());
         }
     }
 
