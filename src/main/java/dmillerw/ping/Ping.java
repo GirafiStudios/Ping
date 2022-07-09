@@ -1,6 +1,5 @@
 package dmillerw.ping;
 
-import dmillerw.ping.client.ClientHandler;
 import dmillerw.ping.network.PacketHandler;
 import dmillerw.ping.util.Config;
 import dmillerw.ping.util.PingSounds;
@@ -29,7 +28,6 @@ public class Ping {
     }
 
     public void setupClient(final FMLClientSetupEvent event) {
-        ClientHandler.registerKeybinds();
     }
 
     public void registerDeferredRegistries(IEventBus modBus) {

@@ -28,7 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -88,89 +88,87 @@ public class PingHandler {
     }
 
     @SubscribeEvent
-    public static void renderPingOffscreen(RenderGameOverlayEvent.Post event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            Minecraft mc = Minecraft.getInstance();
-            for (PingWrapper ping : ACTIVE_PINGS) {
-                if (!ping.isOffscreen || mc.screen != null || mc.options.renderDebug) {
-                    continue;
-                }
-                int width = mc.getWindow().getScreenWidth();
-                int height = mc.getWindow().getScreenHeight();
-
-                int x1 = -(width / 2) + 32;
-                int y1 = -(height / 2) + 32;
-                int x2 = (width / 2) - 32;
-                int y2 = (height / 2) - 32;
-
-                double pingX = ping.screenX;
-                double pingY = ping.screenY;
-
-                pingX -= width * 0.5D;
-                pingY -= height * 0.5D;
-
-                //TODO Fix that player rotation is not being taken into account. Been an issue since the creation of the mod
-                double angle = Math.atan2(pingY, pingX);
-                angle += (Math.toRadians(90));
-                double cos = Math.cos(angle);
-                double sin = Math.sin(angle);
-                double m = cos / sin;
-
-                if (cos > 0) {
-                    pingX = y2 / m;
-                    pingY = y2;
-                } else {
-                    pingX = y1 / m;
-                    pingY = y1;
-                }
-
-                if (pingX > x2) {
-                    pingX = x2;
-                    pingY = x2 * m;
-                } else if (pingX < x1) {
-                    pingX = x1;
-                    pingY = x1 * m;
-                }
-
-                pingX += width * 0.5D;
-                pingY += height * 0.5D;
-
-                PoseStack poseStack = new PoseStack();
-                poseStack.pushPose();
-                PoseStack.Pose matrixEntry = poseStack.last();
-                poseStack.translate(pingX / 2, pingY / 2, 0);
-                RenderSystem.applyModelViewMatrix();
-
-                Tesselator tesselator = Tesselator.getInstance();
-                BufferBuilder vertexBuilder = tesselator.getBuilder();
-                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-                RenderSystem.setShaderTexture(0, TEXTURE);
-                final Matrix4f matrix4f = matrixEntry.pose();
-
-                vertexBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-                float min = -8;
-                float max = 8;
-
-                // Ping Notice Background
-                int r = ping.color >> 16 & 255;
-                int g = ping.color >> 8 & 255;
-                int b = ping.color & 255;
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-
-                // Ping Notice Icon
-                float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-                tesselator.end();
-
-                poseStack.popPose();
-                RenderSystem.applyModelViewMatrix();
+    public static void renderPingOffscreen(RenderGuiOverlayEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        for (PingWrapper ping : ACTIVE_PINGS) {
+            if (!ping.isOffscreen || mc.screen != null || mc.options.renderDebug) {
+                continue;
             }
+            int width = mc.getWindow().getScreenWidth();
+            int height = mc.getWindow().getScreenHeight();
+
+            int x1 = -(width / 2) + 32;
+            int y1 = -(height / 2) + 32;
+            int x2 = (width / 2) - 32;
+            int y2 = (height / 2) - 32;
+
+            double pingX = ping.screenX;
+            double pingY = ping.screenY;
+
+            pingX -= width * 0.5D;
+            pingY -= height * 0.5D;
+
+            //TODO Fix that player rotation is not being taken into account. Been an issue since the creation of the mod
+            double angle = Math.atan2(pingY, pingX);
+            angle += (Math.toRadians(90));
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            double m = cos / sin;
+
+            if (cos > 0) {
+                pingX = y2 / m;
+                pingY = y2;
+            } else {
+                pingX = y1 / m;
+                pingY = y1;
+            }
+
+            if (pingX > x2) {
+                pingX = x2;
+                pingY = x2 * m;
+            } else if (pingX < x1) {
+                pingX = x1;
+                pingY = x1 * m;
+            }
+
+            pingX += width * 0.5D;
+            pingY += height * 0.5D;
+
+            PoseStack poseStack = new PoseStack();
+            poseStack.pushPose();
+            PoseStack.Pose matrixEntry = poseStack.last();
+            poseStack.translate(pingX / 2, pingY / 2, 0);
+            RenderSystem.applyModelViewMatrix();
+
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder vertexBuilder = tesselator.getBuilder();
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            final Matrix4f matrix4f = matrixEntry.pose();
+
+            vertexBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            float min = -8;
+            float max = 8;
+
+            // Ping Notice Background
+            int r = ping.color >> 16 & 255;
+            int g = ping.color >> 8 & 255;
+            int b = ping.color & 255;
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+
+            // Ping Notice Icon
+            float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+            tesselator.end();
+
+            poseStack.popPose();
+            RenderSystem.applyModelViewMatrix();
         }
     }
 
