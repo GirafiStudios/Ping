@@ -2,8 +2,7 @@ package dmillerw.ping.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import dmillerw.ping.Ping;
 import dmillerw.ping.client.util.GLUUtils;
 import dmillerw.ping.client.util.PingRenderHelper;
@@ -33,6 +32,7 @@ import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -192,9 +192,9 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         poseStack.pushPose();
         poseStack.translate(px, py, pz);
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(-camera.getYRot()));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(camera.getXRot()));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f matrix4f = matrixEntry.pose();

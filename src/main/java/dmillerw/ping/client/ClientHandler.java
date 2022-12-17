@@ -59,7 +59,7 @@ public class ClientHandler {
 
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
-        event.registerShader(new ShaderInstance(event.getResourceManager(), new ResourceLocation(Ping.MOD_ID, "rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR), (p_172645_) -> {
+        event.registerShader(new ShaderInstance(event.getResourceProvider(), new ResourceLocation(Ping.MOD_ID, "rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR), (p_172645_) -> {
             rendertypePing = p_172645_;
         });
     }

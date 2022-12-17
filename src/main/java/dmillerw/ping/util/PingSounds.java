@@ -19,7 +19,7 @@ public class PingSounds {
      */
     public static RegistryObject<SoundEvent> registerSound(String name) {
         ResourceLocation resourceLocation = new ResourceLocation(Ping.MOD_ID, name);
-        SoundEvent sound = new SoundEvent(resourceLocation);
+        SoundEvent sound = SoundEvent.createVariableRangeEvent(resourceLocation);
         return SOUND_DEFERRED.register(name, () -> sound);
     }
 }
