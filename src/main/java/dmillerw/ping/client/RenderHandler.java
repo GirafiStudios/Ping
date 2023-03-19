@@ -52,7 +52,6 @@ public class RenderHandler {
         // Menu Background
         if (Config.VISUAL.menuBackground.get()) {
             poseStack.pushPose();
-            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -70,7 +69,6 @@ public class RenderHandler {
             tessellator.end();
 
             RenderSystem.disableBlend();
-            RenderSystem.enableTexture();
             poseStack.popPose();
         }
         poseStack.pushPose();
