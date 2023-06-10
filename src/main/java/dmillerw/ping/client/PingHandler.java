@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -52,7 +52,7 @@ public class PingHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= Config.GENERAL.pingAcceptDistance.get()) {
             if (Config.GENERAL.sound.get()) {
-                mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP.get(), SoundSource.PLAYERS, 0.25F, 1.0F, mc.player.level.random, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
+                mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP.get(), SoundSource.PLAYERS, 0.25F, 1.0F, mc.player.level().random, packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
             }
             packet.ping.timer = Config.GENERAL.pingDuration.get();
             ACTIVE_PINGS.add(packet.ping);
@@ -60,7 +60,7 @@ public class PingHandler {
     }
 
     @SubscribeEvent
-    public static void onRenderWorld(RenderLevelLastEvent event) {
+    public static void onRenderWorld(RenderLevelStageEvent event) {
         if (ACTIVE_PINGS.isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
         Camera camera = mc.getBlockEntityRenderDispatcher().camera;

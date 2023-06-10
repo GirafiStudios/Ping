@@ -7,6 +7,7 @@ import dmillerw.ping.client.gui.PingSelectGui;
 import dmillerw.ping.data.PingType;
 import dmillerw.ping.util.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
@@ -37,13 +38,14 @@ public class RenderHandler {
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && !mc.options.hideGui && !mc.isPaused() && PingSelectGui.active) {
-            renderGui(event.getPoseStack());
-            renderText(event.getPoseStack());
+            renderGui(event.getGuiGraphics());
+            renderText(event.getGuiGraphics());
         }
     }
 
-    private static void renderGui(PoseStack poseStack) {
+    private static void renderGui(GuiGraphics guiGraphics) {
         int numOfItems = PingType.values().length - 1;
+        PoseStack poseStack = guiGraphics.pose();
 
         Minecraft mc = Minecraft.getInstance();
         Tesselator tessellator = Tesselator.getInstance();
@@ -120,7 +122,7 @@ public class RenderHandler {
         poseStack.popPose();
     }
 
-    private static void renderText(PoseStack poseStack) {
+    private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         int numOfItems = PingType.values().length - 1;
 
@@ -142,10 +144,8 @@ public class RenderHandler {
                     mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
             if (mouseIn) {
-                poseStack.pushPose();
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                mc.font.drawShadow(poseStack, type.toString(), mc.getWindow().getGuiScaledWidth() / 2.0F - mc.font.width(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF);
-                poseStack.popPose();
+                guiGraphics.drawString(mc.font, type.toString(), mc.getWindow().getGuiScaledWidth() / 2.0F - mc.font.width(type.toString()) / 2.0F, backgroundY + halfHeight * 2, 0xFFFFFF, true);
             }
         }
     }

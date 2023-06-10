@@ -33,7 +33,7 @@ public class ClientSendPing {
         public static void handle(ClientSendPing message, Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer playerMP = ctx.get().getSender();
             if (playerMP != null && !(playerMP instanceof FakePlayer)) {
-                for (Player player : playerMP.level.players()) {
+                for (Player player : playerMP.level().players()) {
                     if (player instanceof ServerPlayer) {
                         PacketHandler.CHANNEL.sendTo(new ServerBroadcastPing(message.ping), ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
                     }
