@@ -17,7 +17,13 @@ public class KeyHandler {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
+        PingHandlerHelper.pingTimer();
+
         if (event.phase == TickEvent.Phase.END) {
+            Minecraft mc = Minecraft.getInstance();
+            if ((mc.level == null || mc.isPaused()) && PingSelectGui.active) {
+                PingSelectGui.deactivate();
+            }
             return;
         }
 

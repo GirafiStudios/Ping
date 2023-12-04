@@ -24,9 +24,10 @@ public class ClientHandlerBase {
     }
 
     public void sendPing(BlockHitResult raytrace, int color, PingType type) {
+        System.out.println("Send Ping common");
     }
 
     public void sendPing(PingType type) {
-
+        System.out.println("Send Ping common PingType");
     }
 }

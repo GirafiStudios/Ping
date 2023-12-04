@@ -26,11 +26,13 @@ public class ClientHandler extends ClientHandlerBase {
 
     @Override
     public void sendPing(BlockHitResult raytrace, int color, PingType type) {
+        System.out.println("Send Ping Neo");
         PacketHandler.CHANNEL.sendToServer(new ClientSendPing(new PingWrapper(raytrace.getBlockPos(), color, type)));
     }
 
     @Override
     public void sendPing(PingType type) {
+        System.out.println("Send Ping as PingType with Neo");
         BlockHitResult raytraceBlock = raytrace(Minecraft.getInstance().player, 50);
         if (raytraceBlock.getType() == HitResult.Type.BLOCK) {
             sendPing(raytraceBlock, new Color(PingCommon.config().pingColorRed, PingCommon.config().pingColorGreen, PingCommon.config().pingColorBlue).getRGB(), type);

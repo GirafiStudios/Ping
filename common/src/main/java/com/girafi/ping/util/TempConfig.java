@@ -9,8 +9,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-/* Temporary config stuff, until I find/write a better solution
-* */
+/** Originally made by Darkhax for Enchanment Description.
+ * Using temporarily, until I´ve decided what common config solution I want to use going forward
+**/
 public class TempConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
     @Expose

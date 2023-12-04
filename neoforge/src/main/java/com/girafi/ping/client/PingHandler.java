@@ -20,9 +20,4 @@ public class PingHandler {
     public static void renderPingOffscreen(RenderGuiOverlayEvent.Post event) {
         PingHandlerHelper.renderPingOffscreen();
     }
-
-    @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        PingHandlerHelper.pingTimer();
-    }
 }
