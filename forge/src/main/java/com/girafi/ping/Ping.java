@@ -19,6 +19,7 @@ public class Ping {
     }
 
     public void setupCommon(final FMLCommonSetupEvent event) {
+
     }
 
     public void setupClient(final FMLClientSetupEvent event) {

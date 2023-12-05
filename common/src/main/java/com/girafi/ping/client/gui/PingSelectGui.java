@@ -56,8 +56,7 @@ public class PingSelectGui extends Screen {
                     mouseY >= (drawY - ITEM_SIZE * 0.5D) && mouseY <= (drawY + ITEM_SIZE * 0.5D);
 
             if (mouseIn) {
-                System.out.println("Mouse click");
-                ClientHandlerBase.INSTANCE.sendPing(type);
+                ClientHandlerBase.sendPing(type);
                 PingKeybinds.Helper.ignoreNextRelease = true;
                 return true;
             }
@@ -84,7 +83,7 @@ public class PingSelectGui extends Screen {
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
             int backgroundX = minecraft.getWindow().getGuiScaledWidth() / 2 - halfWidth;
             int backgroundY = minecraft.getWindow().getGuiScaledHeight() / 4 - halfHeight;
-            guiGraphics.fillGradient(backgroundX, backgroundY, this.width / 2 + halfWidth, this.height / 3 + (halfHeight / 2), -1072689136, -804253680);
+            guiGraphics.fillGradient(backgroundX, backgroundY, this.width / 2 + halfWidth, ((this.height / 4) + (halfHeight * 2)) - 10, -1072689136, -804253680);
         }
     }
 

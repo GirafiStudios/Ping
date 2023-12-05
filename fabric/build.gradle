@@ -18,6 +18,11 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     implementation project(":common")
 	modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port}"
+    implementation 'mysticdrew:common-networking-fabric:1.0.4-1.20.2'
+}
+
+remapJar {
+    archiveClassifier.set("fabric")
 }
 
 loom {

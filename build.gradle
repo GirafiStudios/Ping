@@ -53,6 +53,10 @@ subprojects {
             name = "Forge Config API Port mod"
             url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
         }
+        maven {
+		    name = "Common Networking by Mysticdrew"
+            url = "https://jm.gserv.me/repository/maven-public/"
+        }
     }
 
     tasks.withType(JavaCompile).configureEach {

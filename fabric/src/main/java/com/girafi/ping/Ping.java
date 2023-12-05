@@ -1,10 +1,8 @@
 package com.girafi.ping;
 
-import fuzs.forgeconfigapiport.api.config.v3.ForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
-import net.neoforged.fml.config.ModConfig;
 
-public class Waddles implements ModInitializer {
+public class Ping implements ModInitializer {
 
     @Override
     public void onInitialize() {

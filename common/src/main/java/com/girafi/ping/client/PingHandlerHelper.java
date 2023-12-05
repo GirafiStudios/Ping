@@ -13,15 +13,12 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -37,11 +34,10 @@ import java.util.Iterator;
 import java.util.List;
 
 public class PingHandlerHelper {
-    public static final PingHandlerHelper INSTANCE = new PingHandlerHelper();
     public static final ResourceLocation TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/ping.png");
     private static final List<PingWrapper> ACTIVE_PINGS = new ArrayList<>();
 
-    public void onPingPacket(ServerBroadcastPing packet) {
+    public static void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= PingCommon.config().pingAcceptDistance) {
             if (PingCommon.config().playPingSound) {

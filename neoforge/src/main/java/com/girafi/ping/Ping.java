@@ -1,6 +1,5 @@
 package com.girafi.ping;
 
-import com.girafi.ping.network.PacketHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -16,13 +15,13 @@ public class Ping {
         eventBus.addListener(this::setupCommon);
         eventBus.addListener(this::setupClient);
 
-        PingCommon.setConfigFolder(FMLPaths.CONFIGDIR.get());
+        PingCommon.loadCommon(FMLPaths.CONFIGDIR.get());
 
         registerDeferredRegistries(eventBus);
     }
 
     public void setupCommon(final FMLCommonSetupEvent event) {
-        PacketHandler.initialize();
+
     }
 
     public void setupClient(final FMLClientSetupEvent event) {

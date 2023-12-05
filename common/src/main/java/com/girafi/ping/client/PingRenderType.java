@@ -33,7 +33,7 @@ public class PingRenderType extends RenderType {
     public static Object createRenderType(String name, VertexFormat vertexFormat, VertexFormat.Mode mode, int i, boolean b, boolean b1, RenderType.CompositeState compositeState) {
         Object compositeRenderType = null;
         try {
-            Method m = RenderType.class.getDeclaredMethod("create");
+            Method m = RenderType.class.getDeclaredMethod("create", String.class, VertexFormat.class, VertexFormat.Mode.class, Integer.TYPE, Boolean.TYPE, Boolean.TYPE, RenderType.CompositeState.class);
             m.setAccessible(true);
             compositeRenderType = m.invoke(null, name, vertexFormat, mode, i, b, b1, compositeState);
 

@@ -1,16 +1,21 @@
 package com.girafi.ping.client;
 
+import com.girafi.ping.PingCommon;
 import com.girafi.ping.data.PingType;
+import com.girafi.ping.data.PingWrapper;
+import com.girafi.ping.network.packet.ClientSendPing;
+import commonnetwork.api.Dispatcher;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Objects;
 
 public class ClientHandlerBase {
-    public static final ClientHandlerBase INSTANCE = new ClientHandlerBase();
-
     @Nullable
     public static ShaderInstance rendertypePing;
 
@@ -23,11 +28,14 @@ public class ClientHandlerBase {
         return (BlockHitResult) player.pick(distance, eyeHeight, false);
     }
 
-    public void sendPing(BlockHitResult raytrace, int color, PingType type) {
-        System.out.println("Send Ping common");
+    public static void sendPing(BlockHitResult raytrace, int color, PingType type) {
+        Dispatcher.sendToServer(new ClientSendPing(new PingWrapper(raytrace.getBlockPos(), color, type)));
     }
 
-    public void sendPing(PingType type) {
-        System.out.println("Send Ping common PingType");
+    public static void sendPing(PingType type) {
+        BlockHitResult raytraceBlock = raytrace(Minecraft.getInstance().player, 50);
+        if (raytraceBlock.getType() == HitResult.Type.BLOCK) {
+            sendPing(raytraceBlock, new Color(PingCommon.config().pingColorRed, PingCommon.config().pingColorGreen, PingCommon.config().pingColorBlue).getRGB(), type);
+        }
     }
 }

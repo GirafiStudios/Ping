@@ -16,6 +16,7 @@ version = "${version}${buildnumber}"
 if (file('src/main/resources/META-INF/accesstransformer.cfg').exists()) {
     minecraft.accessTransformers.file file('src/main/resources/META-INF/accesstransformer.cfg')
 }
+
 runs {
     configureEach {
         modSource project.sourceSets.main
@@ -39,9 +40,13 @@ runs {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+jarJar.enable()
 dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
+	implementation "mysticdrew:common-networking-neoforge:1.0.4-1.20.2"
     compileOnly project(":common")
+		
+    jarJar group: 'mysticdrew', name: 'common-networking-neoforge', version: '[1.0.1, 5.0.0)'
 }
 
 // NeoGradle compiles the game, but we don't want to add our common code to the game's code
@@ -57,4 +62,12 @@ tasks.named("sourcesJar", Jar) {
 
 tasks.withType(ProcessResources).matching(notNeoTask).configureEach {
     from project(":common").sourceSets.main.resources
+}
+
+tasks.jarJar.configure {
+    archiveClassifier.set('neoforge')
+}
+
+tasks.named("build").configure {
+    dependsOn("jarJar")
 }
