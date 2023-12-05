@@ -50,7 +50,7 @@ public class PingHandlerHelper {
     }
 
     public static void translateWorldPing(PoseStack poseStack, Matrix4f projectionMatrix) {
-        if (ACTIVE_PINGS.isEmpty()) return;
+        if (ACTIVE_PINGS.isEmpty() || ACTIVE_PINGS.contains(null)) return;
         Minecraft mc = Minecraft.getInstance();
         Camera camera = mc.getBlockEntityRenderDispatcher().camera;
         Vec3 cameraPos = camera.getPosition();
@@ -58,7 +58,8 @@ public class PingHandlerHelper {
         Frustum clippingHelper = new Frustum(poseStack.last().pose(), projectionMatrix);
         clippingHelper.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-        for (PingWrapper ping : ACTIVE_PINGS) {
+        ACTIVE_PINGS.forEach(ping -> {
+
             double px = ping.pos.getX() + 0.5D - cameraPos.x();
             double py = ping.pos.getY() + 0.5D - cameraPos.y();
             double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
@@ -73,7 +74,7 @@ public class PingHandlerHelper {
                 ping.isOffscreen = true;
                 translatePingCoordinates(px, py, pz, ping);
             }
-        }
+        });
     }
 
     public static void renderPingOffscreen() {
@@ -231,9 +232,9 @@ public class PingHandlerHelper {
         FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
         FloatBuffer projection = BufferUtils.createFloatBuffer(16);
 
-        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelView);
-        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
-        GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
+        //GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelView);
+        //GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+        //GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
         if (GLUUtils.gluProject((float) px, (float) py, (float) pz, modelView, projection, viewport, screenCoords)) {
             ping.screenX = screenCoords.get(0);
