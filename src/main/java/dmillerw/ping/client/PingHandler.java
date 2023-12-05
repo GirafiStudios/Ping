@@ -61,28 +61,30 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (ACTIVE_PINGS.isEmpty()) return;
-        Minecraft mc = Minecraft.getInstance();
-        Camera camera = mc.getBlockEntityRenderDispatcher().camera;
-        Vec3 cameraPos = camera.getPosition();
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+            if (ACTIVE_PINGS.isEmpty()) return;
+            Minecraft mc = Minecraft.getInstance();
+            Camera camera = mc.getBlockEntityRenderDispatcher().camera;
+            Vec3 cameraPos = camera.getPosition();
 
-        Frustum clippingHelper = new Frustum(event.getPoseStack().last().pose(), event.getProjectionMatrix());
-        clippingHelper.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
+            Frustum clippingHelper = new Frustum(event.getPoseStack().last().pose(), event.getProjectionMatrix());
+            clippingHelper.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-        for (PingWrapper ping : ACTIVE_PINGS) {
-            double px = ping.pos.getX() + 0.5D - cameraPos.x();
-            double py = ping.pos.getY() + 0.5D - cameraPos.y();
-            double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
+            for (PingWrapper ping : ACTIVE_PINGS) {
+                double px = ping.pos.getX() + 0.5D - cameraPos.x();
+                double py = ping.pos.getY() + 0.5D - cameraPos.y();
+                double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
 
-            if (clippingHelper.isVisible(ping.getAABB())) {
-                ping.isOffscreen = false;
-                if (Config.VISUAL.blockOverlay.get()) {
-                    renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), event.getPoseStack(), ping);
+                if (clippingHelper.isVisible(ping.getAABB())) {
+                    ping.isOffscreen = false;
+                    if (Config.VISUAL.blockOverlay.get()) {
+                        renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), event.getPoseStack(), ping);
+                    }
+                    renderPing(px, py, pz, event.getPoseStack(), camera, ping);
+                } else {
+                    ping.isOffscreen = true;
+                    translatePingCoordinates(px, py, pz, ping);
                 }
-                renderPing(px, py, pz, event.getPoseStack(), camera, ping);
-            } else {
-                ping.isOffscreen = true;
-                translatePingCoordinates(px, py, pz, ping);
             }
         }
     }
