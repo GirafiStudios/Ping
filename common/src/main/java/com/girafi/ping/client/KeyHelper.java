@@ -10,8 +10,6 @@ import org.lwjgl.glfw.GLFW;
 public class KeyHelper {
 
     public static void onTick() {
-        PingHandlerHelper.pingTimer();
-
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.level == null) {

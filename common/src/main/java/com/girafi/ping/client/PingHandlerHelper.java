@@ -25,17 +25,17 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class PingHandlerHelper {
     public static final ResourceLocation TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/ping.png");
-    private static final List<PingWrapper> ACTIVE_PINGS = new ArrayList<>();
+    private static final List<PingWrapper> ACTIVE_PINGS = Collections.synchronizedList(new ArrayList<>());
 
     public static void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
@@ -162,16 +162,18 @@ public class PingHandlerHelper {
     }
 
     public static void pingTimer() {
-        Iterator<PingWrapper> iterator = ACTIVE_PINGS.iterator();
-        while (iterator.hasNext()) {
-            PingWrapper pingWrapper = iterator.next();
-            if (pingWrapper.animationTimer > 0) {
-                pingWrapper.animationTimer -= 5;
-            }
-            pingWrapper.timer--;
+        synchronized (ACTIVE_PINGS) {
+            Iterator<PingWrapper> iterator = ACTIVE_PINGS.iterator();
+            while (iterator.hasNext()) {
+                PingWrapper pingWrapper = iterator.next();
+                if (pingWrapper.animationTimer > 0) {
+                    pingWrapper.animationTimer -= 5;
+                }
+                pingWrapper.timer--;
 
-            if (pingWrapper.timer <= 0) {
-                iterator.remove();
+                if (pingWrapper.timer <= 0) {
+                    iterator.remove();
+                }
             }
         }
     }
