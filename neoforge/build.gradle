@@ -64,10 +64,6 @@ tasks.withType(ProcessResources).matching(notNeoTask).configureEach {
     from project(":common").sourceSets.main.resources
 }
 
-tasks.jarJar.configure {
-    archiveClassifier.set('neoforge')
-}
-
 tasks.named("build").configure {
     dependsOn("jarJar")
 }

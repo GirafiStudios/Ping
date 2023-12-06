@@ -22,14 +22,8 @@ dependencies {
     include "mysticdrew:common-networking-fabric:${common_networking}-${minecraft_version}"
 }
 
-remapJar {
-    archiveClassifier.set("fabric")
-}
-
 loom {
-    if (project(":common").file("src/main/resources/${mod_id}.accesswidener").exists()) {
-        accessWidenerPath.set(project(":common").file("src/main/resources/${mod_id}.accesswidener"))
-    }
+    accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener")
     mixin {
         defaultRefmapName.set("${mod_id}.refmap.json")
     }

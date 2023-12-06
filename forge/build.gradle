@@ -83,10 +83,6 @@ tasks.named("sourcesJar", Jar) {
     from(project(":common").sourceSets.main.allSource)
 }
 
-tasks.jarJar.configure {
-    archiveClassifier.set('forge')
-}
-
 processResources {
     from project(":common").sourceSets.main.resources
 }
