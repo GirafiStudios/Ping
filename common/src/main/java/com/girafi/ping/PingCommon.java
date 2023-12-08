@@ -21,5 +21,4 @@ public class PingCommon {
     public static TempConfig config() {
         return config;
     }
-
 }

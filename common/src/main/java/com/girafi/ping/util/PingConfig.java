@@ -1,18 +1,18 @@
 //package com.girafi.ping.util;
 //
-//import net.minecraftforge.common.ForgeConfigSpec;
+//import net.neoforged.neoforge.common.ModConfigSpec;
 //
-//public class Config {
-//    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+//public class PingConfig {
+//    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 //    public static final General GENERAL = new General(BUILDER);
 //    public static final Visual VISUAL = new Visual(BUILDER);
 //
 //    public static class General {
-//        public ForgeConfigSpec.DoubleValue pingAcceptDistance;
-//        public ForgeConfigSpec.IntValue pingDuration;
-//        public ForgeConfigSpec.BooleanValue sound;
+//        public ModConfigSpec.DoubleValue pingAcceptDistance;
+//        public ModConfigSpec.IntValue pingDuration;
+//        public ModConfigSpec.BooleanValue sound;
 //
-//        General(ForgeConfigSpec.Builder builder) {
+//        General(ModConfigSpec.Builder builder) {
 //            builder.push("general");
 //            pingAcceptDistance = builder
 //                    .comment("Maximum distance a Ping can be from you and still be received")
@@ -31,13 +31,13 @@
 //    }
 //
 //    public static class Visual {
-//        public ForgeConfigSpec.IntValue pingR;
-//        public ForgeConfigSpec.IntValue pingG;
-//        public ForgeConfigSpec.IntValue pingB;
-//        public ForgeConfigSpec.BooleanValue blockOverlay;
-//        public ForgeConfigSpec.BooleanValue menuBackground;
+//        public ModConfigSpec.IntValue pingR;
+//        public ModConfigSpec.IntValue pingG;
+//        public ModConfigSpec.IntValue pingB;
+//        public ModConfigSpec.BooleanValue blockOverlay;
+//        public ModConfigSpec.BooleanValue menuBackground;
 //
-//        Visual(ForgeConfigSpec.Builder builder) {
+//        Visual(ModConfigSpec.Builder builder) {
 //            builder.push("visual");
 //            blockOverlay = builder
 //                    .comment("Whether to render a colored overlay on the Pinged block")
@@ -61,5 +61,5 @@
 //        }
 //    }
 //
-//    public static final ForgeConfigSpec spec = BUILDER.build();
+//    public static final ModConfigSpec spec = BUILDER.build();
 //}
