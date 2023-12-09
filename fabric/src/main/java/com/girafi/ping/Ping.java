@@ -4,20 +4,20 @@ import com.girafi.ping.client.KeyHelper;
 import com.girafi.ping.client.PingHandlerHelper;
 import com.girafi.ping.client.PingKeybinds;
 import com.girafi.ping.client.gui.PingSelectGui;
-import commonnetwork.CommonNetworkMod;
-import commonnetwork.networking.FabricNetworkHandler;
-import commonnetwork.networking.data.Side;
-import net.fabricmc.api.ClientModInitializer;
+import com.girafi.ping.util.PingConfig;
+import fuzs.forgeconfigapiport.api.config.v3.ForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.neoforged.fml.config.ModConfig;
 
-public class Ping implements ModInitializer {
+public class Ping implements ModInitializer { //TODO Render Ping Offscreen
 
     @Override
     public void onInitialize() {
-        PingCommon.loadCommon(FabricLoader.getInstance().getConfigDir());
+        PingCommon.loadCommon();
+        ForgeConfigRegistry.INSTANCE.register(Constants.MOD_ID, ModConfig.Type.COMMON, PingConfig.spec);
 
         //Register keybinds
         KeyBindingHelper.registerKeyBinding(PingKeybinds.KEY_BINDING);
@@ -35,6 +35,10 @@ public class Ping implements ModInitializer {
             if ((mc.level == null || mc.isPaused()) && PingSelectGui.active) {
                 PingSelectGui.deactivate();
             }
+        });
+
+        WorldRenderEvents.AFTER_TRANSLUCENT.register((renderContext) -> {
+            PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.projectionMatrix());
         });
     }
 }

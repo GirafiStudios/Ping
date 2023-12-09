@@ -6,8 +6,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
 
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
 public class PingHandler {

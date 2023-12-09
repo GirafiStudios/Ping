@@ -1,13 +1,12 @@
 package com.girafi.ping.client;
 
 import com.girafi.ping.Constants;
-import com.girafi.ping.PingCommon;
-import com.girafi.ping.client.util.GLUUtils;
 import com.girafi.ping.client.util.PingRenderHelper;
 import com.girafi.ping.client.util.VertexHelper;
 import com.girafi.ping.data.PingType;
 import com.girafi.ping.data.PingWrapper;
 import com.girafi.ping.network.packet.ServerBroadcastPing;
+import com.girafi.ping.util.PingConfig;
 import com.girafi.ping.util.PingSounds;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -27,10 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,13 +38,13 @@ public class PingHandlerHelper {
 
     public static void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= PingCommon.config().pingAcceptDistance) {
-            if (PingCommon.config().playPingSound) {
+        if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= PingConfig.GENERAL.pingAcceptDistance.get()) {
+            if (PingConfig.GENERAL.sound.get()) {
                 synchronized (PingSounds.BLOOP.get()) { //Workaround for crash when playing a lot of ping "bloop" sounds in rapid succession
                     mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP.get(), SoundSource.PLAYERS, 0.25F, 1.0F, mc.player.getRandom(), packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
                 }
             }
-            packet.ping.timer = PingCommon.config().pingDuration;
+            packet.ping.timer = PingConfig.GENERAL.pingDuration.get();
             ACTIVE_PINGS.add(packet.ping);
         }
     }
@@ -71,7 +67,7 @@ public class PingHandlerHelper {
 
                 if (clippingHelper.isVisible(ping.getAABB())) {
                     ping.isOffscreen = false;
-                    if (PingCommon.config().renderBlockOverlay) {
+                    if (PingConfig.VISUAL.blockOverlay.get()) {
                         renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), poseStack, ping);
                     }
                     renderPing(px, py, pz, poseStack, camera, ping);

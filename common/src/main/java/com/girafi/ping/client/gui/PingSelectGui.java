@@ -1,10 +1,10 @@
 package com.girafi.ping.client.gui;
 
-import com.girafi.ping.PingCommon;
 import com.girafi.ping.client.ClientHandlerBase;
 import com.girafi.ping.client.PingHandlerHelper;
 import com.girafi.ping.client.PingKeybinds;
 import com.girafi.ping.data.PingType;
+import com.girafi.ping.util.PingConfig;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
@@ -78,7 +78,7 @@ public class PingSelectGui extends Screen {
     @Override
     public void renderBackground(@Nonnull GuiGraphics guiGraphics, int i, int i1, float i2) {
         // Menu Background
-        if (PingCommon.config().renderMenuBackground) {
+        if (PingConfig.VISUAL.menuBackground.get()) {
             int halfWidth = (ITEM_SIZE * 4) - (ITEM_PADDING * 4);
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
             int backgroundX = minecraft.getWindow().getGuiScaledWidth() / 2 - halfWidth;
@@ -133,9 +133,9 @@ public class PingSelectGui extends Screen {
             // Button Background
             bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             if (mouseIn) {
-                r = PingCommon.config().pingColorRed;
-                g = PingCommon.config().pingColorGreen;
-                b = PingCommon.config().pingColorBlue;
+                r = PingConfig.VISUAL.pingR.get();
+                g = PingConfig.VISUAL.pingG.get();
+                b = PingConfig.VISUAL.pingB.get();
             }
             bufferBuilder.vertex(drawX + min, drawY + max, 0).uv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
             bufferBuilder.vertex(drawX + max, drawY + max, 0).uv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();

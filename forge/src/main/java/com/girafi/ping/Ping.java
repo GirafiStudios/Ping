@@ -1,14 +1,16 @@
 package com.girafi.ping;
 
+import com.girafi.ping.util.PingConfig;
 import com.girafi.ping.util.PingSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 
 @Mod(value = Constants.MOD_ID)
@@ -19,8 +21,9 @@ public class Ping {
         final IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setupCommon);
         eventBus.addListener(this::setupClient);
+        PingCommon.loadCommon();
 
-        PingCommon.loadCommon(FMLPaths.CONFIGDIR.get());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
 
         registerDeferredRegistries(eventBus);
         SOUND_EVENT_DEFERRED.register("bloop", PingSounds.BLOOP);

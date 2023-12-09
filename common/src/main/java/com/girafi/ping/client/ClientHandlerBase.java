@@ -1,9 +1,9 @@
 package com.girafi.ping.client;
 
-import com.girafi.ping.PingCommon;
 import com.girafi.ping.data.PingType;
 import com.girafi.ping.data.PingWrapper;
 import com.girafi.ping.network.packet.ClientSendPing;
+import com.girafi.ping.util.PingConfig;
 import commonnetwork.api.Dispatcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -35,7 +35,7 @@ public class ClientHandlerBase {
     public static void sendPing(PingType type) {
         BlockHitResult raytraceBlock = raytrace(Minecraft.getInstance().player, 50);
         if (raytraceBlock.getType() == HitResult.Type.BLOCK) {
-            sendPing(raytraceBlock, new Color(PingCommon.config().pingColorRed, PingCommon.config().pingColorGreen, PingCommon.config().pingColorBlue).getRGB(), type);
+            sendPing(raytraceBlock, new Color(PingConfig.VISUAL.pingR.get(), PingConfig.VISUAL.pingG.get(), PingConfig.VISUAL.pingB.get()).getRGB(), type);
         }
     }
 }

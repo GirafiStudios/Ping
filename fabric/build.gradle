@@ -18,8 +18,9 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     implementation project(":common")
 	
+	modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port}"
 	modApi "mysticdrew:common-networking-fabric:${common_networking}-${minecraft_version}"
-    include "mysticdrew:common-networking-fabric:${common_networking}-${minecraft_version}"
+    modImplementation "mysticdrew:common-networking-fabric:${common_networking}-${minecraft_version}"
 }
 
 loom {
