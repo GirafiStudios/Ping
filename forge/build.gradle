@@ -68,12 +68,8 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":common")
 
-	implementation fg.deobf("mysticdrew:common-networking-forge:${common_networking}-${minecraft_version}")	
+    implementation fg.deobf("mysticdrew:common-networking-forge:${common_networking}-${minecraft_version}")	
     jarJar group: 'mysticdrew', name: 'common-networking-neoforge', version: '[1.0.1, 5.0.0)'
-}
-
-reobf {
-    jarJar {}
 }
 
 tasks.withType(JavaCompile).configureEach {
