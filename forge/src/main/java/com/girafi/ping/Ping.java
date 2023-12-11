@@ -21,7 +21,7 @@ public class Ping {
         final IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setupCommon);
         eventBus.addListener(this::setupClient);
-        PingCommon.loadCommon();
+        PingCommon.registerPackets();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
 
