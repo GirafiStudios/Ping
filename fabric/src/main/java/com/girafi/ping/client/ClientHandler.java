@@ -40,10 +40,10 @@ public class ClientHandler implements ClientModInitializer {
         });
 
         WorldRenderEvents.AFTER_TRANSLUCENT.register((renderContext) -> {
-            PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.projectionMatrix());
+            PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.projectionMatrix(), renderContext.tickDelta());
         });
         HudRenderCallback.EVENT.register((guiGraphics, delta) -> {
-            PingHandlerHelper.renderPingOffscreen(guiGraphics.pose());
+            PingHandlerHelper.renderPingOffscreen(guiGraphics);
         });
     }
 }

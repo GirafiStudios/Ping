@@ -13,6 +13,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -22,10 +23,12 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +42,8 @@ public class PingHandlerHelper {
     public static void onPingPacket(ServerBroadcastPing packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && Mth.sqrt((float) mc.player.distanceToSqr(packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ())) <= PingConfig.GENERAL.pingAcceptDistance.get()) {
-            if (PingConfig.GENERAL.sound.get()) {
-                synchronized (PingSounds.BLOOP.get()) { //Workaround for crash when playing a lot of ping "bloop" sounds in rapid succession
+            synchronized (PingSounds.BLOOP.get()) { //Workaround for crash when playing a lot of ping "bloop" sounds in rapid succession
+                if (PingConfig.GENERAL.sound.get()) {
                     mc.getSoundManager().play(new SimpleSoundInstance(PingSounds.BLOOP.get(), SoundSource.PLAYERS, 0.25F, 1.0F, mc.player.getRandom(), packet.ping.pos.getX(), packet.ping.pos.getY(), packet.ping.pos.getZ()));
                 }
             }
@@ -49,7 +52,7 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void translateWorldPing(PoseStack poseStack, Matrix4f projectionMatrix) {
+    public static void translateWorldPing(PoseStack poseStack, Matrix4f projectionMatrix, float partialTicks) {
         if (ACTIVE_PINGS.isEmpty() || ACTIVE_PINGS.contains(null)) return;
         Minecraft mc = Minecraft.getInstance();
         Camera camera = mc.getBlockEntityRenderDispatcher().camera;
@@ -73,15 +76,17 @@ public class PingHandlerHelper {
                     renderPing(px, py, pz, poseStack, camera, ping);
                 } else {
                     ping.isOffscreen = true;
-                    translatePingCoordinates(px, py, pz, ping);
+                    translatePingCoordinates(mc, ping, partialTicks);
                 }
             });
         }
     }
 
-    public static void renderPingOffscreen(PoseStack poseStack) {
+    public static void renderPingOffscreen(GuiGraphics guiGraphics) {
         synchronized (ACTIVE_PINGS) {
             Minecraft mc = Minecraft.getInstance();
+            PoseStack poseStack = guiGraphics.pose();
+
             for (PingWrapper ping : ACTIVE_PINGS) {
                 if (!ping.isOffscreen || mc.screen != null || mc.getDebugOverlay().showDebugScreen()) {
                     continue;
@@ -100,9 +105,8 @@ public class PingHandlerHelper {
                 pingX -= width * 0.5D;
                 pingY -= height * 0.5D;
 
-                //TODO Fix that player rotation is not being taken into account. Been an issue since the creation of the mod
                 double angle = Math.atan2(pingY, pingX);
-                angle += (Math.toRadians(90));
+                angle += (Math.toRadians(mc.gameRenderer.fov));
                 double cos = Math.cos(angle);
                 double sin = Math.sin(angle);
                 double m = cos / sin;
@@ -231,8 +235,32 @@ public class PingHandlerHelper {
         poseStack.popPose();
     }
 
-    public static void translatePingCoordinates(double px, double py, double pz, PingWrapper ping) {
-            ping.screenX = 0;
-            ping.screenY = 0;
+    public static void translatePingCoordinates(Minecraft mc, PingWrapper ping, float partialTicks) { //Works-ish, but is not perfect
+        Player player = mc.player;
+        Camera camera = mc.gameRenderer.getMainCamera();
+        int blockX = ping.pos.getX();
+        int blockZ = ping.pos.getY();
+
+        if (player != null) {
+            Vector2f hP = new Vector2f(blockX, blockZ);
+            Vector2f vP = new Vector2f(hP.length(), ping.pos.getY());
+
+            Vector2f playerEyePos = new Vector2f((float) player.getEyePosition().x, (float) player.getEyePosition(partialTicks).z);
+
+            Vector2f lookAngleH = new Vector2f(camera.getLookVector().x, camera.getLookVector().z);
+            float angleBetweenVecH = lookAngleH.angle(hP.sub(playerEyePos));
+
+            Vector2f lookAngleV = new Vector2f(camera.getLookVector().x, camera.getLookVector().z);
+            float angleBetweenVecV = lookAngleV.angle(vP.sub(playerEyePos));
+
+            float fov = mc.gameRenderer.fov;
+            double clipH = Math.sin(angleBetweenVecH) / Math.sin(Math.toRadians(fov));
+            double clipV = Math.sin(angleBetweenVecV) / Math.sin(Math.toRadians(fov));
+            double screenCoordH = (clipH + 1) * (mc.getWindow().getGuiScaledWidth() * 0.5D);
+            double screenCoordV = (clipV + 1) * (mc.getWindow().getGuiScaledHeight() * 0.5D);
+
+            ping.screenX = screenCoordH;
+            ping.screenY = screenCoordV;
+        }
     }
 }

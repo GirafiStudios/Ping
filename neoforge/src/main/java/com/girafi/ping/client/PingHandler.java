@@ -13,12 +13,12 @@ public class PingHandler {
     @SubscribeEvent
     public static void onRenderWorld(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
-            PingHandlerHelper.translateWorldPing(event.getPoseStack(), event.getProjectionMatrix());
+            PingHandlerHelper.translateWorldPing(event.getPoseStack(), event.getProjectionMatrix(), event.getPartialTick());
         }
     }
 
     @SubscribeEvent
     public static void renderPingOffscreen(RenderGuiOverlayEvent.Post event) {
-            PingHandlerHelper.renderPingOffscreen(event.getGuiGraphics().pose());
+        PingHandlerHelper.renderPingOffscreen(event.getGuiGraphics());
     }
 }

@@ -11,8 +11,8 @@ public class PingWrapper {
     public final int color;
     public final PingType type;
     public boolean isOffscreen = false;
-    public float screenX;
-    public float screenY;
+    public double screenX;
+    public double screenY;
     public int animationTimer = 20;
     public int timer;
 
