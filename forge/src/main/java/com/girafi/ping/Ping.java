@@ -23,7 +23,7 @@ public class Ping {
         eventBus.addListener(this::setupClient);
         PingCommon.registerPackets();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
+        //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PingConfig.spec); //Uncomment when building
 
         registerDeferredRegistries(eventBus);
         SOUND_EVENT_DEFERRED.register("bloop", PingSounds.BLOOP);
