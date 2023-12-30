@@ -16,11 +16,11 @@ public class PingRenderType extends RenderType {
 
     public static RenderType getPingOverlay() {
         CompositeState renderTypeState = CompositeState.builder().setShaderState(RENDER_TYPE_PING).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setTextureState(BLOCK_SHEET_MIPPED).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
-        return create("ping_overlay", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, RenderType.MEDIUM_BUFFER_SIZE, true, true, renderTypeState);
+        return create("ping_overlay", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, RenderType.TRANSIENT_BUFFER_SIZE, true, true, renderTypeState);
     }
 
     public static RenderType getPingIcon(ResourceLocation location) {
         CompositeState renderTypeState = CompositeState.builder().setShaderState(RENDER_TYPE_PING).setTextureState(new TextureStateShard(location, false, true)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setLayeringState(DISABLE_DEPTH).createCompositeState(true);
-        return create("ping_icon", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, RenderType.MEDIUM_BUFFER_SIZE, true, true, renderTypeState);
+        return create("ping_icon", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, RenderType.TRANSIENT_BUFFER_SIZE, true, true, renderTypeState);
     }
 }
