@@ -28,7 +28,8 @@
         "fabric-api": "*",
         "minecraft": "~1.20.4",
         "java": ">=17",
-        "fabric-key-binding-api-v1": "*"
+        "fabric-key-binding-api-v1": "*",
+        "forgeconfigapiport": ">=20.4.0"
     },
     "suggests": {
         "another-mod": "*"
