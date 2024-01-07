@@ -17,7 +17,7 @@ public class KeyHelper {
         }
 
         long handle = Minecraft.getInstance().getWindow().getWindow();
-        int keycode = PingKeybinds.KEY_BINDING.getDefaultKey().getValue();
+        int keycode = PingKeybinds.KEY_BINDING.key.getValue();
         if (keycode >= 0) {
             boolean keyPressed = (PingKeybinds.KEY_BINDING.matchesMouse(keycode) ? GLFW.glfwGetMouseButton(handle, keycode) == 1 : InputConstants.isKeyDown(handle, keycode));
 
