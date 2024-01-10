@@ -76,6 +76,8 @@ dependencies {
 
     implementation fg.deobf("mysticdrew:common-networking-forge:${common_networking}-${minecraft_version}")	
     jarJar group: 'mysticdrew', name: 'common-networking-neoforge', version: '[1.0.1, 5.0.0)'
+    implementation fg.deobf("fuzs.forgeconfigapiport:forgeconfigapiport-forge:${forge_config_api_port}")
+    jarJar group: 'fuzs.forgeconfigapiport', name: 'forgeconfigapiport-forge', version: '[20.4.1, 30.0.0)'
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -2,6 +2,7 @@ package com.girafi.ping;
 
 import com.girafi.ping.util.PingConfig;
 import com.girafi.ping.util.PingSounds;
+import fuzs.forgeconfigapiport.forge.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,7 +24,7 @@ public class Ping {
         eventBus.addListener(this::setupClient);
         PingCommon.registerPackets();
 
-        //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PingConfig.spec); //Uncomment when building
+        NeoForgeConfigRegistry.INSTANCE.register(ModConfig.Type.COMMON, PingConfig.spec);
 
         registerDeferredRegistries(eventBus);
         SOUND_EVENT_DEFERRED.register("bloop", PingSounds.BLOOP);
