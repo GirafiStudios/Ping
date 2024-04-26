@@ -16,7 +16,8 @@ public class ClientSendPing {
     public static final ResourceLocation CHANNEL = new ResourceLocation(Constants.MOD_ID, "client_send_ping");
     private PingWrapper ping;
 
-    public ClientSendPing() {}
+    public ClientSendPing() {
+    }
 
     public ClientSendPing(PingWrapper ping) {
         this.ping = ping;
@@ -39,7 +40,7 @@ public class ClientSendPing {
         if (playerMP != null) {
             for (Player player : playerMP.level().players()) {
                 if (player instanceof ServerPlayer) {
-                    Dispatcher.sendToServer(new ServerBroadcastPing(ctx.message().getPing()));
+                    Dispatcher.sendToClient(new ServerBroadcastPing(ctx.message().getPing()), playerMP);
                 }
             }
         }
