@@ -2,12 +2,12 @@ package com.girafi.ping.network.packet;
 
 import com.girafi.ping.Constants;
 import com.girafi.ping.data.PingWrapper;
+import com.girafi.ping.util.PingConfig;
 import commonnetwork.api.Dispatcher;
 import commonnetwork.networking.data.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 /**
  * Sent from the Client, handled on the Server
@@ -38,11 +38,7 @@ public class ClientSendPing {
     public static void handle(PacketContext<ClientSendPing> ctx) {
         ServerPlayer playerMP = ctx.sender();
         if (playerMP != null) {
-            for (Player player : playerMP.level().players()) {
-                if (player instanceof ServerPlayer) {
-                    Dispatcher.sendToClient(new ServerBroadcastPing(ctx.message().getPing()), playerMP);
-                }
-            }
+            Dispatcher.sendToClientsInRange(new ServerBroadcastPing(ctx.message().getPing()), playerMP.serverLevel(), ctx.message().getPing().pos, PingConfig.GENERAL.pingAcceptDistance.get());
         }
     }
 }
