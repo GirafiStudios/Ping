@@ -47,8 +47,13 @@ dependencies {
     jarJar group: 'mysticdrew', name: 'common-networking-neoforge', version: '[1.0.10, 5.0.0)'
 }
 
-tasks.jarJar.configure {
-    archiveClassifier.set("")
+tasks.named('jar') {
+    archiveClassifier = "slim"
+}
+
+
+tasks.named('jarJar') {
+    archiveClassifier = ''
 }
 
 tasks.named("build").configure {

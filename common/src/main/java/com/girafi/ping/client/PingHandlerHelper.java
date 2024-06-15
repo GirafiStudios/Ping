@@ -67,8 +67,6 @@ public class PingHandlerHelper {
                 double py = ping.pos.getY() + 0.5D - cameraPos.y();
                 double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
 
-                System.out.println(ping.getAABB());
-
                 if (clippingHelper.isVisible(ping.getAABB())) {
                     ping.isOffscreen = false;
                     if (PingConfig.VISUAL.blockOverlay.get()) {
