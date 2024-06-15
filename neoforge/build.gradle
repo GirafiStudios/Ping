@@ -44,7 +44,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
 
     implementation "mysticdrew:common-networking-neoforge:${common_networking}-${minecraft_version}"		
-    jarJar group: 'mysticdrew', name: 'common-networking-neoforge', version: '[1.0.10, 5.0.0)'
+    jarJar group: 'mysticdrew', name: 'common-networking-neoforge', version: "${common_networking}-${minecraft_version}"
 }
 
 tasks.named('jar') {
