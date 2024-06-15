@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
  * Sent from the Server, handled on the Client
  */
 public class ServerBroadcastPing {
-    public static final ResourceLocation CHANNEL = new ResourceLocation(Constants.MOD_ID, "server_broadcast_ping");
+    public static final ResourceLocation CHANNEL = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "server_broadcast_ping");
     public PingWrapper ping;
 
     public ServerBroadcastPing() {

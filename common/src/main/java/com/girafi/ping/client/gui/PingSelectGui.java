@@ -103,7 +103,7 @@ public class PingSelectGui extends Screen {
 
         Minecraft mc = Minecraft.getInstance();
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        BufferBuilder bufferBuilder;
 
         poseStack.pushPose();
         RenderSystem.setShaderTexture(0, PingHandlerHelper.TEXTURE);
@@ -131,25 +131,28 @@ public class PingSelectGui extends Screen {
             int b = 255;
 
             // Button Background
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             if (mouseIn) {
                 r = PingConfig.VISUAL.pingR.get();
                 g = PingConfig.VISUAL.pingG.get();
                 b = PingConfig.VISUAL.pingB.get();
             }
-            bufferBuilder.vertex(drawX + min, drawY + max, 0).uv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
-            bufferBuilder.vertex(drawX + max, drawY + max, 0).uv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).color(r, g, b, 255).endVertex();
-            bufferBuilder.vertex(drawX + max, drawY + min, 0).uv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
-            bufferBuilder.vertex(drawX + min, drawY + min, 0).uv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).color(r, g, b, 255).endVertex();
-            tessellator.end();
+            bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            bufferBuilder.addVertex(drawX + min, drawY + max, 0).setUv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).setColor(r, g, b, 255);
+            bufferBuilder.addVertex(drawX + max, drawY + max, 0).setUv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).setColor(r, g, b, 255);
+            bufferBuilder.addVertex(drawX + max, drawY + min, 0).setUv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).setColor(r, g, b, 255);
+            bufferBuilder.addVertex(drawX + min, drawY + min, 0).setUv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).setColor(r, g, b, 255);
+
+            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
 
             // Button Icon
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.vertex(drawX + min, drawY + max, 0).uv(type.getMinU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.vertex(drawX + max, drawY + max, 0).uv(type.getMaxU(), type.getMaxV()).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.vertex(drawX + max, drawY + min, 0).uv(type.getMaxU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
-            bufferBuilder.vertex(drawX + min, drawY + min, 0).uv(type.getMinU(), type.getMinV()).color(255, 255, 255, 255).endVertex();
-            tessellator.end();
+            bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+
+            bufferBuilder.addVertex(drawX + min, drawY + max, 0).setUv(type.getMinU(), type.getMaxV()).setColor(255, 255, 255, 255);
+            bufferBuilder.addVertex(drawX + max, drawY + max, 0).setUv(type.getMaxU(), type.getMaxV()).setColor(255, 255, 255, 255);
+            bufferBuilder.addVertex(drawX + max, drawY + min, 0).setUv(type.getMaxU(), type.getMinV()).setColor(255, 255, 255, 255);
+            bufferBuilder.addVertex(drawX + min, drawY + min, 0).setUv(type.getMinU(), type.getMinV()).setColor(255, 255, 255, 255);
+
+            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
         }
         poseStack.popPose();
     }

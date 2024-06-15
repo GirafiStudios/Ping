@@ -26,7 +26,7 @@ public class ClientHandler implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_GOTO);
 
         CoreShaderRegistrationCallback.EVENT.register((context -> {
-            context.register(new ResourceLocation(Constants.MOD_ID, "rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR, program -> {
+            context.register(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR, program -> {
                 ClientHandlerBase.rendertypePing = program;
             });
         }));
@@ -40,7 +40,7 @@ public class ClientHandler implements ClientModInitializer {
         });
 
         WorldRenderEvents.AFTER_TRANSLUCENT.register((renderContext) -> {
-            PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.projectionMatrix(), renderContext.tickDelta());
+            PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.frustum(), renderContext.tickCounter().getGameTimeDeltaTicks());
         });
         HudRenderCallback.EVENT.register((guiGraphics, delta) -> {
             PingHandlerHelper.renderPingOffscreen(guiGraphics);

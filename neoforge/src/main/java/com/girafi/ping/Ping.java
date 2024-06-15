@@ -5,7 +5,7 @@ import com.girafi.ping.util.PingSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -16,12 +16,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class Ping {
     public static final DeferredRegister<SoundEvent> SOUND_EVENT_DEFERRED = DeferredRegister.create(Registries.SOUND_EVENT, Constants.MOD_ID);
 
-    public Ping(IEventBus eventBus) {
+    public Ping(ModContainer modContainer, IEventBus eventBus) {
         eventBus.addListener(this::setupCommon);
         eventBus.addListener(this::setupClient);
         PingCommon.registerPackets();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
+        modContainer.registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
 
         registerDeferredRegistries(eventBus);
         SOUND_EVENT_DEFERRED.register("bloop", PingSounds.BLOOP);

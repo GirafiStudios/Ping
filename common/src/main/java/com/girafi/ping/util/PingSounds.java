@@ -16,7 +16,7 @@ public class PingSounds {
      * @return The Sound that was registered
      */
     public static Supplier<SoundEvent> registerSound(String name) {
-        ResourceLocation resourceLocation = new ResourceLocation(Constants.MOD_ID, name);
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name);
         SoundEvent sound = SoundEvent.createVariableRangeEvent(resourceLocation);
         return () -> sound;
     }

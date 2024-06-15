@@ -3,7 +3,6 @@ package com.girafi.ping;
 import com.girafi.ping.network.packet.ClientSendPing;
 import com.girafi.ping.network.packet.ServerBroadcastPing;
 import commonnetwork.CommonNetworkMod;
-import commonnetwork.api.Network;
 
 public class PingCommon {
 
