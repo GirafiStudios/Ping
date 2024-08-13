@@ -12,7 +12,7 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             PingHandlerHelper.translateWorldPing(event.getPoseStack(), event.getFrustum(), event.getRenderTick());
         }
     }
