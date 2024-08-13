@@ -73,7 +73,7 @@ jarJar.enable()
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("mysticdrew:common-networking-forge:${common_networking}-${minecraft_version}")	
+    implementation fg.deobf("mysticdrew:common-networking-forge:${common_networking}-1.21")	
     jarJar group: 'mysticdrew', name: 'common-networking-forge', version: '[1.0.10, 5.0.0)'
     implementation fg.deobf("fuzs.forgeconfigapiport:forgeconfigapiport-forge:${forge_config_api_port}")
     jarJar group: 'fuzs.forgeconfigapiport', name: 'forgeconfigapiport-forge', version: '[21.0.0, 30.0.0)'
