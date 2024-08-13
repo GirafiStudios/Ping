@@ -13,5 +13,18 @@
   "ping.subtitle.bloop": "Ping bloops",
 
   "_comment": "Gui",
-  "ping.pingSelect.title" : "Ping Select"
+  "ping.pingSelect.title" : "Ping Select",
+
+  "_comment": "Config",
+  "ping.configuration.general": "General Settings",
+  "ping.configuration.visual": "Visual Settings",
+  "ping.configuration.pingAcceptDistance" : "Max Allowed Ping Distance",
+  "ping.configuration.pingDuration": "Ping Duration",
+  "ping.configuration.sound": "Play Ping Sound",
+  "ping.configuration.blockOverlay": "Render Ping Block Overlay",
+  "ping.configuration.menuBackground": "Render Ping Menu Background",
+  "ping.configuration.pingColor": "Ping Color",
+  "ping.configuration.pingRed": "Red",
+  "ping.configuration.pingBlue": "Blue",
+  "ping.configuration.pingGreen": "Green"
 }

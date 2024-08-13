@@ -10,6 +10,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(Constants.MOD_ID)
@@ -22,6 +24,7 @@ public class Ping {
         PingCommon.registerPackets();
 
         modContainer.registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         registerDeferredRegistries(eventBus);
         SOUND_EVENT_DEFERRED.register("bloop", PingSounds.BLOOP);
