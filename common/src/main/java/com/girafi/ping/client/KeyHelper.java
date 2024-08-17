@@ -3,11 +3,15 @@ package com.girafi.ping.client;
 import com.girafi.ping.client.gui.PingSelectGui;
 import com.girafi.ping.data.PingType;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyHelper {
+    private static boolean quickPingAlertHeld = false;
+    private static boolean quickPingMineHeld = false;
+    private static boolean quickPingLookHeld = false;
+    private static boolean quickPingGotoHeld = false;
+
 
     public static void onTick() {
         Minecraft mc = Minecraft.getInstance();
@@ -38,18 +42,44 @@ public class KeyHelper {
             PingKeybinds.Helper.lastKeyState = keyPressed;
         }
 
-        if (canSendQuickPing(PingKeybinds.PING_ALERT)) {
-            ClientHandlerBase.sendPing(PingType.ALERT);
-        } else if (canSendQuickPing(PingKeybinds.PING_MINE)) {
-            ClientHandlerBase.sendPing(PingType.MINE);
-        } else if (canSendQuickPing(PingKeybinds.PING_LOOK)) {
-            ClientHandlerBase.sendPing(PingType.LOOK);
-        } else if (canSendQuickPing(PingKeybinds.PING_GOTO)) {
-            ClientHandlerBase.sendPing(PingType.GOTO);
-        }
-    }
+        //ALERT
+        boolean quickPingDownAlert = PingKeybinds.PING_ALERT.isDown();
 
-    private static boolean canSendQuickPing(KeyMapping keyBinding) {
-        return keyBinding.isDown(); //Will continuously be triggered when key is held down due to vanilla issue.
+        if (quickPingDownAlert && !quickPingAlertHeld) {
+            while (PingKeybinds.PING_ALERT.consumeClick()) {
+                ClientHandlerBase.sendPing(PingType.ALERT);
+            }
+        }
+        quickPingAlertHeld = quickPingDownAlert;
+
+        //MINE
+        boolean quickPingDownMine = PingKeybinds.PING_MINE.isDown();
+
+        if (quickPingDownMine && !quickPingMineHeld) {
+            while (PingKeybinds.PING_MINE.consumeClick()) {
+                ClientHandlerBase.sendPing(PingType.MINE);
+            }
+        }
+        quickPingMineHeld = quickPingDownMine;
+
+        //LOOK
+        boolean quickPingDownLook = PingKeybinds.PING_LOOK.isDown();
+
+        if (quickPingDownLook && !quickPingLookHeld) {
+            while (PingKeybinds.PING_LOOK.consumeClick()) {
+                ClientHandlerBase.sendPing(PingType.LOOK);
+            }
+        }
+        quickPingLookHeld = quickPingDownLook;
+
+        //GOTO
+        boolean quickPingDownGoto = PingKeybinds.PING_GOTO.isDown();
+
+        if (quickPingDownGoto && !quickPingGotoHeld) {
+            while (PingKeybinds.PING_GOTO.consumeClick()) {
+                ClientHandlerBase.sendPing(PingType.GOTO);
+            }
+        }
+        quickPingGotoHeld = quickPingDownGoto;
     }
 }
