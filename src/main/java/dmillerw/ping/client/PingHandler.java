@@ -61,7 +61,7 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             if (ACTIVE_PINGS.isEmpty()) return;
             Minecraft mc = Minecraft.getInstance();
             Camera camera = mc.getBlockEntityRenderDispatcher().camera;
