@@ -14,6 +14,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -105,7 +106,7 @@ public class PingHandlerHelper {
                 pingY -= height * 0.5D;
 
                 double angle = Math.atan2(pingY, pingX);
-                angle += (Math.toRadians(mc.gameRenderer.fov));
+                angle += (Math.toRadians(mc.gameRenderer.fovModifier));
                 double cos = Math.cos(angle);
                 double sin = Math.sin(angle);
                 double m = cos / sin;
@@ -132,11 +133,10 @@ public class PingHandlerHelper {
                 poseStack.pushPose();
                 PoseStack.Pose matrixEntry = poseStack.last();
                 poseStack.translate(pingX / 2, pingY / 2, 0);
-                RenderSystem.applyModelViewMatrix();
 
                 Tesselator tesselator = Tesselator.getInstance();
                 BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
                 RenderSystem.setShaderTexture(0, TEXTURE);
                 final Matrix4f matrix4f = matrixEntry.pose();
 
@@ -162,7 +162,6 @@ public class PingHandlerHelper {
                 BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
 
                 poseStack.popPose();
-                RenderSystem.applyModelViewMatrix();
             }
         }
     }
@@ -197,7 +196,7 @@ public class PingHandlerHelper {
         MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
         RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
         VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -223,13 +222,13 @@ public class PingHandlerHelper {
     }
 
     public static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleIcon();
+        //TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleIcon(); //TODO
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
         poseStack.pushPose();
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
-        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
+        //PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
         poseStack.translate(0, 0, 0);
         poseStack.popPose();
     }
@@ -252,7 +251,7 @@ public class PingHandlerHelper {
             Vector2f lookAngleV = new Vector2f(camera.getLookVector().x, camera.getLookVector().z);
             float angleBetweenVecV = lookAngleV.angle(vP.sub(playerEyePos));
 
-            float fov = mc.gameRenderer.fov;
+            float fov = mc.gameRenderer.fovModifier;
             double clipH = Math.sin(angleBetweenVecH) / Math.sin(Math.toRadians(fov));
             double clipV = Math.sin(angleBetweenVecV) / Math.sin(Math.toRadians(fov));
             double screenCoordH = (clipH + 1) * (mc.getWindow().getGuiScaledWidth() * 0.5D);

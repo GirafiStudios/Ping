@@ -6,22 +6,13 @@ import com.girafi.ping.network.packet.ClientSendPing;
 import com.girafi.ping.util.PingConfig;
 import commonnetwork.api.Dispatcher;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Objects;
 
 public class ClientHandlerBase {
-    @Nullable
-    public static ShaderInstance rendertypePing;
-
-    public static ShaderInstance getRenderTypePing() {
-        return Objects.requireNonNull(rendertypePing, "Attempted to call getRenderTypePing before shaders have finished loading.");
-    }
 
     public static BlockHitResult raytrace(Player player, double distance) {
         float eyeHeight = player.getEyeHeight();
