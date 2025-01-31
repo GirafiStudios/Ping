@@ -12,6 +12,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
@@ -78,14 +80,7 @@ public class PingSelectGui extends Screen {
 
     @Override
     public void renderBackground(@Nonnull GuiGraphics guiGraphics, int i, int i1, float i2) {
-        // Menu Background
-        if (PingConfig.VISUAL.menuBackground.get()) {
-            int halfWidth = (ITEM_SIZE * 4) - (ITEM_PADDING * 4);
-            int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
-            int backgroundX = minecraft.getWindow().getGuiScaledWidth() / 2 - halfWidth;
-            int backgroundY = minecraft.getWindow().getGuiScaledHeight() / 4 - halfHeight;
-            guiGraphics.fillGradient(backgroundX, backgroundY, this.width / 2 + halfWidth, ((this.height / 4) + (halfHeight * 2)) - 10, -1072689136, -804253680);
-        }
+        // Don't rent default background
     }
 
     @Override
@@ -95,21 +90,30 @@ public class PingSelectGui extends Screen {
         if (mc != null && mc.level != null && !mc.options.hideGui && !mc.isPaused() && PingSelectGui.active) {
             renderGui(guiGraphics);
             renderText(guiGraphics);
+            renderPingBackground(guiGraphics);
+        }
+    }
+
+    public void renderPingBackground(GuiGraphics guiGraphics) {
+        if (PingConfig.VISUAL.menuBackground.get() && minecraft != null) {
+            System.out.println("RENDER PING BACKGROUND");
+            int halfWidth = (ITEM_SIZE * 4) - (ITEM_PADDING * 4);
+            int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
+            int backgroundX = minecraft.getWindow().getGuiScaledWidth() / 2 - halfWidth;
+            int backgroundY = minecraft.getWindow().getGuiScaledHeight() / 4 - halfHeight;
+            guiGraphics.fillGradient(RenderType.gui(), backgroundX, backgroundY, this.width / 2 + halfWidth, ((this.height / 4) + (halfHeight * 2)) - 10, -1072689136, -804253680, 0);
         }
     }
 
     public static void renderGui(GuiGraphics guiGraphics) {
+        System.out.println("RENDER GUI AKA ICONS");
         int numOfItems = PingType.values().length - 1;
         PoseStack poseStack = guiGraphics.pose();
-
         Minecraft mc = Minecraft.getInstance();
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder;
 
         poseStack.pushPose();
-        RenderSystem.setShaderTexture(0, PingHandlerHelper.TEXTURE);
-        RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
-
+        MultiBufferSource.BufferSource source = mc.renderBuffers().bufferSource();
+        VertexConsumer vertexConsumer = source.getBuffer(RenderType.guiTextured(PingHandlerHelper.TEXTURE));
         final double mouseX = mc.mouseHandler.xpos() * ((double) mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
         final double mouseY = mc.mouseHandler.ypos() * ((double) mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
 
@@ -137,23 +141,16 @@ public class PingSelectGui extends Screen {
                 g = PingConfig.VISUAL.pingG.get();
                 b = PingConfig.VISUAL.pingB.get();
             }
-            bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferBuilder.addVertex(drawX + min, drawY + max, 0).setUv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).setColor(r, g, b, 255);
-            bufferBuilder.addVertex(drawX + max, drawY + max, 0).setUv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).setColor(r, g, b, 255);
-            bufferBuilder.addVertex(drawX + max, drawY + min, 0).setUv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).setColor(r, g, b, 255);
-            bufferBuilder.addVertex(drawX + min, drawY + min, 0).setUv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).setColor(r, g, b, 255);
-
-            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+            vertexConsumer.addVertex(drawX + min, drawY + max, 0).setUv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV()).setColor(r, g, b, 255);
+            vertexConsumer.addVertex(drawX + max, drawY + max, 0).setUv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV()).setColor(r, g, b, 255);
+            vertexConsumer.addVertex(drawX + max, drawY + min, 0).setUv(PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV()).setColor(r, g, b, 255);
+            vertexConsumer.addVertex(drawX + min, drawY + min, 0).setUv(PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV()).setColor(r, g, b, 255);
 
             // Button Icon
-            bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-
-            bufferBuilder.addVertex(drawX + min, drawY + max, 0).setUv(type.getMinU(), type.getMaxV()).setColor(255, 255, 255, 255);
-            bufferBuilder.addVertex(drawX + max, drawY + max, 0).setUv(type.getMaxU(), type.getMaxV()).setColor(255, 255, 255, 255);
-            bufferBuilder.addVertex(drawX + max, drawY + min, 0).setUv(type.getMaxU(), type.getMinV()).setColor(255, 255, 255, 255);
-            bufferBuilder.addVertex(drawX + min, drawY + min, 0).setUv(type.getMinU(), type.getMinV()).setColor(255, 255, 255, 255);
-
-            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+            vertexConsumer.addVertex(drawX + min, drawY + max, 0).setUv(type.getMinU(), type.getMaxV()).setColor(255, 255, 255, 255);
+            vertexConsumer.addVertex(drawX + max, drawY + max, 0).setUv(type.getMaxU(), type.getMaxV()).setColor(255, 255, 255, 255);
+            vertexConsumer.addVertex(drawX + max, drawY + min, 0).setUv(type.getMaxU(), type.getMinV()).setColor(255, 255, 255, 255);
+            vertexConsumer.addVertex(drawX + min, drawY + min, 0).setUv(type.getMinU(), type.getMinV()).setColor(255, 255, 255, 255);
         }
         poseStack.popPose();
     }
