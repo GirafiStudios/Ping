@@ -1,17 +1,6 @@
 {
-    "blend": {
-        "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
-    },
-    "vertex": "ping:rendertype_ping",
-    "fragment": "ping:rendertype_ping",
-    "attributes": [
-        "Position",
-        "UV0",
-        "Color",
-        "Normal"
-    ],
+    "vertex": "ping:core/rendertype_ping",
+    "fragment": "ping:core/rendertype_ping",
     "samplers": [
         { "name": "Sampler0" }
     ],

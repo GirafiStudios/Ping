@@ -222,13 +222,13 @@ public class PingHandlerHelper {
     }
 
     public static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
-        //TextureAtlasSprite icon = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(new ItemStack(Blocks.WHITE_STAINED_GLASS)).getParticleIcon(); //TODO
+        TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.WHITE_STAINED_GLASS.defaultBlockState()).getParticleIcon();
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 
         poseStack.pushPose();
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
-        //PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
+        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
         poseStack.translate(0, 0, 0);
         poseStack.popPose();
     }

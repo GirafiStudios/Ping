@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
 
 public class PingRenderType extends RenderType {
-    public static final ShaderProgram PING_SHADER = new ShaderProgram(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR, ShaderDefines.EMPTY);
+    public static final ShaderProgram PING_SHADER = new ShaderProgram(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "core/rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR, ShaderDefines.EMPTY);
     protected static final ShaderStateShard PING = new ShaderStateShard(PING_SHADER);
     protected static final LayeringStateShard DISABLE_DEPTH = new LayeringStateShard("disable_depth", GlStateManager::_disableDepthTest, GlStateManager::_enableDepthTest);
 
