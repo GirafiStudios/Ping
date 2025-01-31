@@ -80,7 +80,7 @@ public class PingSelectGui extends Screen {
 
     @Override
     public void renderBackground(@Nonnull GuiGraphics guiGraphics, int i, int i1, float i2) {
-        // Don't rent default background
+        // Don't render default background
     }
 
     @Override
@@ -88,15 +88,14 @@ public class PingSelectGui extends Screen {
         super.render(guiGraphics, i, i2, f);
         Minecraft mc = minecraft;
         if (mc != null && mc.level != null && !mc.options.hideGui && !mc.isPaused() && PingSelectGui.active) {
+            renderPingBackground(guiGraphics);
             renderGui(guiGraphics);
             renderText(guiGraphics);
-            renderPingBackground(guiGraphics);
         }
     }
 
     public void renderPingBackground(GuiGraphics guiGraphics) {
         if (PingConfig.VISUAL.menuBackground.get() && minecraft != null) {
-            System.out.println("RENDER PING BACKGROUND");
             int halfWidth = (ITEM_SIZE * 4) - (ITEM_PADDING * 4);
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;
             int backgroundX = minecraft.getWindow().getGuiScaledWidth() / 2 - halfWidth;
@@ -106,7 +105,6 @@ public class PingSelectGui extends Screen {
     }
 
     public static void renderGui(GuiGraphics guiGraphics) {
-        System.out.println("RENDER GUI AKA ICONS");
         int numOfItems = PingType.values().length - 1;
         PoseStack poseStack = guiGraphics.pose();
         Minecraft mc = Minecraft.getInstance();
