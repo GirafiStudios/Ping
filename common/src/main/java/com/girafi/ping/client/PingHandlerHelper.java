@@ -14,7 +14,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -132,10 +131,9 @@ public class PingHandlerHelper {
                 PoseStack.Pose matrixEntry = poseStack.last();
                 poseStack.translate(pingX / 2, pingY / 2, 0);
 
-                Tesselator tesselator = Tesselator.getInstance();
-                BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-                RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
-                RenderSystem.setShaderTexture(0, TEXTURE);
+                MultiBufferSource.BufferSource source = mc.renderBuffers().bufferSource();
+                VertexConsumer vertexConsumer = source.getBuffer(RenderType.guiTextured(TEXTURE));
+
                 final Matrix4f matrix4f = matrixEntry.pose();
 
                 float min = -8;
@@ -145,19 +143,17 @@ public class PingHandlerHelper {
                 int r = ping.color >> 16 & 255;
                 int g = ping.color >> 8 & 255;
                 int b = ping.color & 255;
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
                 // Ping Notice Icon
                 float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(bufferBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-
-                BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
 
                 poseStack.popPose();
             }
@@ -192,9 +188,8 @@ public class PingHandlerHelper {
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f matrix4f = matrixEntry.pose();
         MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-        RenderType pingType = PingRenderType.getPingIcon(TEXTURE);
+        RenderType pingType = PingRenderType.pingIcon(TEXTURE);
         VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
-        RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -220,7 +215,7 @@ public class PingHandlerHelper {
     }
 
     public static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.WHITE_STAINED_GLASS.defaultBlockState()).getParticleIcon();
+        TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.WHITE_STAINED_GLASS.defaultBlockState()).particleIcon();
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
 

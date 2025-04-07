@@ -7,13 +7,11 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.renderer.CoreShaders;
 
 public class ClientHandler implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        CoreShaders.getProgramsToPreload().add(PingRenderType.PING_SHADER);
         PingCommon.registerPackets();
 
         //Register keybinds
