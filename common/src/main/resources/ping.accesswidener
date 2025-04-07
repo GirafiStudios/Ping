@@ -1,16 +1,3 @@
 accessWidener v1 named
 accessible   field   net/minecraft/client/renderer/GameRenderer   fovModifier   F
 accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
-
-accessible   class   net/minecraft/client/renderer/RenderType$CompositeState
-accessible   method  net/minecraft/client/renderer/RenderType   create   (Ljava/lang/String;IZZLcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/RenderType$CompositeState;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
-accessible   method  net/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder setTextureState    (Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;)Lnet/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder;
-accessible   method  net/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder setLayeringState   (Lnet/minecraft/client/renderer/RenderStateShard$LayeringStateShard;)Lnet/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder;
-accessible   method  net/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder createCompositeState   (Z)Lnet/minecraft/client/renderer/RenderType$CompositeState;
-
-accessible   class   net/minecraft/client/renderer/RenderStateShard$TextureStateShard
-accessible   class   net/minecraft/client/renderer/RenderStateShard$LayeringStateShard
-accessible   field   net/minecraft/client/renderer/RenderStateShard BLOCK_SHEET_MIPPED   net/minecraft/client/renderer/RenderStateShard$LightmapStateShard
-
-accessible   field   net/minecraft/client/renderer/RenderPipelines   register   (Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;
-accessible   field   net/minecraft/client/renderer/RenderPipelines OUTLINE_SNIPPET com/mojang/blaze3d/pipeline/RenderPipeline$Snippet
