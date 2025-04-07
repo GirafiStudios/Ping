@@ -10,7 +10,7 @@ accessible   method  net/minecraft/client/renderer/RenderType$CompositeState$Com
 
 accessible   class   net/minecraft/client/renderer/RenderStateShard$TextureStateShard
 accessible   class   net/minecraft/client/renderer/RenderStateShard$LayeringStateShard
-accessible   field   net/minecraft/client/renderer/RenderStateShard OUTLINE_SNIPPET  net/minecraft/client/renderer/RenderStateShard$LightmapStateShard
+accessible   field   net/minecraft/client/renderer/RenderStateShard BLOCK_SHEET_MIPPED   net/minecraft/client/renderer/RenderStateShard$LightmapStateShard
 
 accessible   field   net/minecraft/client/renderer/RenderPipelines   register   (Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;
-accessible   field   net/minecraft/client/renderer/RenderPipelines ENTITY_SNIPPET com/mojang/blaze3d/pipeline/RenderPipeline$Snippet
+accessible   field   net/minecraft/client/renderer/RenderPipelines OUTLINE_SNIPPET com/mojang/blaze3d/pipeline/RenderPipeline$Snippet
