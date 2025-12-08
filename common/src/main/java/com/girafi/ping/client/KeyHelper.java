@@ -4,8 +4,6 @@ import com.girafi.ping.client.gui.PingSelectGui;
 import com.girafi.ping.data.PingType;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
-import org.lwjgl.glfw.GLFW;
 
 public class KeyHelper {
     private static boolean quickPingAlertHeld = false;

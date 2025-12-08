@@ -8,30 +8,30 @@ import com.girafi.ping.data.PingWrapper;
 import com.girafi.ping.network.packet.ServerBroadcastPing;
 import com.girafi.ping.util.PingConfig;
 import com.girafi.ping.util.PingSounds;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.waypoints.TrackedWaypoint;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +45,8 @@ public class PingHandlerHelper {
     public static final ResourceLocation MINE_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/mine");
     public static final ResourceLocation LOOK_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/look");
     public static final ResourceLocation GOTO_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/goto");
+    private static final ResourceLocation LOCATOR_BAR_ARROW_UP = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_up");
+    private static final ResourceLocation LOCATOR_BAR_ARROW_DOWN = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_down");
     private static final List<PingWrapper> ACTIVE_PINGS = Collections.synchronizedList(new ArrayList<>());
 
     public static void onPingPacket(ServerBroadcastPing packet) {
@@ -76,98 +78,89 @@ public class PingHandlerHelper {
                 double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
 
                 if (clippingHelper.isVisible(ping.getAABB())) {
-                    ping.isOffscreen = false;
                     if (PingConfig.VISUAL.blockOverlay.get()) {
                         renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), poseStack, ping);
                     }
                     renderPing(px, py, pz, poseStack, camera, ping);
-                } else {
-                    ping.isOffscreen = true;
-                    translatePingCoordinates(mc, ping, partialTicks);
                 }
             });
         }
+
     }
 
-    public static void renderPingOffscreen(GuiGraphics guiGraphics) {
-        synchronized (ACTIVE_PINGS) {
-            Minecraft mc = Minecraft.getInstance(); //TODO
-            PoseStack poseStack = guiGraphics.pose();
-
-            for (PingWrapper ping : ACTIVE_PINGS) {
-                if (!ping.isOffscreen || mc.screen != null || mc.getDebugOverlay().showDebugScreen()) {
-                    continue;
-                }
-                int width = mc.getWindow().getScreenWidth();
-                int height = mc.getWindow().getScreenHeight();
-
-                int x1 = -(width / 2) + 32;
-                int y1 = -(height / 2) + 32;
-                int x2 = (width / 2) - 32;
-                int y2 = (height / 2) - 32;
-
-                double pingX = ping.screenX;
-                double pingY = ping.screenY;
-
-                pingX -= width * 0.5D;
-                pingY -= height * 0.5D;
-
-                double angle = Math.atan2(pingY, pingX);
-                angle += (Math.toRadians(mc.gameRenderer.fovModifier));
-                double cos = Math.cos(angle);
-                double sin = Math.sin(angle);
-                double m = cos / sin;
-
-                if (cos > 0) {
-                    pingX = y2 / m;
-                    pingY = y2;
-                } else {
-                    pingX = y1 / m;
-                    pingY = y1;
-                }
-
-                if (pingX > x2) {
-                    pingX = x2;
-                    pingY = x2 * m;
-                } else if (pingX < x1) {
-                    pingX = x1;
-                    pingY = x1 * m;
-                }
-
-                pingX += width * 0.5D;
-                pingY += height * 0.5D;
-
-                poseStack.pushPose();
-                PoseStack.Pose matrixEntry = poseStack.last();
-                poseStack.translate(pingX / 2, pingY / 2, 0);
-
-                MultiBufferSource.BufferSource source = mc.renderBuffers().bufferSource();
-                VertexConsumer vertexConsumer = source.getBuffer(RenderType.guiTextured(TEXTURE));
-
-                final Matrix4f matrix4f = matrixEntry.pose();
-
-                float min = -8;
-                float max = 8;
-
-                // Ping Notice Background
-                int r = ping.color >> 16 & 255;
-                int g = ping.color >> 8 & 255;
-                int b = ping.color & 255;
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-
-                // Ping Notice Icon
-                float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-                VertexHelper.renderPosTexColorNoZ(vertexConsumer, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-
-                poseStack.popPose();
-            }
+    public static void renderPingDirector(GuiGraphics guiGraphics) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc != null) {
+            renderPingOnLocatorBar(guiGraphics, mc);
         }
+    }
+
+    public static void renderPingOnLocatorBar(GuiGraphics guiGraphics, Minecraft mc) {
+        int windowTop = top(mc.getWindow());
+        Level level = mc.cameraEntity.level();
+
+        ACTIVE_PINGS.forEach(pingWrapper -> {
+                    BlockPos pingPos = pingWrapper.pos;
+                    ChunkPos chunkPos = new ChunkPos(pingPos);
+                    double angleToCamera = yawAngleToCamera(mc.gameRenderer.getMainCamera(), chunkPos);
+
+                    //Keep inside exp bar
+                    if (angleToCamera <= -61.0) {
+                        angleToCamera = -61.0;
+                    } else if (angleToCamera > 60.0) {
+                        angleToCamera = 60.0;
+                    }
+                    int j = Mth.ceil((guiGraphics.guiWidth() - 9) / 2.0F);
+                    ResourceLocation icon = pickPingIcon(pingWrapper.type);
+                    int l = (int) (angleToCamera * 173.0 / 2.0 / 60.0);
+                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON, j + l, windowTop - 2, 9, 9, pingWrapper.color);
+                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, j + l, windowTop - 2, 9, 9, ARGB.white(1.0F));
+                    TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(level, mc.gameRenderer);
+                    if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
+                        int yOffset;
+                        ResourceLocation directionIcon;
+                        if (pitchDirection == TrackedWaypoint.PitchDirection.DOWN) {
+                            yOffset = 6;
+                            directionIcon = LOCATOR_BAR_ARROW_DOWN;
+                        } else {
+                            yOffset = -6;
+                            directionIcon = LOCATOR_BAR_ARROW_UP;
+                        }
+
+                        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, directionIcon, j + l + 1, windowTop + yOffset, 7, 5);
+                    }
+                }
+        );
+    }
+
+    public static ResourceLocation pickPingIcon (PingType pingType) {
+        return switch (pingType) {
+            case ALERT -> ALERT_BUTTON;
+            case MINE -> MINE_BUTTON;
+            case GOTO -> GOTO_BUTTON;
+            case LOOK -> LOOK_BUTTON;
+            case BACKGROUND -> BUTTON;
+        };
+    }
+
+    public static TrackedWaypoint.PitchDirection pitchDirectionToCamera(Level level, TrackedWaypoint.Projector projector) {
+        double d0 = projector.projectHorizonToScreen();
+        if (d0 < -1.0) {
+            return TrackedWaypoint.PitchDirection.DOWN;
+        } else {
+            return d0 > 1.0 ? TrackedWaypoint.PitchDirection.UP : TrackedWaypoint.PitchDirection.NONE;
+        }
+    }
+
+    public static double yawAngleToCamera(Camera camera, ChunkPos chunkPos) {
+        Vec3 vec3 = camera.position();
+        Vec3 vec31 = vec3.subtract(Vec3.atCenterOf(chunkPos.getMiddleBlockPosition((int) vec3.y()))).rotateClockwise90();
+        float f = (float) Mth.atan2(vec31.z(), vec31.x()) * (180.0F / (float) Math.PI);
+        return Mth.degreesDifference(camera.yaw(), f);
+    }
+
+    public static int top(Window window) {
+        return window.getGuiScaledHeight() - 24 - 5;
     }
 
     public static void pingTimer() {
@@ -203,7 +196,6 @@ public class PingHandlerHelper {
         RenderType pingType = PingRenderType.pingIcon(TEXTURE);
         VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
-
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
 
@@ -227,28 +219,6 @@ public class PingHandlerHelper {
         poseStack.popPose();
     }
 
-    public static void drawString(BlockPos tePos, String str, double xOffset, double yOffset, double zOffset, float scaleModifier, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
-        BlockEntityRenderDispatcher rendererDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
-        Entity entity = rendererDispatcher.camera.getEntity();
-        System.out.println(tePos);
-        double distance = new Vec3(entity.getX(), entity.getY(), entity.getZ()).distanceToSqr(tePos.getX(), tePos.getY(), tePos.getZ());
-
-        if (distance <= (double) (14 * 14)) {
-            float yaw = rendererDispatcher.camera.getYRot();
-            float pitch = rendererDispatcher.camera.getXRot();
-            Font font = Minecraft.getInstance().font;
-            poseStack.pushPose();
-            poseStack.translate(xOffset, yOffset, zOffset);
-
-            poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
-            poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
-            poseStack.scale(-0.015F + scaleModifier, -0.015F + scaleModifier, 0.015F + scaleModifier);
-
-            font.drawInBatch(str, -font.width(str) / 2, 0, 1, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, 0);
-            poseStack.popPose();
-        }
-    }
-
     public static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
         TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.WHITE_STAINED_GLASS.defaultBlockState()).particleIcon();
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
@@ -261,34 +231,5 @@ public class PingHandlerHelper {
 
         poseStack.translate(0, 0, 0);
         poseStack.popPose();
-    }
-
-    public static void translatePingCoordinates(Minecraft mc, PingWrapper ping, float partialTicks) { //Works-ish, but is not perfect
-        Player player = mc.player;
-        Camera camera = mc.gameRenderer.getMainCamera();
-        int blockX = ping.pos.getX();
-        int blockZ = ping.pos.getY();
-
-        if (player != null) {
-            Vector2f hP = new Vector2f(blockX, blockZ);
-            Vector2f vP = new Vector2f(hP.length(), ping.pos.getY());
-
-            Vector2f playerEyePos = new Vector2f((float) player.getEyePosition().x, (float) player.getEyePosition(partialTicks).z);
-
-            Vector2f lookAngleH = new Vector2f(camera.getLookVector().x, camera.getLookVector().z);
-            float angleBetweenVecH = lookAngleH.angle(hP.sub(playerEyePos));
-
-            Vector2f lookAngleV = new Vector2f(camera.getLookVector().x, camera.getLookVector().z);
-            float angleBetweenVecV = lookAngleV.angle(vP.sub(playerEyePos));
-
-            float fov = mc.gameRenderer.fovModifier;
-            double clipH = Math.sin(angleBetweenVecH) / Math.sin(Math.toRadians(fov));
-            double clipV = Math.sin(angleBetweenVecV) / Math.sin(Math.toRadians(fov));
-            double screenCoordH = (clipH + 1) * (mc.getWindow().getGuiScaledWidth() * 0.5D);
-            double screenCoordV = (clipV + 1) * (mc.getWindow().getGuiScaledHeight() * 0.5D);
-
-            ping.screenX = screenCoordH;
-            ping.screenY = screenCoordV;
-        }
     }
 }

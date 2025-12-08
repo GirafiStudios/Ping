@@ -16,7 +16,7 @@ public class PingHandler {
     }
 
     @SubscribeEvent
-    public static void renderPingOffscreen(RenderGuiLayerEvent.Post event) {
-        PingHandlerHelper.renderPingOffscreen(event.getGuiGraphics());
+    public static void renderPingDirector(RenderGuiLayerEvent.Post event) {
+        PingHandlerHelper.renderPingDirector(event.getGuiGraphics());
     }
 }

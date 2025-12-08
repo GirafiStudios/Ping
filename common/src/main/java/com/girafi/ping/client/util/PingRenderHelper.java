@@ -1,6 +1,5 @@
 package com.girafi.ping.client.util;
 
-import com.girafi.ping.client.PingHandlerHelper;
 import com.girafi.ping.client.PingRenderType;
 import com.girafi.ping.data.PingWrapper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.BlockPos;
 import org.joml.Matrix4f;
 
 public class PingRenderHelper {
@@ -62,8 +60,5 @@ public class PingRenderHelper {
         VertexHelper.renderPosTexColor(vertexConsumer, posMatrix, (width / 2), (height / 2), (length / 2), icon.getU1(), icon.getV1(), r, g, b, alpha);
         VertexHelper.renderPosTexColor(vertexConsumer, posMatrix, (width / 2), (height / 2), -(length / 2), icon.getU0(), icon.getV1(), r, g, b, alpha);
         buffer.endBatch(pingOverlay);
-
-        PingHandlerHelper.drawString(ping.pos, "TEST", 0, 2, 0, 1, poseStack, buffer, 0, 0);
-
     }
 }

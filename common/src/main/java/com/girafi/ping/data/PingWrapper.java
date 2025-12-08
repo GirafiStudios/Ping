@@ -10,9 +10,6 @@ public class PingWrapper {
     public final BlockPos pos;
     public final int color;
     public final PingType type;
-    public boolean isOffscreen = false;
-    public double screenX;
-    public double screenY;
     public int animationTimer = 20;
     public int timer;
 
