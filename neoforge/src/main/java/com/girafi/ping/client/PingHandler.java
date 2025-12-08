@@ -11,10 +11,8 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 public class PingHandler {
 
     @SubscribeEvent
-    public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            PingHandlerHelper.translateWorldPing(event.getPoseStack(), event.getFrustum(), event.getRenderTick());
-        }
+    public static void onRenderWorld(RenderLevelStageEvent.AfterParticles event) {
+        PingHandlerHelper.translateWorldPing(event.getPoseStack(), event.getFrustum(), event.getRenderTick());
     }
 
     @SubscribeEvent

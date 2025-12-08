@@ -13,17 +13,22 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -35,6 +40,11 @@ import java.util.List;
 
 public class PingHandlerHelper {
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "textures/ping.png");
+    public static final ResourceLocation BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/button");
+    public static final ResourceLocation ALERT_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/alert");
+    public static final ResourceLocation MINE_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/mine");
+    public static final ResourceLocation LOOK_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/look");
+    public static final ResourceLocation GOTO_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/goto");
     private static final List<PingWrapper> ACTIVE_PINGS = Collections.synchronizedList(new ArrayList<>());
 
     public static void onPingPacket(ServerBroadcastPing packet) {
@@ -81,7 +91,7 @@ public class PingHandlerHelper {
 
     public static void renderPingOffscreen(GuiGraphics guiGraphics) {
         synchronized (ACTIVE_PINGS) {
-            Minecraft mc = Minecraft.getInstance();
+            Minecraft mc = Minecraft.getInstance(); //TODO
             PoseStack poseStack = guiGraphics.pose();
 
             for (PingWrapper ping : ACTIVE_PINGS) {
@@ -185,11 +195,14 @@ public class PingHandlerHelper {
         poseStack.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
+        //System.out.println("X: " + px + " Y: " + py + " Z: " + pz);
+
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f matrix4f = matrixEntry.pose();
         MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
         RenderType pingType = PingRenderType.pingIcon(TEXTURE);
         VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
+
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -214,6 +227,28 @@ public class PingHandlerHelper {
         poseStack.popPose();
     }
 
+    public static void drawString(BlockPos tePos, String str, double xOffset, double yOffset, double zOffset, float scaleModifier, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
+        BlockEntityRenderDispatcher rendererDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
+        Entity entity = rendererDispatcher.camera.getEntity();
+        System.out.println(tePos);
+        double distance = new Vec3(entity.getX(), entity.getY(), entity.getZ()).distanceToSqr(tePos.getX(), tePos.getY(), tePos.getZ());
+
+        if (distance <= (double) (14 * 14)) {
+            float yaw = rendererDispatcher.camera.getYRot();
+            float pitch = rendererDispatcher.camera.getXRot();
+            Font font = Minecraft.getInstance().font;
+            poseStack.pushPose();
+            poseStack.translate(xOffset, yOffset, zOffset);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
+            poseStack.scale(-0.015F + scaleModifier, -0.015F + scaleModifier, 0.015F + scaleModifier);
+
+            font.drawInBatch(str, -font.width(str) / 2, 0, 1, false, poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, 0);
+            poseStack.popPose();
+        }
+    }
+
     public static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
         TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.WHITE_STAINED_GLASS.defaultBlockState()).particleIcon();
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
@@ -221,7 +256,9 @@ public class PingHandlerHelper {
 
         poseStack.pushPose();
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
-        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping.color, 175);
+        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping, 175);
+
+
         poseStack.translate(0, 0, 0);
         poseStack.popPose();
     }

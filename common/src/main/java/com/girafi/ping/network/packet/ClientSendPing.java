@@ -38,7 +38,7 @@ public class ClientSendPing {
     public static void handle(PacketContext<ClientSendPing> ctx) {
         ServerPlayer playerMP = ctx.sender();
         if (playerMP != null) {
-            Dispatcher.sendToClientsInRange(new ServerBroadcastPing(ctx.message().getPing()), playerMP.serverLevel(), ctx.message().getPing().pos, PingConfig.GENERAL.pingAcceptDistance.get());
+            Dispatcher.sendToClientsInRange(new ServerBroadcastPing(ctx.message().getPing()), playerMP.level(), ctx.message().getPing().pos, PingConfig.GENERAL.pingAcceptDistance.get());
         }
     }
 }

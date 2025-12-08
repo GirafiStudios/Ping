@@ -4,6 +4,7 @@ import com.girafi.ping.client.gui.PingSelectGui;
 import com.girafi.ping.data.PingType;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyHelper {
@@ -11,6 +12,7 @@ public class KeyHelper {
     private static boolean quickPingMineHeld = false;
     private static boolean quickPingLookHeld = false;
     private static boolean quickPingGotoHeld = false;
+    private static boolean wasPingMenyKeyPressed = false;
 
 
     public static void onTick() {
@@ -20,27 +22,18 @@ public class KeyHelper {
             return;
         }
 
-        long handle = Minecraft.getInstance().getWindow().getWindow();
-        int keycode = PingKeybinds.KEY_BINDING.key.getValue();
-        if (keycode >= 0) {
-            boolean keyPressed = (PingKeybinds.KEY_BINDING.matchesMouse(keycode) ? GLFW.glfwGetMouseButton(handle, keycode) == 1 : InputConstants.isKeyDown(handle, keycode));
+        //PING MENU
+        boolean isPingMenyKeyPressed = InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), PingKeybinds.KEY_BINDING.key.getValue());
 
-            if (keyPressed != PingKeybinds.Helper.lastKeyState) {
-                if (keyPressed) {
-                    PingSelectGui.activate();
-                } else {
-                    if (!PingKeybinds.Helper.ignoreNextRelease) {
-                        final double mouseX = mc.mouseHandler.xpos() * ((double) mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
-                        final double mouseY = mc.mouseHandler.ypos() * ((double) mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
-
-                        PingSelectGui.INSTANCE.mouseClicked(mouseX, mouseY, 0);
-                    }
-                    PingKeybinds.Helper.ignoreNextRelease = false;
-                    PingSelectGui.deactivate();
-                }
-            }
-            PingKeybinds.Helper.lastKeyState = keyPressed;
+        if (isPingMenyKeyPressed && !wasPingMenyKeyPressed) {
+            PingSelectGui.activate();
         }
+        if (!isPingMenyKeyPressed && wasPingMenyKeyPressed) {
+            if (mc.screen instanceof PingSelectGui) {
+                PingSelectGui.deactivate();
+            }
+        }
+        wasPingMenyKeyPressed = isPingMenyKeyPressed;
 
         //ALERT
         boolean quickPingDownAlert = PingKeybinds.PING_ALERT.isDown();

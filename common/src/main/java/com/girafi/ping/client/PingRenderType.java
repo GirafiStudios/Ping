@@ -19,8 +19,7 @@ public class PingRenderType {
     protected static final RenderStateShard.LayeringStateShard DISABLE_DEPTH = new RenderStateShard.LayeringStateShard("disable_depth", GlStateManager::_disableDepthTest, GlStateManager::_enableDepthTest);
     public static final RenderPipeline PING_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.OUTLINE_SNIPPET).withLocation(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "pipeline/ping")).withVertexShader(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "core/ping")).withFragmentShader(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "core/ping")).withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS).withSampler("Sampler0").withBlend(BlendFunction.TRANSLUCENT).withCull(false).build());
     private static final RenderType PING_OVERLAY = RenderType.create("ping_overlay", RenderType.TRANSIENT_BUFFER_SIZE, true, true, PING_PIPELINE, RenderType.CompositeState.builder().setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED).setLayeringState(DISABLE_DEPTH).createCompositeState(true));
-    private static final Function<ResourceLocation, RenderType> PING_ICON = Util.memoize((location) -> RenderType.create("ping_icon", RenderType.TRANSIENT_BUFFER_SIZE, true, true, PING_PIPELINE, RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(location, TriState.FALSE, true)).setLayeringState(DISABLE_DEPTH).createCompositeState(true)));
-
+    private static final Function<ResourceLocation, RenderType> PING_ICON = Util.memoize((location) -> RenderType.create("ping_icon", RenderType.TRANSIENT_BUFFER_SIZE, true, true, PING_PIPELINE, RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(location, true)).setLayeringState(DISABLE_DEPTH).createCompositeState(true)));
 
     public static RenderType pingOverlay() {
         return PING_OVERLAY;
