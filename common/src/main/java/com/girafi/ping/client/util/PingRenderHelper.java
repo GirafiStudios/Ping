@@ -8,11 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Matrix4f;
 
 public class PingRenderHelper {
 
-    public static void drawBlockOverlay(float width, float height, float length, PoseStack poseStack, TextureAtlasSprite icon, PingWrapper ping, int alpha) {
+    public static void drawBlockOverlay(float width, float height, float length, PoseStack poseStack, BlockState overlayBlock, PingWrapper ping, int alpha) {
+        TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(overlayBlock).particleIcon();
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f posMatrix = matrixEntry.pose();
         RenderType pingOverlay = PingRenderType.pingOverlay();

@@ -1,6 +1,5 @@
 package com.girafi.ping.client;
 
-import com.girafi.ping.Constants;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -16,8 +15,24 @@ import java.util.function.Function;
 
 public class PingRenderType {
     protected static final RenderStateShard.LayeringStateShard DISABLE_DEPTH = new RenderStateShard.LayeringStateShard("disable_depth", GlStateManager::_disableDepthTest, GlStateManager::_enableDepthTest);
-    public static final RenderPipeline PING_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.OUTLINE_SNIPPET).withLocation(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "pipeline/ping")).withVertexShader(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "core/ping")).withFragmentShader(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "core/ping")).withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS).withSampler("Sampler0").withBlend(BlendFunction.TRANSLUCENT).withCull(false).build());
-    private static final RenderType PING_OVERLAY = RenderType.create("ping_overlay", RenderType.TRANSIENT_BUFFER_SIZE, true, true, PING_PIPELINE, RenderType.CompositeState.builder().setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED).setLayeringState(DISABLE_DEPTH).createCompositeState(true));
+    public static final RenderPipeline PING_PIPELINE = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.OUTLINE_SNIPPET)
+            .withLocation("core/position_tex_color")
+            .withVertexShader("core/position_tex_color")
+            .withFragmentShader("core/position_tex_color")
+            .withSampler("Sampler0")
+            .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
+            .withBlend(BlendFunction.TRANSLUCENT)
+            .withCull(false).build());
+    private static final RenderType PING_OVERLAY = RenderType.create(
+            "ping_overlay",
+            RenderType.TRANSIENT_BUFFER_SIZE,
+            true,
+            true,
+            PING_PIPELINE,
+            RenderType.CompositeState.builder()
+                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                    .setLayeringState(DISABLE_DEPTH)
+                    .createCompositeState(true));
     private static final Function<ResourceLocation, RenderType> PING_ICON = Util.memoize((location) -> RenderType.create("ping_icon", RenderType.TRANSIENT_BUFFER_SIZE, true, true, PING_PIPELINE, RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(location, true)).setLayeringState(DISABLE_DEPTH).createCompositeState(true)));
 
     public static RenderType pingOverlay() {

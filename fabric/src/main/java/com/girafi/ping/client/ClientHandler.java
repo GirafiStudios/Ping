@@ -33,8 +33,9 @@ public class ClientHandler implements ClientModInitializer {
         WorldRenderEvents.AFTER_TRANSLUCENT.register((renderContext) -> {
             PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.frustum(), renderContext.tickCounter().getGameTimeDeltaTicks());
         });
+
         HudRenderCallback.EVENT.register((guiGraphics, delta) -> {
-            PingHandlerHelper.renderPingOffscreen(guiGraphics);
+            PingHandlerHelper.renderPingDirector(guiGraphics, delta.getGameTimeDeltaTicks());
         });
     }
 }

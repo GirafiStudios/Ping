@@ -19,16 +19,17 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.waypoints.TrackedWaypoint;
 import org.joml.Matrix4f;
@@ -79,9 +80,9 @@ public class PingHandlerHelper {
 
                 if (clippingHelper.isVisible(ping.getAABB())) {
                     if (PingConfig.VISUAL.blockOverlay.get()) {
-                        renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), poseStack, ping);
+                        renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), mc, poseStack, ping);
                     }
-                    renderPing(px, py, pz, poseStack, camera, ping);
+                    renderPing(px, py, pz, poseStack, camera, partialTicks, ping);
                 }
             });
         }
@@ -96,41 +97,45 @@ public class PingHandlerHelper {
 
     public static void renderPingOnLocatorBar(GuiGraphics guiGraphics, Minecraft mc, float partialTicks) {
         int windowTop = top(mc.getWindow());
-        Level level = mc.cameraEntity.level();
+        Entity cameraEntity = mc.cameraEntity;
+        Level level = cameraEntity.level();
+        if (cameraEntity instanceof Player player) {
+            if (player.isCreative()) return;
 
-        ACTIVE_PINGS.forEach(pingWrapper -> {
-                    BlockPos pingPos = pingWrapper.pos;
-                    ChunkPos chunkPos = new ChunkPos(pingPos);
-                    double angleToCamera = yawAngleToCamera(mc.gameRenderer.getMainCamera(), chunkPos);
+            ACTIVE_PINGS.forEach(pingWrapper -> {
+                        BlockPos pingPos = pingWrapper.pos;
+                        ChunkPos chunkPos = new ChunkPos(pingPos);
+                        double angleToCamera = yawAngleToCamera(mc.gameRenderer.getMainCamera(), chunkPos);
 
-                    //Keep inside exp bar
-                    if (angleToCamera <= -61.0) {
-                        angleToCamera = -61.0;
-                    } else if (angleToCamera > 60.0) {
-                        angleToCamera = 60.0;
-                    }
-                    int j = Mth.ceil((guiGraphics.guiWidth() - 9) / 2.0F);
-                    ResourceLocation icon = pickPingIcon(pingWrapper.type);
-                    int l = (int) (angleToCamera * 173.0 / 2.0 / 60.0);
-                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON, j + l, windowTop - 2, 9, 9, pingWrapper.color);
-                    float alpha = pingWrapper.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.3F) > 0) ? 0.85F : 0.3F : 0.85F;
-                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, j + l, windowTop - 2, 9, 9, alpha);
-                    TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(level, mc.gameRenderer);
-                    if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
-                        int yOffset;
-                        ResourceLocation directionIcon;
-                        if (pitchDirection == TrackedWaypoint.PitchDirection.DOWN) {
-                            yOffset = 6;
-                            directionIcon = LOCATOR_BAR_ARROW_DOWN;
-                        } else {
-                            yOffset = -6;
-                            directionIcon = LOCATOR_BAR_ARROW_UP;
+                        //Keep inside exp bar
+                        if (angleToCamera <= -61.0) {
+                            angleToCamera = -61.0;
+                        } else if (angleToCamera > 60.0) {
+                            angleToCamera = 60.0;
                         }
+                        int j = Mth.ceil((guiGraphics.guiWidth() - 9) / 2.0F);
+                        ResourceLocation icon = pickPingIcon(pingWrapper.type);
+                        int l = (int) (angleToCamera * 173.0 / 2.0 / 60.0);
+                        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON, j + l, windowTop - 2, 9, 9, pingWrapper.color);
+                        float alpha = pingWrapper.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.3F) > 0) ? 0.85F : 0.3F : 0.85F;
+                        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, j + l, windowTop - 2, 9, 9, alpha);
+                        TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(level, mc.gameRenderer);
+                        if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
+                            int yOffset;
+                            ResourceLocation directionIcon;
+                            if (pitchDirection == TrackedWaypoint.PitchDirection.DOWN) {
+                                yOffset = 6;
+                                directionIcon = LOCATOR_BAR_ARROW_DOWN;
+                            } else {
+                                yOffset = -6;
+                                directionIcon = LOCATOR_BAR_ARROW_UP;
+                            }
 
-                        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, directionIcon, j + l + 1, windowTop + yOffset, 7, 5);
+                            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, directionIcon, j + l + 1, windowTop + yOffset, 7, 5);
+                        }
                     }
-                }
-        );
+            );
+        }
     }
 
     public static ResourceLocation pickPingIcon(PingType pingType) {
@@ -180,15 +185,13 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void renderPing(double px, double py, double pz, PoseStack poseStack, Camera camera, PingWrapper ping) {
+    public static void renderPing(double px, double py, double pz, PoseStack poseStack, Camera camera, float partialTicks, PingWrapper ping) {
         Minecraft mc = Minecraft.getInstance();
         poseStack.pushPose();
         poseStack.translate(px, py, pz);
         poseStack.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
         poseStack.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
-
-        //System.out.println("X: " + px + " Y: " + py + " Z: " + pz);
 
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f matrix4f = matrixEntry.pose();
@@ -209,7 +212,7 @@ public class PingHandlerHelper {
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
         // Block Overlay Icon
-        float alpha = ping.type == PingType.ALERT ? mc.level != null ? (float) (1.0F + (0.01D * Math.sin(mc.level.getDayTime()))) : 0.85F : 0.85F;
+        float alpha = ping.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.15F) > 0) ? 0.85F : 0.3F : 0.85F;
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
@@ -219,17 +222,14 @@ public class PingHandlerHelper {
         poseStack.popPose();
     }
 
-    public static void renderPingOverlay(double x, double y, double z, PoseStack poseStack, PingWrapper ping) {
-        TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.WHITE_STAINED_GLASS.defaultBlockState()).particleIcon();
+    public static void renderPingOverlay(double x, double y, double z, Minecraft mc, PoseStack poseStack, PingWrapper ping) {
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
+        BlockState overlayBlock = Blocks.WHITE_STAINED_GLASS.defaultBlockState();
 
         poseStack.pushPose();
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
-        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, icon, ping, 175);
-
-
-        poseStack.translate(0, 0, 0);
+        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, overlayBlock, ping, 175);
         poseStack.popPose();
     }
 }
