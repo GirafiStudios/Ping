@@ -29,6 +29,6 @@
         "minecraft": "~${minecraft_version}",
         "java": ">=${java_version}",
         "fabric-key-binding-api-v1": "*",
-        "forgeconfigapiport": ">=21.6.1"
+        "forgeconfigapiport": ">=21.7.0"
     }
 }
