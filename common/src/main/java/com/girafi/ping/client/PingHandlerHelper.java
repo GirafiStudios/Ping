@@ -85,17 +85,16 @@ public class PingHandlerHelper {
                 }
             });
         }
-
     }
 
-    public static void renderPingDirector(GuiGraphics guiGraphics) {
+    public static void renderPingDirector(GuiGraphics guiGraphics, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc != null) {
-            renderPingOnLocatorBar(guiGraphics, mc);
+        if (mc != null && mc.level != null) {
+            renderPingOnLocatorBar(guiGraphics, mc, partialTicks);
         }
     }
 
-    public static void renderPingOnLocatorBar(GuiGraphics guiGraphics, Minecraft mc) {
+    public static void renderPingOnLocatorBar(GuiGraphics guiGraphics, Minecraft mc, float partialTicks) {
         int windowTop = top(mc.getWindow());
         Level level = mc.cameraEntity.level();
 
@@ -114,7 +113,8 @@ public class PingHandlerHelper {
                     ResourceLocation icon = pickPingIcon(pingWrapper.type);
                     int l = (int) (angleToCamera * 173.0 / 2.0 / 60.0);
                     guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON, j + l, windowTop - 2, 9, 9, pingWrapper.color);
-                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, j + l, windowTop - 2, 9, 9, ARGB.white(1.0F));
+                    float alpha = pingWrapper.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.3F) > 0) ? 0.85F : 0.3F : 0.85F;
+                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, j + l, windowTop - 2, 9, 9, alpha);
                     TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(level, mc.gameRenderer);
                     if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
                         int yOffset;
@@ -133,7 +133,7 @@ public class PingHandlerHelper {
         );
     }
 
-    public static ResourceLocation pickPingIcon (PingType pingType) {
+    public static ResourceLocation pickPingIcon(PingType pingType) {
         return switch (pingType) {
             case ALERT -> ALERT_BUTTON;
             case MINE -> MINE_BUTTON;

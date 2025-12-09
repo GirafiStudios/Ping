@@ -17,6 +17,6 @@ public class PingHandler {
 
     @SubscribeEvent
     public static void renderPingDirector(RenderGuiLayerEvent.Post event) {
-        PingHandlerHelper.renderPingDirector(event.getGuiGraphics());
+        PingHandlerHelper.renderPingDirector(event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaTicks());
     }
 }
