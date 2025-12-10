@@ -22,7 +22,7 @@ public class Ping {
         PingCommon.registerPackets();
         modContainer.registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
 

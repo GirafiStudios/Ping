@@ -12,22 +12,20 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -63,28 +61,31 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void translateWorldPing(PoseStack poseStack, Frustum clippingHelper, float partialTicks) {
+    public static void translateWorldPing(PoseStack poseStack, LevelRenderState levelRenderState, Frustum frustum, float partialTicks) {
         if (ACTIVE_PINGS.isEmpty() || ACTIVE_PINGS.contains(null)) return;
         Minecraft mc = Minecraft.getInstance();
-        Camera camera = mc.getBlockEntityRenderDispatcher().camera;
-        Vec3 cameraPos = camera.getPosition();
+        CameraRenderState cameraRenderState = levelRenderState.cameraRenderState;
+        Vec3 cameraPos = cameraRenderState.pos;
 
-        clippingHelper.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-        synchronized (ACTIVE_PINGS) {
-            ACTIVE_PINGS.forEach(ping -> {
+        if (frustum != null) {
+            frustum.prepare(cameraPos.x(), cameraPos.y(), cameraPos.z());
 
-                double px = ping.pos.getX() + 0.5D - cameraPos.x();
-                double py = ping.pos.getY() + 0.5D - cameraPos.y();
-                double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
+            synchronized (ACTIVE_PINGS) {
+                ACTIVE_PINGS.forEach(ping -> {
 
-                if (clippingHelper.isVisible(ping.getAABB())) {
-                    if (PingConfig.VISUAL.blockOverlay.get()) {
-                        renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), mc, poseStack, ping);
+                    double px = ping.pos.getX() + 0.5D - cameraPos.x();
+                    double py = ping.pos.getY() + 0.5D - cameraPos.y();
+                    double pz = ping.pos.getZ() + 0.5D - cameraPos.z();
+
+                    if (frustum.isVisible(ping.getAABB())) {
+                        if (PingConfig.VISUAL.blockOverlay.get()) {
+                            renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), mc, poseStack, ping);
+                        }
+                        renderPing(px, py, pz, poseStack, cameraRenderState, partialTicks, ping);
                     }
-                    renderPing(px, py, pz, poseStack, camera, partialTicks, ping);
-                }
-            });
+                });
+            }
         }
     }
 
@@ -97,15 +98,13 @@ public class PingHandlerHelper {
 
     public static void renderPingOnLocatorBar(GuiGraphics guiGraphics, Minecraft mc, float partialTicks) {
         int windowTop = top(mc.getWindow());
-        Entity cameraEntity = mc.cameraEntity;
-        Level level = cameraEntity.level();
+        Entity cameraEntity = mc.getCameraEntity();
         if (cameraEntity instanceof Player player) {
             if (player.isCreative()) return;
 
             ACTIVE_PINGS.forEach(pingWrapper -> {
-                        BlockPos pingPos = pingWrapper.pos;
-                        ChunkPos chunkPos = new ChunkPos(pingPos);
-                        double angleToCamera = yawAngleToCamera(mc.gameRenderer.getMainCamera(), chunkPos);
+                        Vec3 pingPos = new Vec3(pingWrapper.pos.getX(), pingWrapper.pos.getY(), pingWrapper.pos.getZ());
+                        double angleToCamera = yawAngleToCamera(mc.gameRenderer.getMainCamera(), pingPos);
 
                         //Keep inside exp bar
                         if (angleToCamera <= -61.0) {
@@ -117,9 +116,9 @@ public class PingHandlerHelper {
                         ResourceLocation icon = pickPingIcon(pingWrapper.type);
                         int l = (int) (angleToCamera * 173.0 / 2.0 / 60.0);
                         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON, j + l, windowTop - 2, 9, 9, pingWrapper.color);
-                        float alpha = pingWrapper.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.3F) > 0) ? 0.85F : 0.3F : 0.85F;
+                        float alpha = pingWrapper.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.25F) > 0) ? 0.85F : 0.25F : 0.85F;
                         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, j + l, windowTop - 2, 9, 9, alpha);
-                        TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(level, mc.gameRenderer);
+                        TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(mc.gameRenderer, pingPos);
                         if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
                             int yOffset;
                             ResourceLocation directionIcon;
@@ -148,19 +147,31 @@ public class PingHandlerHelper {
         };
     }
 
-    public static TrackedWaypoint.PitchDirection pitchDirectionToCamera(Level level, TrackedWaypoint.Projector projector) {
-        double d0 = projector.projectHorizonToScreen();
-        if (d0 < -1.0) {
+    public static TrackedWaypoint.PitchDirection pitchDirectionToCamera(TrackedWaypoint.Projector projector, Vec3 pingPos) {
+        Vec3 vec3 = projector.projectPointToScreen(pingPos);
+        boolean bl = vec3.z > (double) 1.0F;
+        double d = bl ? -vec3.y : vec3.y;
+        if (d < (double) -1.0F) {
             return TrackedWaypoint.PitchDirection.DOWN;
+        } else if (d > (double) 1.0F) {
+            return TrackedWaypoint.PitchDirection.UP;
         } else {
-            return d0 > 1.0 ? TrackedWaypoint.PitchDirection.UP : TrackedWaypoint.PitchDirection.NONE;
+            if (bl) {
+                if (vec3.y > (double) 0.0F) {
+                    return TrackedWaypoint.PitchDirection.UP;
+                }
+
+                if (vec3.y < (double) 0.0F) {
+                    return TrackedWaypoint.PitchDirection.DOWN;
+                }
+            }
+            return TrackedWaypoint.PitchDirection.NONE;
         }
     }
 
-    public static double yawAngleToCamera(Camera camera, ChunkPos chunkPos) {
-        Vec3 vec3 = camera.position();
-        Vec3 vec31 = vec3.subtract(Vec3.atCenterOf(chunkPos.getMiddleBlockPosition((int) vec3.y()))).rotateClockwise90();
-        float f = (float) Mth.atan2(vec31.z(), vec31.x()) * (180.0F / (float) Math.PI);
+    public static double yawAngleToCamera(TrackedWaypoint.Camera camera, Vec3 pingPos) {
+        Vec3 vec3 = camera.position().subtract(pingPos).rotateClockwise90();
+        float f = (float) Mth.atan2(vec3.z(), vec3.x()) * (180F / (float) Math.PI);
         return Mth.degreesDifference(camera.yaw(), f);
     }
 
@@ -185,12 +196,11 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void renderPing(double px, double py, double pz, PoseStack poseStack, Camera camera, float partialTicks, PingWrapper ping) {
+    public static void renderPing(double px, double py, double pz, PoseStack poseStack, CameraRenderState cameraRenderState, float partialTicks, PingWrapper ping) {
         Minecraft mc = Minecraft.getInstance();
         poseStack.pushPose();
         poseStack.translate(px, py, pz);
-        poseStack.mulPose(Axis.YP.rotationDegrees(-camera.getYRot()));
-        poseStack.mulPose(Axis.XP.rotationDegrees(camera.getXRot()));
+        poseStack.mulPose(cameraRenderState.orientation);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
         PoseStack.Pose matrixEntry = poseStack.last();
@@ -212,7 +222,7 @@ public class PingHandlerHelper {
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
 
         // Block Overlay Icon
-        float alpha = ping.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.15F) > 0) ? 0.85F : 0.3F : 0.85F;
+        float alpha = ping.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.25F) > 0) ? 0.85F : 0.25F : 0.85F;
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
         VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);

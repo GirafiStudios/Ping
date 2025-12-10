@@ -6,9 +6,15 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.LevelRenderState;
 
 public class ClientHandler implements ClientModInitializer {
+    public static final RenderStateDataKey<Frustum> FRUSTUM = RenderStateDataKey.create(() -> "PingFrustum");
+    public static final RenderStateDataKey<Float> PARTIAL_TICKS = RenderStateDataKey.create(() -> "PingPartialTicks");
 
     @Override
     public void onInitializeClient() {
@@ -30,12 +36,21 @@ public class ClientHandler implements ClientModInitializer {
             }
         });
 
-        WorldRenderEvents.AFTER_TRANSLUCENT.register((renderContext) -> {
-            PingHandlerHelper.translateWorldPing(renderContext.matrixStack(), renderContext.frustum(), renderContext.tickCounter().getGameTimeDeltaTicks());
+        WorldRenderEvents.AFTER_ENTITIES.register((renderContext) -> {
+            LevelRenderState levelRenderState = renderContext.worldState();
+            PingHandlerHelper.translateWorldPing(renderContext.matrices(), levelRenderState, levelRenderState.getData(FRUSTUM), levelRenderState.getData(PARTIAL_TICKS));
         });
+
+        WorldRenderEvents.END_EXTRACTION.register(this::stateExtraction);
 
         HudRenderCallback.EVENT.register((guiGraphics, delta) -> {
             PingHandlerHelper.renderPingDirector(guiGraphics, delta.getGameTimeDeltaTicks());
         });
+    }
+
+    public void stateExtraction(WorldExtractionContext context) {
+        LevelRenderState levelRenderState = context.worldState();
+        levelRenderState.setData(FRUSTUM, context.frustum());
+        levelRenderState.setData(PARTIAL_TICKS, context.tickCounter().getGameTimeDeltaTicks());
     }
 }

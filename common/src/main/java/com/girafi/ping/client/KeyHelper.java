@@ -21,7 +21,7 @@ public class KeyHelper {
         }
 
         //PING MENU
-        boolean isPingMenyKeyPressed = InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), PingKeybinds.KEY_BINDING.key.getValue());
+        boolean isPingMenyKeyPressed = InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), PingKeybinds.KEY_BINDING.key.getValue());
 
         if (isPingMenyKeyPressed && !wasPingMenyKeyPressed) {
             PingSelectGui.activate();
