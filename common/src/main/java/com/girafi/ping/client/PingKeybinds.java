@@ -2,11 +2,11 @@ package com.girafi.ping.client;
 
 import com.girafi.ping.Constants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public class PingKeybinds {
-    private static final KeyMapping.Category PING_CATEGORY =  KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "key.categories.ping"));
+    private static final KeyMapping.Category PING_CATEGORY =  KeyMapping.Category.register(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "key.categories.ping"));
     public static final KeyMapping KEY_BINDING = new KeyMapping("key.ping", GLFW.GLFW_KEY_V, PING_CATEGORY);
     public static final KeyMapping PING_ALERT = new KeyMapping("ping.key.alert", GLFW.GLFW_KEY_KP_4, PING_CATEGORY);
     public static final KeyMapping PING_MINE = new KeyMapping("ping.key.mine", GLFW.GLFW_KEY_KP_5, PING_CATEGORY);

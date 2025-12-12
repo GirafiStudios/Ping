@@ -16,12 +16,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -38,14 +38,14 @@ import java.util.Iterator;
 import java.util.List;
 
 public class PingHandlerHelper {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "textures/ping.png");
-    public static final ResourceLocation BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/button");
-    public static final ResourceLocation ALERT_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/alert");
-    public static final ResourceLocation MINE_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/mine");
-    public static final ResourceLocation LOOK_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/look");
-    public static final ResourceLocation GOTO_BUTTON = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ping/goto");
-    private static final ResourceLocation LOCATOR_BAR_ARROW_UP = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_up");
-    private static final ResourceLocation LOCATOR_BAR_ARROW_DOWN = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_down");
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "textures/ping.png");
+    public static final Identifier BUTTON = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ping/button");
+    public static final Identifier ALERT_BUTTON = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ping/alert");
+    public static final Identifier MINE_BUTTON = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ping/mine");
+    public static final Identifier LOOK_BUTTON = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ping/look");
+    public static final Identifier GOTO_BUTTON = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ping/goto");
+    private static final Identifier LOCATOR_BAR_ARROW_UP = Identifier.withDefaultNamespace("hud/locator_bar_arrow_up");
+    private static final Identifier LOCATOR_BAR_ARROW_DOWN = Identifier.withDefaultNamespace("hud/locator_bar_arrow_down");
     private static final List<PingWrapper> ACTIVE_PINGS = Collections.synchronizedList(new ArrayList<>());
 
     public static void onPingPacket(ServerBroadcastPing packet) {
@@ -113,7 +113,7 @@ public class PingHandlerHelper {
                             angleToCamera = 60.0;
                         }
                         int j = Mth.ceil((guiGraphics.guiWidth() - 9) / 2.0F);
-                        ResourceLocation icon = pickPingIcon(pingWrapper.type);
+                        Identifier icon = pickPingIcon(pingWrapper.type);
                         int l = (int) (angleToCamera * 173.0 / 2.0 / 60.0);
                         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON, j + l, windowTop - 2, 9, 9, pingWrapper.color);
                         float alpha = pingWrapper.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.25F) > 0) ? 0.85F : 0.25F : 0.85F;
@@ -121,7 +121,7 @@ public class PingHandlerHelper {
                         TrackedWaypoint.PitchDirection pitchDirection = pitchDirectionToCamera(mc.gameRenderer, pingPos);
                         if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
                             int yOffset;
-                            ResourceLocation directionIcon;
+                            Identifier directionIcon;
                             if (pitchDirection == TrackedWaypoint.PitchDirection.DOWN) {
                                 yOffset = 6;
                                 directionIcon = LOCATOR_BAR_ARROW_DOWN;
@@ -137,7 +137,7 @@ public class PingHandlerHelper {
         }
     }
 
-    public static ResourceLocation pickPingIcon(PingType pingType) {
+    public static Identifier pickPingIcon(PingType pingType) {
         return switch (pingType) {
             case ALERT -> ALERT_BUTTON;
             case MINE -> MINE_BUTTON;
@@ -206,7 +206,7 @@ public class PingHandlerHelper {
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f matrix4f = matrixEntry.pose();
         MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-        RenderType pingType = PingRenderType.pingIcon(TEXTURE);
+        RenderType pingType = PingRenderType.ping(TEXTURE);
         VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);

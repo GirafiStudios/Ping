@@ -5,13 +5,13 @@ import com.girafi.ping.client.PingHandlerHelper;
 import com.girafi.ping.data.PingWrapper;
 import commonnetwork.networking.data.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Sent from the Server, handled on the Client
  */
 public class ServerBroadcastPing {
-    public static final ResourceLocation CHANNEL = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "server_broadcast_ping");
+    public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "server_broadcast_ping");
     public PingWrapper ping;
 
     public ServerBroadcastPing() {

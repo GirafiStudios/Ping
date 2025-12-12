@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Matrix4f;
@@ -17,7 +17,7 @@ public class PingRenderHelper {
         TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(overlayBlock).particleIcon();
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f posMatrix = matrixEntry.pose();
-        RenderType pingOverlay = PingRenderType.pingOverlay();
+        RenderType pingOverlay = PingRenderType.ping(icon.atlasLocation());
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         VertexConsumer vertexConsumer = buffer.getBuffer(pingOverlay);
 

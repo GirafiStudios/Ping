@@ -6,14 +6,14 @@ import com.girafi.ping.util.PingConfig;
 import commonnetwork.api.Dispatcher;
 import commonnetwork.networking.data.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
  * Sent from the Client, handled on the Server
  */
 public class ClientSendPing {
-    public static final ResourceLocation CHANNEL = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "client_send_ping");
+    public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "client_send_ping");
     private PingWrapper ping;
 
     public ClientSendPing() {

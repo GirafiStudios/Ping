@@ -10,21 +10,21 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 public class PingButton extends Button {
-    protected final ResourceLocation pingIcon;
+    protected final Identifier pingIcon;
     protected final PingType pingType;
 
-    public PingButton(ResourceLocation pingIcon, PingType pingType, int x, int y) {
+    public PingButton(Identifier pingIcon, PingType pingType, int x, int y) {
         super(x, y, 32, 32, Component.translatable("ping.key." + pingType.toString().toLowerCase()), b -> ClientHandlerBase.sendPing(pingType), Button.DEFAULT_NARRATION);
         this.pingIcon = pingIcon;
         this.pingType = pingType;
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         guiGraphics.blitSprite(
                 RenderPipelines.GUI_TEXTURED,

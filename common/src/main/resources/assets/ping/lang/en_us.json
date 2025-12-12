@@ -1,6 +1,6 @@
 {
   "_comment": "Categories",
-  "ping:key.categories.ping": "Ping",
+  "key.category.ping.key.categories.ping": "Ping",
 
   "_comment": "Pings",
   "key.ping": "Open Ping menu",

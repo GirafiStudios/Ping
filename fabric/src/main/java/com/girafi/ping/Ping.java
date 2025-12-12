@@ -6,7 +6,7 @@ import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.config.ModConfig;
 
 public class Ping implements ModInitializer {
@@ -15,6 +15,6 @@ public class Ping implements ModInitializer {
     public void onInitialize() {
         PingCommon.registerPackets();
         ConfigRegistry.INSTANCE.register(Constants.MOD_ID, ModConfig.Type.COMMON, PingConfig.spec);
-        Registry.register(BuiltInRegistries.SOUND_EVENT, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "bloop"), PingSounds.BLOOP.get());
+        Registry.register(BuiltInRegistries.SOUND_EVENT, Identifier.fromNamespaceAndPath(Constants.MOD_ID, "bloop"), PingSounds.BLOOP.get());
     }
 }
