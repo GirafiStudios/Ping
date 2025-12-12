@@ -17,11 +17,11 @@ public class PingConfig {
             pingAcceptDistance = builder
                     .comment("Maximum distance a Ping can be from you and still be received")
                     .translation("ping.configuration.pingAcceptDistance")
-                    .defineInRange("pingAcceptDistance", 64.0D, 0.0D, 255.0D);
+                    .defineInRange("pingAcceptDistance", 255.0D, 0.0D, 1000.0D);
             pingDuration = builder
                     .comment("How many ticks a Ping should remain active before disappearing")
                     .translation("ping.configuration.pingDuration")
-                    .defineInRange("pingDuration", 125, 0, Integer.MAX_VALUE - 1);
+                    .defineInRange("pingDuration", 150, 0, Integer.MAX_VALUE - 1);
             sound = builder
                     .comment("Whether to play a sound when a Ping is received")
                     .translation("ping.configuration.sound")

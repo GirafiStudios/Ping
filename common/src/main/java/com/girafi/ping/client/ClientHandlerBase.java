@@ -24,7 +24,7 @@ public class ClientHandlerBase {
     }
 
     public static void sendPing(PingType type) {
-        BlockHitResult raytraceBlock = raytrace(Minecraft.getInstance().player, 50);
+        BlockHitResult raytraceBlock = raytrace(Minecraft.getInstance().player, PingConfig.GENERAL.pingAcceptDistance.get());
         if (raytraceBlock.getType() == HitResult.Type.BLOCK) {
             sendPing(raytraceBlock, new Color(PingConfig.VISUAL.pingR.get(), PingConfig.VISUAL.pingG.get(), PingConfig.VISUAL.pingB.get()).getRGB(), type);
         }
