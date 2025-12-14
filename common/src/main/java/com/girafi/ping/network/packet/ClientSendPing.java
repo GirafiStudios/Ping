@@ -6,6 +6,8 @@ import com.girafi.ping.util.PingConfig;
 import commonnetwork.api.Dispatcher;
 import commonnetwork.networking.data.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -14,21 +16,26 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public class ClientSendPing {
     public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "client_send_ping");
+    public static final StreamCodec<FriendlyByteBuf, ClientSendPing> STREAM_CODEC = StreamCodec.ofMember(ClientSendPing::encode, ClientSendPing::new);
     private PingWrapper ping;
 
     public ClientSendPing() {
+    }
+
+    public ClientSendPing(FriendlyByteBuf buf) {
+        this.ping = PingWrapper.readFromBuffer(buf);
     }
 
     public ClientSendPing(PingWrapper ping) {
         this.ping = ping;
     }
 
-    public static void encode(ClientSendPing pingPacket, FriendlyByteBuf buf) {
-        pingPacket.ping.writeToBuffer(buf);
+    public static CustomPacketPayload.Type<CustomPacketPayload> type() {
+        return new CustomPacketPayload.Type<>(CHANNEL);
     }
 
-    public static ClientSendPing decode(FriendlyByteBuf buf) {
-        return new ClientSendPing(PingWrapper.readFromBuffer(buf));
+    public static void encode(ClientSendPing pingPacket, FriendlyByteBuf buf) {
+        pingPacket.ping.writeToBuffer(buf);
     }
 
     public PingWrapper getPing() {

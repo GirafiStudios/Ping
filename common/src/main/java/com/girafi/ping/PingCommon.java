@@ -7,7 +7,7 @@ import commonnetwork.CommonNetworkMod;
 public class PingCommon {
 
     public static void registerPackets() {
-        CommonNetworkMod.registerPacket(ClientSendPing.CHANNEL, ClientSendPing.class, ClientSendPing::encode, ClientSendPing::decode, ClientSendPing::handle)
-                .registerPacket(ServerBroadcastPing.CHANNEL, ServerBroadcastPing.class, ServerBroadcastPing::encode, ServerBroadcastPing::decode, ServerBroadcastPing::handle);
+        CommonNetworkMod.registerPacket(ClientSendPing.type(), ClientSendPing.class, ClientSendPing.STREAM_CODEC, ClientSendPing::handle)
+                .registerPacket(ServerBroadcastPing.type(), ServerBroadcastPing.class, ServerBroadcastPing.STREAM_CODEC,  ServerBroadcastPing::handle);
     }
 }
