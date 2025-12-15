@@ -45,6 +45,7 @@ neoForge {
 
 dependencies {
 	jarJar(implementation ("mysticdrew:common-networking-neoforge:${common_networking}-${minecraft_version}")) { transitive false }
+    implementation "maven.modrinth:iris:${iris_version}+${minecraft_version}-fabric"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

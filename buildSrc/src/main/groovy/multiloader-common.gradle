@@ -49,6 +49,10 @@ repositories {
 		name = "Common Networking by Mysticdrew"
         url = "https://jm.gserv.me/repository/maven-public/"
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+   }
 }
 
 // Declare capabilities on the outgoing configurations.

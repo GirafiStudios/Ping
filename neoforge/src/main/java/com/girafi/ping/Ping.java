@@ -1,7 +1,11 @@
 package com.girafi.ping;
 
+import com.girafi.ping.client.PingRenderType;
+import com.girafi.ping.platform.Services;
 import com.girafi.ping.util.PingConfig;
 import com.girafi.ping.util.PingSounds;
+import net.irisshaders.iris.api.v0.IrisApi;
+import net.irisshaders.iris.api.v0.IrisProgram;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -28,6 +32,10 @@ public class Ping {
 
         registerDeferredRegistries(eventBus);
         SOUND_EVENT_DEFERRED.register("bloop", PingSounds.BLOOP);
+
+        if (Services.PLATFORM.isModLoaded("iris")) {
+            IrisApi.getInstance().assignPipeline(PingRenderType.PING_PIPELINE, IrisProgram.TEXTURED);
+        }
     }
 
     public static void registerDeferredRegistries(IEventBus modBus) {
