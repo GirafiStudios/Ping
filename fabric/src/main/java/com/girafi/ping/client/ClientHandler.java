@@ -1,16 +1,12 @@
 package com.girafi.ping.client;
 
-import com.girafi.ping.Constants;
 import com.girafi.ping.PingCommon;
 import com.girafi.ping.client.gui.PingSelectGui;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.resources.ResourceLocation;
 
 public class ClientHandler implements ClientModInitializer {
 
@@ -25,11 +21,6 @@ public class ClientHandler implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_LOOK);
         KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_GOTO);
 
-        CoreShaderRegistrationCallback.EVENT.register((context -> {
-            context.register(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "rendertype_ping"), DefaultVertexFormat.POSITION_TEX_COLOR, program -> {
-                ClientHandlerBase.rendertypePing = program;
-            });
-        }));
         ClientTickEvents.END_CLIENT_TICK.register((mc) -> {
             PingHandlerHelper.pingTimer();
             KeyHelper.onTick();
