@@ -1,10 +1,12 @@
 package com.girafi.ping.network.packet;
 
 import com.girafi.ping.Constants;
+import com.girafi.ping.PingCommon;
 import com.girafi.ping.data.PingWrapper;
 import com.girafi.ping.util.PingConfig;
 import commonnetwork.api.Dispatcher;
 import commonnetwork.networking.data.PacketContext;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -43,9 +45,15 @@ public class ClientSendPing {
     }
 
     public static void handle(PacketContext<ClientSendPing> ctx) {
-        ServerPlayer playerMP = ctx.sender();
-        if (playerMP != null) {
-            Dispatcher.sendToClientsInRange(new ServerBroadcastPing(ctx.message().getPing()), playerMP.level(), ctx.message().getPing().pos, PingConfig.GENERAL.pingAcceptDistance.get());
+        ServerPlayer sender = ctx.sender();
+        if (sender != null) {
+            ServerBroadcastPing serverBroadcastPing = new ServerBroadcastPing(ctx.message().getPing());
+            BlockPos pos = ctx.message().ping.pos;
+            if (PingConfig.GENERAL.sendToTeamOnly.get()) {
+                PingCommon.sendToClientsInRangeWithTeamCheck(serverBroadcastPing, sender, sender.level(), pos, PingConfig.GENERAL.pingAcceptDistance.get());
+            } else {
+                Dispatcher.sendToClientsInRange(serverBroadcastPing, sender.level(), pos, PingConfig.GENERAL.pingAcceptDistance.get());
+            }
         }
     }
 }

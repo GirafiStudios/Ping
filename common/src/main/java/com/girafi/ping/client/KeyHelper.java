@@ -15,7 +15,6 @@ public class KeyHelper {
     private static boolean quickPingGotoHeld = false;
     private static boolean wasPingMenuKeyPressed = false;
 
-
     public static void onTick() {
         Minecraft mc = Minecraft.getInstance();
 

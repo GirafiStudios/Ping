@@ -26,6 +26,8 @@
   "ping.configuration.pingDuration.tooltip": "Configure how long your Ping stays visible",
   "ping.configuration.sound": "Play Ping Sound",
   "ping.configuration.sound.tooltip": "Configure if a ping sound should play",
+  "ping.configuration.teamOnly": "Team Pings",
+  "ping.configuration.sendToTeamOnly.tooltip": "Should Pings only be sent to players on the same team?",
   "ping.configuration.blockOverlay": "Render Ping Block Overlay",
   "ping.configuration.blockOverlay.tooltip": "Configure whether the ping block overlay should render or not",
   "ping.configuration.menuBackground": "Render Ping Menu Background",

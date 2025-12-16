@@ -11,6 +11,7 @@ public class PingConfig {
         public ModConfigSpec.DoubleValue pingAcceptDistance;
         public ModConfigSpec.IntValue pingDuration;
         public ModConfigSpec.BooleanValue sound;
+        public ModConfigSpec.BooleanValue sendToTeamOnly;
 
         General(ModConfigSpec.Builder builder) {
             builder.push("general");
@@ -26,6 +27,10 @@ public class PingConfig {
                     .comment("Whether to play a sound when a Ping is received")
                     .translation("ping.configuration.sound")
                     .define("sound", true);
+            sendToTeamOnly = builder
+                    .comment("Should Pings only be sent to players on the same team?")
+                    .translation("ping.configuration.teamOnly")
+                    .define("sendToTeamOnly", false);
             builder.pop();
         }
     }
