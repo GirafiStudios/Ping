@@ -4,13 +4,14 @@ import com.girafi.ping.PingCommon;
 import com.girafi.ping.client.gui.PingSelectGui;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
+import net.minecraft.resources.Identifier;
 
 public class ClientHandler implements ClientModInitializer {
     public static final RenderStateDataKey<Frustum> FRUSTUM = RenderStateDataKey.create(() -> "PingFrustum");
@@ -21,11 +22,11 @@ public class ClientHandler implements ClientModInitializer {
         PingCommon.registerPackets();
 
         //Register keybinds
-        KeyBindingHelper.registerKeyBinding(PingKeybinds.KEY_BINDING);
-        KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_ALERT);
-        KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_MINE);
-        KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_LOOK);
-        KeyBindingHelper.registerKeyBinding(PingKeybinds.PING_GOTO);
+        KeyMappingHelper.registerKeyMapping(PingKeybinds.KEY_BINDING);
+        KeyMappingHelper.registerKeyMapping(PingKeybinds.PING_ALERT);
+        KeyMappingHelper.registerKeyMapping(PingKeybinds.PING_MINE);
+        KeyMappingHelper.registerKeyMapping(PingKeybinds.PING_LOOK);
+        KeyMappingHelper.registerKeyMapping(PingKeybinds.PING_GOTO);
 
         ClientTickEvents.END_CLIENT_TICK.register((mc) -> {
             PingHandlerHelper.pingTimer();
@@ -36,21 +37,21 @@ public class ClientHandler implements ClientModInitializer {
             }
         });
 
-        WorldRenderEvents.AFTER_ENTITIES.register((renderContext) -> {
-            LevelRenderState levelRenderState = renderContext.worldState();
-            PingHandlerHelper.translateWorldPing(renderContext.matrices(), levelRenderState, levelRenderState.getData(FRUSTUM), levelRenderState.getData(PARTIAL_TICKS));
+        LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register((renderContext) -> {
+            LevelRenderState levelRenderState = renderContext.levelState();
+            PingHandlerHelper.translateWorldPing(renderContext.poseStack(), levelRenderState, levelRenderState.getData(FRUSTUM), levelRenderState.getData(PARTIAL_TICKS));
         });
 
-        WorldRenderEvents.END_EXTRACTION.register(this::stateExtraction);
+        LevelRenderEvents.END_EXTRACTION.register(this::stateExtraction);
 
-        HudRenderCallback.EVENT.register((guiGraphics, delta) -> {
+        HudElementRegistry.addLast(Identifier.fromNamespaceAndPath("ping", "overlay"), (guiGraphics, delta) -> {
             PingHandlerHelper.renderPingDirector(guiGraphics, delta.getGameTimeDeltaTicks());
         });
     }
 
-    public void stateExtraction(WorldExtractionContext context) {
-        LevelRenderState levelRenderState = context.worldState();
-        levelRenderState.setData(FRUSTUM, context.frustum());
-        levelRenderState.setData(PARTIAL_TICKS, context.tickCounter().getGameTimeDeltaTicks());
+    public void stateExtraction(LevelExtractionContext context) {
+        LevelRenderState levelRenderState = context.levelState();
+        levelRenderState.setData(FRUSTUM, context.camera().getCullFrustum());
+        levelRenderState.setData(PARTIAL_TICKS, context.deltaTracker().getGameTimeDeltaTicks());
     }
 }

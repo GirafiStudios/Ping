@@ -13,13 +13,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
@@ -89,14 +89,14 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void renderPingDirector(GuiGraphics guiGraphics, float partialTicks) {
+    public static void renderPingDirector(GuiGraphicsExtractor guiGraphics, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
         if (mc != null && mc.level != null) {
             renderPingOnLocatorBar(guiGraphics, mc, partialTicks);
         }
     }
 
-    public static void renderPingOnLocatorBar(GuiGraphics guiGraphics, Minecraft mc, float partialTicks) {
+    public static void renderPingOnLocatorBar(GuiGraphicsExtractor guiGraphics, Minecraft mc, float partialTicks) {
         int windowTop = top(mc.getWindow());
         Entity cameraEntity = mc.getCameraEntity();
         if (cameraEntity instanceof Player player) {

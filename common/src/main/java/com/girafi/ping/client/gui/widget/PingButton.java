@@ -6,7 +6,7 @@ import com.girafi.ping.client.gui.PingSelectGui;
 import com.girafi.ping.data.PingType;
 import com.girafi.ping.util.PingConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,7 @@ public class PingButton extends Button {
     }
 
     @Override
-    protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         guiGraphics.blitSprite(
                 RenderPipelines.GUI_TEXTURED,
@@ -49,7 +49,7 @@ public class PingButton extends Button {
             int halfHeight = (PingSelectGui.ITEM_SIZE + PingSelectGui.ITEM_PADDING) / 2;
             int backgroundY = mc.getWindow().getGuiScaledHeight() / 4 - halfHeight;
             String pingString = this.pingType.toString();
-            guiGraphics.drawString(mc.font, pingString, mc.getWindow().getGuiScaledWidth() / 2 - mc.font.width(pingString) / 2, (backgroundY + halfHeight * 2) - 2, ARGB.white(this.alpha), true);
+            guiGraphics.text(mc.font, pingString, mc.getWindow().getGuiScaledWidth() / 2 - mc.font.width(pingString) / 2, (backgroundY + halfHeight * 2) - 2, ARGB.white(this.alpha), true);
         }
     }
 }

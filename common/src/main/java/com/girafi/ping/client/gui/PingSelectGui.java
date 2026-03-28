@@ -5,7 +5,7 @@ import com.girafi.ping.client.gui.widget.PingButton;
 import com.girafi.ping.data.PingType;
 import com.girafi.ping.util.PingConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -51,7 +51,7 @@ public class PingSelectGui extends Screen {
     }
 
     @Override
-    public void renderBackground(@Nonnull GuiGraphics guiGraphics, int i, int i1, float i2) {
+    public void extractBackground(@Nonnull GuiGraphicsExtractor guiGraphics, int i, int i1, float i2) {
         if (PingConfig.VISUAL.menuBackground.get()) {
             int halfWidth = (ITEM_SIZE * 4) - (ITEM_PADDING * 4);
             int halfHeight = (ITEM_SIZE + ITEM_PADDING) / 2;

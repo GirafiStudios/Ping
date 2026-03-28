@@ -14,7 +14,7 @@ import org.joml.Matrix4f;
 public class PingRenderHelper {
 
     public static void drawBlockOverlay(float width, float height, float length, PoseStack poseStack, BlockState overlayBlock, PingWrapper ping, int alpha) {
-        TextureAtlasSprite icon = Minecraft.getInstance().getBlockRenderer().getBlockModel(overlayBlock).particleIcon();
+        TextureAtlasSprite icon = Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(overlayBlock).sprite();
         PoseStack.Pose matrixEntry = poseStack.last();
         Matrix4f posMatrix = matrixEntry.pose();
         RenderType pingOverlay = PingRenderType.ping(icon.atlasLocation());

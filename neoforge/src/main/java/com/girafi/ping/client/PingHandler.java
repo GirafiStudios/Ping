@@ -2,7 +2,7 @@ package com.girafi.ping.client;
 
 import com.girafi.ping.Constants;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.api.distmarker.Dist;
@@ -18,7 +18,7 @@ public class PingHandler {
     public static final ContextKey<Float> PARTIAL_TICKS = new ContextKey<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "partial_ticks"));
 
     @SubscribeEvent
-    public static void onRenderWorld(RenderLevelStageEvent.AfterParticles event) {
+    public static void onRenderWorld(RenderLevelStageEvent.AfterTranslucentParticles event) {
         LevelRenderState levelRenderState = event.getLevelRenderState();
         PingHandlerHelper.translateWorldPing(event.getPoseStack(), levelRenderState, levelRenderState.getRenderData(PING_FRUSTUM), levelRenderState.getRenderData(PARTIAL_TICKS));
     }
