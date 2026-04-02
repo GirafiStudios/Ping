@@ -19,7 +19,7 @@ neoForge {
 dependencies {
     compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    compileOnly "mysticdrew:common-networking-common:${common_networking}-${minecraft_version}"
+    compileOnly "mysticdrew:common-networking-common:${common_networking}-26.1"
 	implementation ("fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api_port}") { transitive = false }
 }
 

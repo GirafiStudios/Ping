@@ -16,10 +16,10 @@ dependencies {
     implementation "com.google.code.findbugs:jsr305:3.0.1"
 	
 	implementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port}"
-    implementation "mysticdrew:common-networking-fabric:${common_networking}-${minecraft_version}"
-    include "mysticdrew:common-networking-fabric:${common_networking}-${minecraft_version}"
+    implementation "mysticdrew:common-networking-fabric:${common_networking}-26.1"
+    include "mysticdrew:common-networking-fabric:${common_networking}-26.1"
 
-    implementation "maven.modrinth:iris:${iris_version}+${minecraft_version}-fabric"
+    implementation "maven.modrinth:iris:${iris_version}+26.1-fabric"
 }
 
 loom {
