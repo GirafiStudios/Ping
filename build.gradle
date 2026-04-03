@@ -15,7 +15,8 @@ registrationUtils {
 }
 
 ext {
-    parseVersionRange = { String range, int maxPatch = 10 ->
+    parseVersionRange = { String range, String minecraftVersion ->
+        def maxPatch = (minecraftVersion.tokenize('.')?.getAt(2) ?: 0) as int
         def cleaned = range.trim()[1..-2]
         def (minRaw, maxRaw) = cleaned.split(',')
 

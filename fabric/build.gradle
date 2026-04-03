@@ -57,7 +57,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
     mainFile.addModLoader('Fabric')
     mainFile.addRequirement('fabric-api')
     mainFile.addRequirement('forge-config-api-port')
-    def vr = rootProject.parseVersionRange(minecraft_version_range)
+    def vr = rootProject.parseVersionRange(minecraft_version_range, minecraft_version)
     mainFile.addGameVersion(*vr.quoted)
 }
 
@@ -71,7 +71,7 @@ modrinth {
     versionName = "${mod_name}-fabric-${minecraft_version}-${version}"
     versionType = "release"
     loaders = ["fabric"]
-    gameVersions = rootProject.parseVersionRange(minecraft_version_range).list
+    gameVersions = rootProject.parseVersionRange(minecraft_version_range, minecraft_version).list
     uploadFile = jar
     dependencies {
         required.project('fabric-api')
