@@ -10,11 +10,10 @@ import com.girafi.ping.util.PingConfig;
 import com.girafi.ping.util.PingSounds;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -61,7 +60,7 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void translateWorldPing(PoseStack poseStack, LevelRenderState levelRenderState, Frustum frustum, float partialTicks) {
+    public static void translateWorldPing(PoseStack poseStack, SubmitNodeCollector collector, LevelRenderState levelRenderState, Frustum frustum, float partialTicks) {
         if (ACTIVE_PINGS.isEmpty() || ACTIVE_PINGS.contains(null)) return;
         Minecraft mc = Minecraft.getInstance();
         CameraRenderState cameraRenderState = levelRenderState.cameraRenderState;
@@ -80,9 +79,9 @@ public class PingHandlerHelper {
 
                     if (frustum.isVisible(ping.getAABB())) {
                         if (PingConfig.VISUAL.blockOverlay.get()) {
-                            renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), mc, poseStack, ping);
+                            renderPingOverlay(ping.pos.getX() - cameraPos.x(), ping.pos.getY() - cameraPos.y(), ping.pos.getZ() - cameraPos.z(), mc, poseStack, collector, ping);
                         }
-                        renderPing(px, py, pz, poseStack, cameraRenderState, partialTicks, ping);
+                        renderPing(px, py, pz, poseStack, collector, cameraRenderState, partialTicks, ping);
                     }
                 });
             }
@@ -104,7 +103,7 @@ public class PingHandlerHelper {
 
             ACTIVE_PINGS.forEach(pingWrapper -> {
                         Vec3 pingPos = new Vec3(pingWrapper.pos.getX(), pingWrapper.pos.getY(), pingWrapper.pos.getZ());
-                        double angleToCamera = yawAngleToCamera(mc.gameRenderer.getMainCamera(), pingPos);
+                        double angleToCamera = yawAngleToCamera(mc.gameRenderer.mainCamera(), pingPos);
 
                         //Keep inside exp bar
                         if (angleToCamera <= -61.0) {
@@ -196,18 +195,14 @@ public class PingHandlerHelper {
         }
     }
 
-    public static void renderPing(double px, double py, double pz, PoseStack poseStack, CameraRenderState cameraRenderState, float partialTicks, PingWrapper ping) {
+    public static void renderPing(double px, double py, double pz, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraRenderState, float partialTicks, PingWrapper ping) {
         Minecraft mc = Minecraft.getInstance();
         poseStack.pushPose();
         poseStack.translate(px, py, pz);
         poseStack.mulPose(cameraRenderState.orientation);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
-        PoseStack.Pose matrixEntry = poseStack.last();
-        Matrix4f matrix4f = matrixEntry.pose();
-        MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
         RenderType pingType = PingRenderType.ping(TEXTURE);
-        VertexConsumer vertexBuilder = buffer.getBuffer(pingType);
 
         float min = -0.25F - (0.25F * (float) ping.animationTimer / 20F);
         float max = 0.25F + (0.25F * (float) ping.animationTimer / 20F);
@@ -216,30 +211,37 @@ public class PingHandlerHelper {
         int r = ping.color >> 16 & 255;
         int g = ping.color >> 8 & 255;
         int b = ping.color & 255;
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
-
-        // Block Overlay Icon
         float alpha = ping.type == PingType.ALERT ? (Mth.sin((mc.level.getGameTime() + partialTicks) * 0.25F) > 0) ? 0.85F : 0.25F : 0.85F;
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, ping.type.getMinU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, ping.type.getMaxU(), ping.type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, ping.type.getMaxU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-        VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, ping.type.getMinU(), ping.type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
-        buffer.endBatch(pingType);
+        PingType type = ping.type;
+
+        // Submitted in a later order than the block overlay, as draw order between different render types within the same order is not guaranteed
+        collector.order(1).submitCustomGeometry(poseStack, pingType, (pose, vertexBuilder) -> {
+            Matrix4f matrix4f = pose.pose();
+
+            // Block Overlay Background
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMaxV(), r, g, b, 255);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, PingType.BACKGROUND.getMaxU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, PingType.BACKGROUND.getMinU(), PingType.BACKGROUND.getMinV(), r, g, b, 255);
+
+            // Block Overlay Icon
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, max, type.getMinU(), type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, max, type.getMaxU(), type.getMaxV(), 1.0F, 1.0F, 1.0F, alpha);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, max, min, type.getMaxU(), type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+            VertexHelper.renderPosTexColorNoZ(vertexBuilder, matrix4f, min, min, type.getMinU(), type.getMinV(), 1.0F, 1.0F, 1.0F, alpha);
+        });
 
         poseStack.popPose();
     }
 
-    public static void renderPingOverlay(double x, double y, double z, Minecraft mc, PoseStack poseStack, PingWrapper ping) {
+    public static void renderPingOverlay(double x, double y, double z, Minecraft mc, PoseStack poseStack, SubmitNodeCollector collector, PingWrapper ping) {
         float padding = 0F + (0.20F * (float) ping.animationTimer / (float) 20);
         float box = 1 + padding + padding;
-        BlockState overlayBlock = Blocks.WHITE_STAINED_GLASS.defaultBlockState();
+        BlockState overlayBlock = Blocks.STAINED_GLASS.white().defaultBlockState();
 
         poseStack.pushPose();
         poseStack.translate(x + 0.5, y + 0.5, z + 0.5);
-        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, overlayBlock, ping, 175);
+        PingRenderHelper.drawBlockOverlay(box, box, box, poseStack, collector, overlayBlock, ping, 175);
         poseStack.popPose();
     }
 }

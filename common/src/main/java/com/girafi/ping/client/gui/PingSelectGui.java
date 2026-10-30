@@ -22,16 +22,16 @@ public class PingSelectGui extends Screen {
     }
 
     public static void activate() {
-        if (Minecraft.getInstance().screen == null) {
+        if (Minecraft.getInstance().gui.screen() == null) {
             active = true;
-            Minecraft.getInstance().setScreen(INSTANCE);
+            Minecraft.getInstance().gui.setScreen(INSTANCE);
         }
     }
 
     public static void deactivate() {
-        if (Minecraft.getInstance().screen == INSTANCE) {
+        if (Minecraft.getInstance().gui.screen() == INSTANCE) {
             active = false;
-            Minecraft.getInstance().setScreen(null);
+            Minecraft.getInstance().gui.setScreen(null);
         }
     }
 

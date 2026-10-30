@@ -34,7 +34,7 @@ public class KeyHelper {
             PingSelectGui.activate();
         }
         if (!isPingMenuKeyPressed && wasPingMenuKeyPressed) {
-            if (mc.screen instanceof PingSelectGui) {
+            if (mc.gui.screen() instanceof PingSelectGui) {
                 PingSelectGui.deactivate();
             }
         }

@@ -33,7 +33,7 @@ public class PingButton extends Button {
                 this.getY(),
                 this.getWidth(),
                 this.getHeight(),
-                this.isHoveredOrFocused() ? ARGB.color(PingConfig.VISUAL.pingR.get(), PingConfig.VISUAL.pingG.get(), PingConfig.VISUAL.pingB.get()) : ARGB.white(this.alpha)
+                this.isHovered() ? ARGB.color(PingConfig.VISUAL.pingR.get(), PingConfig.VISUAL.pingG.get(), PingConfig.VISUAL.pingB.get()) : ARGB.white(this.alpha)
         );
         guiGraphics.blitSprite(
                 RenderPipelines.GUI_TEXTURED,
@@ -45,7 +45,7 @@ public class PingButton extends Button {
                 ARGB.white(this.alpha)
         );
 
-        if (this.isHoveredOrFocused()) {
+        if (this.isHovered()) {
             int halfHeight = (PingSelectGui.ITEM_SIZE + PingSelectGui.ITEM_PADDING) / 2;
             int backgroundY = mc.getWindow().getGuiScaledHeight() / 4 - halfHeight;
             String pingString = this.pingType.toString();

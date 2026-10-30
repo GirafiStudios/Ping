@@ -13,24 +13,16 @@ java {
 }
 
 repositories {
-    mavenCentral()
-    // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Sponge'
-                url = 'https://repo.spongepowered.org/repository/maven-public'
-            }
-        }
-        filter { includeGroupAndSubgroups('org.spongepowered') }
+    maven {
+       name = 'Forge Config API Port mod'
+       url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+       content {
+         includeGroupAndSubgroups('fuzs')
+       }
     }
     maven {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
-    }
-    maven {
-        name = "Forge Config API Port mod"
-        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
     }
     maven {
 		name = "Common Networking by Mysticdrew"
@@ -42,17 +34,13 @@ repositories {
    }
 }
 
-sourcesJar {
+tasks.withType(Jar).configureEach {
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_name}" }
     }
 }
 
 jar {
-    from(rootProject.file('LICENSE')) {
-        rename { "${it}_${mod_name}" }
-    }
-
     manifest {
         attributes([
                 'Specification-Title'   : mod_name,
@@ -87,7 +75,7 @@ processResources {
     ]
 
     var jsonExpandProps = expandProps.collectEntries {
-        key, value -> [(key): value instanceof String ? value.replace("\n", "\\\\n") : value]
+        key, value -> [(key): value instanceof String ? value.replace('\n', '\\\\n') : value]
     }
 
     filesMatching(['META-INF/neoforge.mods.toml']) {

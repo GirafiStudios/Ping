@@ -5,6 +5,7 @@ import com.girafi.ping.network.packet.ServerBroadcastPing;
 import commonnetwork.CommonNetworkMod;
 import commonnetwork.api.Dispatcher;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.Team;
@@ -12,11 +13,11 @@ import net.minecraft.world.scores.Team;
 public class PingCommon {
 
     public static void registerPackets() {
-        CommonNetworkMod.registerPacket(ClientSendPing.type(), ClientSendPing.class, ClientSendPing.STREAM_CODEC, ClientSendPing::handle)
-                .registerPacket(ServerBroadcastPing.type(), ServerBroadcastPing.class, ServerBroadcastPing.STREAM_CODEC, ServerBroadcastPing::handle);
+        CommonNetworkMod.registerPacket(ClientSendPing.TYPE, ClientSendPing.STREAM_CODEC, ClientSendPing::handle)
+                .registerPacket(ServerBroadcastPing.TYPE, ServerBroadcastPing.STREAM_CODEC, ServerBroadcastPing::handle);
     }
 
-    public static <T> void sendToClientsInRangeWithTeamCheck(T packet, ServerPlayer sender, ServerLevel level, BlockPos pos, double range) {
+    public static <T extends CustomPacketPayload> void sendToClientsInRangeWithTeamCheck(T packet, ServerPlayer sender, ServerLevel level, BlockPos pos, double range) {
         double rangeSqr = range * range;
         Team senderTeam = sender.getTeam();
         boolean senderHasTeam = senderTeam != null;

@@ -37,9 +37,9 @@ public class ClientHandler implements ClientModInitializer {
             }
         });
 
-        LevelRenderEvents.AFTER_TRANSLUCENT_FEATURES.register((renderContext) -> {
+        LevelRenderEvents.COLLECT_SUBMITS.register((renderContext) -> {
             LevelRenderState levelRenderState = renderContext.levelState();
-            PingHandlerHelper.translateWorldPing(renderContext.poseStack(), levelRenderState, levelRenderState.getData(FRUSTUM), levelRenderState.getData(PARTIAL_TICKS));
+            PingHandlerHelper.translateWorldPing(renderContext.poseStack(), renderContext.submitNodeCollector(), levelRenderState, levelRenderState.getData(FRUSTUM), levelRenderState.getData(PARTIAL_TICKS));
         });
 
         LevelRenderEvents.END_EXTRACTION.register(this::stateExtraction);

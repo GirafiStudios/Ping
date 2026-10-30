@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id 'multiloader-loader'
     id 'net.neoforged.moddev'
-    id 'net.darkhax.curseforgegradle' version '1.1.+'
+    id 'net.darkhax.curseforgegradle' version '1.+'
     id "com.modrinth.minotaur" version "2.+"
 }
 
@@ -24,16 +24,16 @@ neoForge {
         }
         client {
             client()
-            gameDirectory = this.mkdir(this.file("runs/client"))
+            gameDirectory = this.mkdir(this.file('runs/client'))
         }
         data {
             clientData()
-            gameDirectory = this.mkdir(this.file("runs/data"))
+            gameDirectory = this.mkdir(this.file('runs/data'))
         }
         server {
             server()
-            this.file("runs/server").createParentDirectories()
-            gameDirectory = this.mkdir(this.file("runs/server"))
+            this.file('runs/server').createParentDirectories()
+            gameDirectory = this.mkdir(this.file('runs/server'))
         }
     }
     mods {
@@ -44,8 +44,9 @@ neoForge {
 }
 
 dependencies {
-	jarJar(implementation ("mysticdrew:common-networking-neoforge:${common_networking}-26.1")) { transitive false }
-    implementation "maven.modrinth:iris:${iris_version}+26.1-fabric"
+    jarJar(implementation ("mysticdrew:common-networking-neoforge:${minecraft_version}-${common_networking}")) { transitive false }
+    implementation "maven.modrinth:iris:${iris_version}+${minecraft_version}-neoforge"
+    runtimeOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}-neoforge")
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

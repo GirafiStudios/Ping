@@ -12,8 +12,9 @@ import net.minecraft.resources.Identifier;
 /**
  * Sent from the Server, handled on the Client
  */
-public class ServerBroadcastPing {
+public class ServerBroadcastPing implements CustomPacketPayload {
     public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "server_broadcast_ping");
+    public static final CustomPacketPayload.Type<ServerBroadcastPing> TYPE = new CustomPacketPayload.Type<>(CHANNEL);
     public static final StreamCodec<FriendlyByteBuf, ServerBroadcastPing> STREAM_CODEC = StreamCodec.ofMember(ServerBroadcastPing::encode, ServerBroadcastPing::new);
     public PingWrapper ping;
 
@@ -28,8 +29,9 @@ public class ServerBroadcastPing {
         this.ping = ping;
     }
 
-    public static CustomPacketPayload.Type<CustomPacketPayload> type() {
-        return new CustomPacketPayload.Type<>(CHANNEL);
+    @Override
+    public CustomPacketPayload.Type<ServerBroadcastPing> type() {
+        return TYPE;
     }
 
     public static void encode(ServerBroadcastPing pingPacket, FriendlyByteBuf buf) {

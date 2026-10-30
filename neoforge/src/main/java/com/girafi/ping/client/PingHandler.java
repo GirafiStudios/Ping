@@ -10,7 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 
 @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
 public class PingHandler {
@@ -18,9 +18,9 @@ public class PingHandler {
     public static final ContextKey<Float> PARTIAL_TICKS = new ContextKey<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "partial_ticks"));
 
     @SubscribeEvent
-    public static void onRenderWorld(RenderLevelStageEvent.AfterTranslucentParticles event) {
+    public static void onRenderWorld(SubmitCustomGeometryEvent event) {
         LevelRenderState levelRenderState = event.getLevelRenderState();
-        PingHandlerHelper.translateWorldPing(event.getPoseStack(), levelRenderState, levelRenderState.getRenderData(PING_FRUSTUM), levelRenderState.getRenderData(PARTIAL_TICKS));
+        PingHandlerHelper.translateWorldPing(event.getPoseStack(), event.getSubmitNodeCollector(), levelRenderState, levelRenderState.getRenderData(PING_FRUSTUM), levelRenderState.getRenderData(PARTIAL_TICKS));
     }
 
     @SubscribeEvent

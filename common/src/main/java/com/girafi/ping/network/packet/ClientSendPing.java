@@ -16,8 +16,9 @@ import net.minecraft.server.level.ServerPlayer;
 /**
  * Sent from the Client, handled on the Server
  */
-public class ClientSendPing {
+public class ClientSendPing implements CustomPacketPayload {
     public static final Identifier CHANNEL = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "client_send_ping");
+    public static final CustomPacketPayload.Type<ClientSendPing> TYPE = new CustomPacketPayload.Type<>(CHANNEL);
     public static final StreamCodec<FriendlyByteBuf, ClientSendPing> STREAM_CODEC = StreamCodec.ofMember(ClientSendPing::encode, ClientSendPing::new);
     private PingWrapper ping;
 
@@ -32,8 +33,9 @@ public class ClientSendPing {
         this.ping = ping;
     }
 
-    public static CustomPacketPayload.Type<CustomPacketPayload> type() {
-        return new CustomPacketPayload.Type<>(CHANNEL);
+    @Override
+    public CustomPacketPayload.Type<ClientSendPing> type() {
+        return TYPE;
     }
 
     public static void encode(ClientSendPing pingPacket, FriendlyByteBuf buf) {
