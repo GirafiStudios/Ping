@@ -24,7 +24,7 @@ public class Ping {
 
     public Ping(ModContainer modContainer, IEventBus eventBus) {
         PingCommon.registerPackets();
-        modContainer.registerConfig(ModConfig.Type.COMMON, PingConfig.spec);
+        modContainer.registerConfig(ModConfig.Type.LOCAL, PingConfig.spec);
 
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);

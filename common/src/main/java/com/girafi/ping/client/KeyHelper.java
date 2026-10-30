@@ -3,10 +3,9 @@ package com.girafi.ping.client;
 import com.girafi.ping.client.gui.PingSelectGui;
 import com.girafi.ping.data.PingType;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLMouse;
 
 public class KeyHelper {
     private static boolean quickPingAlertHeld = false;
@@ -22,13 +21,10 @@ public class KeyHelper {
             return;
         }
 
-        Window window = Minecraft.getInstance().getWindow();
-        long handle = window.handle();
-
         //PING MENU
         KeyMapping pingKey = PingKeybinds.KEY_BINDING;
         int pingKeycode = pingKey.key.getValue();
-        boolean isPingMenuKeyPressed = pingKey.key.getType() == InputConstants.Type.MOUSE ? GLFW.glfwGetMouseButton(handle, pingKeycode) == GLFW.GLFW_PRESS : InputConstants.isKeyDown(window, pingKeycode);
+        boolean isPingMenuKeyPressed = pingKey.key.getType() == InputConstants.Type.MOUSE ? isMouseButtonDown(pingKeycode) : InputConstants.isKeyDown(pingKeycode);
 
         if (isPingMenuKeyPressed && !wasPingMenuKeyPressed) {
             PingSelectGui.activate();
@@ -43,7 +39,7 @@ public class KeyHelper {
         //ALERT
         KeyMapping alertKey = PingKeybinds.PING_ALERT;
         int alertKeycode = alertKey.key.getValue();
-        boolean quickPingDownAlert = alertKey.key.getType() == InputConstants.Type.MOUSE ? GLFW.glfwGetMouseButton(handle, alertKeycode) == GLFW.GLFW_PRESS : alertKey.isDown();
+        boolean quickPingDownAlert = alertKey.key.getType() == InputConstants.Type.MOUSE ? isMouseButtonDown(alertKeycode) : alertKey.isDown();
 
         if (quickPingDownAlert && !quickPingAlertHeld) {
             while (PingKeybinds.PING_ALERT.consumeClick()) {
@@ -55,7 +51,7 @@ public class KeyHelper {
         //MINE
         KeyMapping mineKey = PingKeybinds.PING_MINE;
         int mineKeykode = mineKey.key.getValue();
-        boolean quickPingDownMine = mineKey.key.getType() == InputConstants.Type.MOUSE ? GLFW.glfwGetMouseButton(handle, mineKeykode) == GLFW.GLFW_PRESS : mineKey.isDown();
+        boolean quickPingDownMine = mineKey.key.getType() == InputConstants.Type.MOUSE ? isMouseButtonDown(mineKeykode) : mineKey.isDown();
 
         if (quickPingDownMine && !quickPingMineHeld) {
             while (PingKeybinds.PING_MINE.consumeClick()) {
@@ -67,7 +63,7 @@ public class KeyHelper {
         //LOOK
         KeyMapping lookKey = PingKeybinds.PING_LOOK;
         int lookKeycode = lookKey.key.getValue();
-        boolean quickPingDownLook = lookKey.key.getType() == InputConstants.Type.MOUSE ? GLFW.glfwGetMouseButton(handle, lookKeycode) == GLFW.GLFW_PRESS : lookKey.isDown();
+        boolean quickPingDownLook = lookKey.key.getType() == InputConstants.Type.MOUSE ? isMouseButtonDown(lookKeycode) : lookKey.isDown();
 
         if (quickPingDownLook && !quickPingLookHeld) {
             while (PingKeybinds.PING_LOOK.consumeClick()) {
@@ -79,7 +75,7 @@ public class KeyHelper {
         //GOTO
         KeyMapping gotoKey = PingKeybinds.PING_GOTO;
         int gotoKeycode = gotoKey.key.getValue();
-        boolean quickPingDownGoto = gotoKey.key.getType() == InputConstants.Type.MOUSE ? GLFW.glfwGetMouseButton(handle, gotoKeycode) == GLFW.GLFW_PRESS : gotoKey.isDown();
+        boolean quickPingDownGoto = gotoKey.key.getType() == InputConstants.Type.MOUSE ? isMouseButtonDown(gotoKeycode) : gotoKey.isDown();
 
         if (quickPingDownGoto && !quickPingGotoHeld) {
             while (PingKeybinds.PING_GOTO.consumeClick()) {
@@ -87,5 +83,12 @@ public class KeyHelper {
             }
         }
         quickPingGotoHeld = quickPingDownGoto;
+    }
+
+    private static boolean isMouseButtonDown(int button) {
+        if (button < 1 || button > 32) {
+            return false;
+        }
+        return (SDLMouse.SDL_GetMouseState(null, null) & (1 << (button - 1))) != 0;
     }
 }

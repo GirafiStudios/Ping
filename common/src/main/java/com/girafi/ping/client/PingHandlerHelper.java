@@ -199,8 +199,8 @@ public class PingHandlerHelper {
         Minecraft mc = Minecraft.getInstance();
         poseStack.pushPose();
         poseStack.translate(px, py, pz);
-        poseStack.mulPose(cameraRenderState.orientation);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        poseStack.rotate(cameraRenderState.orientation);
+        poseStack.rotateDegrees(Axis.ZP, 180.0F);
 
         RenderType pingType = PingRenderType.ping(TEXTURE);
 
